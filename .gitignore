@@ -1,0 +1,15 @@
+# os
+.DS_Store
+
+# output
+node_modules
+/src/generated/prisma
+dist
+
+# test
+uploads/
+public/
+document/
+
+# local file
+.env
