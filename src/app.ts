@@ -2,10 +2,10 @@ import * as dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import express, { Express } from 'express';
-import routes from './routes/index'
+import routes from './routes/index';
 dotenv.config();
 
-const app: Express = express()
+const app: Express = express();
 
 /**
  * CORS
@@ -23,4 +23,4 @@ app.use(cookieParser());
  */
 app.use('/api', routes);
 
-export { app }
+export { app };
