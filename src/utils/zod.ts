@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
 import type { NextFunction } from 'express';
-import { ApiError } from '../errors/ApiError';
+import { ApiError } from '@errors/ApiError';
 
 /**
  * 주어진 에러가 ZodError라면 에러 메시지를 포맷팅하여
@@ -41,8 +41,7 @@ export const forwardZodError = (err: unknown, context: string, next: NextFunctio
   }
 
   // 예상치 못한 에러일 경우도 Error 객체로 변환 보장
-  const normalizedError =
-    err instanceof Error ? err : new Error(String(err));
+  const normalizedError = err instanceof Error ? err : new Error(String(err));
 
   return next(normalizedError);
 };

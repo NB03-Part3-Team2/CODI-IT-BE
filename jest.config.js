@@ -32,15 +32,15 @@ const config = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   coverageReporters: [
     // "json",
-    "text",
-    "lcov",
+    'text',
+    'lcov',
     // "clover"
-    "json-summary",
+    'json-summary',
   ],
 
   // An object that configures minimum threshold enforcement for coverage results
@@ -79,20 +79,26 @@ const config = {
 
   // An array of file extensions your modules use
   moduleFileExtensions: [
-    "js",
-  //   "mjs",
-  //   "cjs",
-  //   "jsx",
-    "ts",
-  //   "mts",
-  //   "cts",
-  //   "tsx",
-  //   "json",
-  //   "node"
+    'js',
+    //   "mjs",
+    //   "cjs",
+    //   "jsx",
+    'ts',
+    //   "mts",
+    //   "cts",
+    //   "tsx",
+    //   "json",
+    //   "node"
   ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  moduleNameMapper: {
+    '^@errors/(.*)$': '<rootDir>/src/errors/$1',
+    '^@middlewares/(.*)$': '<rootDir>/src/middlewares/$1',
+    '^@modules/(.*)$': '<rootDir>/src/modules/$1',
+    '^@routes/(.*)$': '<rootDir>/src/routes/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+  },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -178,7 +184,7 @@ const config = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': 'ts-jest',
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
