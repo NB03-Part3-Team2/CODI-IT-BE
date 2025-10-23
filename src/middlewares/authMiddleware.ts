@@ -1,6 +1,6 @@
 // import type { RequestHandler } from 'express';
 // import tokenUtils from '#modules/auth/utils/tokenUtils';
-// import { ApiError }  from '../errors/ApiError';
+// import { ApiError }  from '@errors/ApiError';
 
 // export const authMiddleware: RequestHandler = (req, res, next) => {
 //   const authHeader = req.headers.authorization;

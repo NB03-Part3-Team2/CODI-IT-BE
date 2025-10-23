@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 /*
 	modules에서 route임포트
-	import sampleRoutes from '../modules/sample/sampleRouter';
+	import sampleRoutes from '@modules/sample/sampleRoute';
 */
 const router = Router();
 

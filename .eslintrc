@@ -25,4 +25,15 @@
       },
     ],
   },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json",
+      },
+      "node": {
+        "paths": ["./src"],
+        "extensions": [".js", ".ts", ".tsx", ".json"],
+      },
+    },
+  },
 }
