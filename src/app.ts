@@ -6,7 +6,7 @@ import routes from './routes/index'
 import { errorHandler } from './middlewares/errorHandler';
 dotenv.config();
 
-const app: Express = express()
+const app: Express = express();
 
 /**
  * CORS
