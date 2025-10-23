@@ -10,6 +10,7 @@
     "prettier",
   ],
   "env": {
+    // node.js에서 console과 같은 전역변수 사용 여부
     "node": true,
     "browser": true,
     "es6": true,
