@@ -43,11 +43,6 @@ const seed = async () => {
   await prisma.grade.deleteMany();
   console.log('✅ 기존 데이터 삭제 완료');
 
-  // ID 시퀀스 리셋
-  console.log('🔄 ID 시퀀스 리셋 중...');
-  await prisma.$executeRaw`TRUNCATE TABLE "notifications", "inquiry_replies", "inquiries", "reviews", "payments", "order_items", "orders", "cart_items", "carts", "stocks", "products", "store_likes", "stores", "users", "categories", "sizes", "grades" RESTART IDENTITY CASCADE`;
-  console.log('✅ ID 시퀀스 리셋 완료');
-
   // 등급 데이터 삽입
   console.log('📊 등급 데이터 삽입 중...');
   await prisma.grade.createMany({
