@@ -23,7 +23,8 @@
     "@middlewares": "dist/middlewares",
     "@modules": "dist/modules",
     "@routes": "dist/routes",
-    "@utils": "dist/utils"
+    "@utils": "dist/utils",
+    "@shared": "dist/shared"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
