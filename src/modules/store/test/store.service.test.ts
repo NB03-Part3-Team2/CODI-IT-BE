@@ -8,7 +8,7 @@
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
 import storeService from '../storeService';
 import storeRepository from '../storeRepo';
-import { CreateStoreDTO, UpdateStoreDTO } from '@store/dto/storeDTO';
+import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
 
 describe('StoreService 단위 테스트', () => {
@@ -25,7 +25,7 @@ describe('StoreService 단위 테스트', () => {
     test('createStore', async () => {
       // 1. 테스트에 사용할 mock 데이터와 userId를 생성합니다.
       const userId = 'test-user-id';
-      const dto: CreateStoreDTO = {
+      const dto: CreateStoreDto = {
         name: '패션스토어',
         address: '서울시 강남구 테헤란로 123',
         detailAddress: '456호',
@@ -70,7 +70,7 @@ describe('StoreService 단위 테스트', () => {
       // Arrange: 테스트에 필요한 변수와 mock 객체들을 설정합니다.
       const userId = 'test-user-id';
       const storeId = 'test-store-id';
-      const updateDto: UpdateStoreDTO = {
+      const updateDto: UpdateStoreDto = {
         name: '새로운 패션스토어',
         content: '더 트렌디해진 패션 아이템!',
       };

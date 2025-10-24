@@ -1,10 +1,10 @@
 import { prisma } from '@shared/prisma';
-import { CreateStoreDTO, UpdateStoreDTO } from '@store/dto/storeDTO';
+import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
 
 class StoreRepository {
-  create = async (userId: string, createStoreDTO: CreateStoreDTO) => {
+  create = async (userId: string, createStoreDto: CreateStoreDto) => {
     return await prisma.store.create({
-      data: { userId, ...createStoreDTO },
+      data: { userId, ...createStoreDto },
       select: {
         id: true,
         name: true,
@@ -20,12 +20,12 @@ class StoreRepository {
     });
   };
 
-  update = async (storeId: string, updateStoreDTO: UpdateStoreDTO) => {
+  update = async (storeId: string, updateStoreDto: UpdateStoreDto) => {
     return await prisma.store.update({
       where: {
         id: storeId,
       },
-      data: updateStoreDTO,
+      data: updateStoreDto,
       select: {
         id: true,
         name: true,
