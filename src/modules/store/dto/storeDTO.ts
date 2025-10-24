@@ -42,6 +42,6 @@ export const storeIdSchema = z.object({
   storeId: z.cuid({ message: '사용자 ID는 CUID 형식이어야 합니다.' }),
 });
 
-export type CreateStoreDTO = z.infer<typeof createStoreSchema>;
+export type CreateStoreDto = z.infer<typeof createStoreSchema>;
 
-export type UpdateStoreDTO = z.infer<typeof updateStoreSchema>;
+export type UpdateStoreDto = z.infer<typeof updateStoreSchema>;
