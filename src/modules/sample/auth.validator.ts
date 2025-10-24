@@ -24,7 +24,7 @@ const validateAuthLogin: RequestHandler = async (req, res, next) => {
       email: req.body.email,
       password: req.body.password,
     };
-    const data = await loginSchema.parseAsync(parsedBody);
+    await loginSchema.parseAsync(parsedBody);
     next();
   } catch (err) {
     forwardZodError(err, '사용자 로그인', next);
