@@ -15,6 +15,3 @@ document/
 # local file
 .env*
 !.env.example
-
-# eslint
-.eslintrc
