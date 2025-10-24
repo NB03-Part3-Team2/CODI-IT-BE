@@ -1,6 +1,6 @@
-import storeRepository from '@store/storeRepo';
+import storeRepository from '@modules/store/storeRepo';
 import { ApiError } from '@errors/ApiError';
-import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
+import { CreateStoreDto, UpdateStoreDto } from '@modules/store/dto/storeDTO';
 
 class StoreService {
   createStore = async (userId: string, createStoreDto: CreateStoreDto) => {

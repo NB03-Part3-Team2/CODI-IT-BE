@@ -1,5 +1,5 @@
 import { prisma } from '@shared/prisma';
-import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
+import { CreateStoreDto, UpdateStoreDto } from '@modules/store/dto/storeDTO';
 
 // create와 update에서 사용할 select 옵션
 const selectOptionDB = {

@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { createStoreSchema, updateStoreSchema, storeIdSchema } from '@store/dto/storeDTO';
+import { createStoreSchema, updateStoreSchema, storeIdSchema } from '@modules/store/dto/storeDTO';
 
 const validateCreateStore: RequestHandler = async (req, res, next) => {
   try {

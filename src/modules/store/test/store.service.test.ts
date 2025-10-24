@@ -8,7 +8,7 @@
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
 import storeService from '../storeService';
 import storeRepository from '../storeRepo';
-import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
+import { CreateStoreDto, UpdateStoreDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
 
 describe('StoreService 단위 테스트', () => {

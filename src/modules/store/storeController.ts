@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import storeService from '@store/storeService';
-import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
+import storeService from '@modules/store/storeService';
+import { CreateStoreDto, UpdateStoreDto } from '@modules/store/dto/storeDTO';
 
 class StoreController {
   // post 메소드를 예시로 들겠습니다

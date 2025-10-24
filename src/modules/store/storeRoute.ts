@@ -1,6 +1,6 @@
 import express from 'express';
-import storeController from '@store/storeController';
-import storeValidator from '@store/storeValidator';
+import storeController from '@modules/store/storeController';
+import storeValidator from '@modules/store/storeValidator';
 const storeRouter = express.Router();
 
 storeRouter.route('/').post(storeValidator.validateCreateStore, storeController.postStore); // post: 새 스토어 등록 - 추후 인증 미들웨어 필요
