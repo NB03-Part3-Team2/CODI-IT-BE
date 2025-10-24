@@ -10,7 +10,7 @@ const validateCreateStore: RequestHandler = async (req, res, next) => {
       detailAddress: req.body.detailAddress,
       phoneNumber: req.body.phoneNumber,
       content: req.body.content,
-      image: req.body.imag,
+      image: req.body.image,
     };
     await createStoreSchema.parseAsync(parsedBody);
     next();
