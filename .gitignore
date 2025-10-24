@@ -13,4 +13,5 @@ public/
 document/
 
 # local file
-.env
+.env*
+!.env.example

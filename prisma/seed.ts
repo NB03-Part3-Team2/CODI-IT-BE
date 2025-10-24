@@ -1,4 +1,4 @@
-import { prisma } from '@shared/prisma';
+import { prisma } from '../src/shared/prisma';
 import {
   GRADES,
   USERS,
@@ -17,7 +17,7 @@ import {
   NOTIFICATIONS,
   STORE_LIKES,
 } from './mock';
-import { hashPassword } from '@modules/auth/utils/passwordUtils';
+import { hashPassword } from '../src/modules/auth/utils/passwordUtils';
 
 const seed = async () => {
   console.log('🌱 시드 데이터 삽입 시작...');

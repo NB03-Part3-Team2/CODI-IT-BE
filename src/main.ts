@@ -1,4 +1,7 @@
-import 'module-alias/register';
+// 프로덕션 환경에서만 module-alias 사용
+if (process.env.NODE_ENV === 'production') {
+  require('module-alias/register');
+}
 import * as dotenv from 'dotenv';
 import http from 'http';
 import { app } from './app';
