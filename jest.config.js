@@ -99,6 +99,7 @@ const config = {
     '^@routes/(.*)$': '<rootDir>/src/routes/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@shared/(.*)$': '<rootDir>/src/shared/$1',
+    '^@store/(.*)$': '<rootDir>/src/modules/store/$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
