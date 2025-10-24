@@ -27,7 +27,7 @@ const validateUpdateStore: RequestHandler = async (req, res, next) => {
       detailAddress: req.body.detailAddress,
       phoneNumber: req.body.phoneNumber,
       content: req.body.content,
-      image: req.body.imag,
+      image: req.body.image,
     };
     const storeId = {
       storeId: req.params.storeId,
