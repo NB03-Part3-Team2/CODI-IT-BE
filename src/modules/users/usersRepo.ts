@@ -3,7 +3,7 @@ import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
 import { prisma } from '@shared/prisma';
 
 class userRepository {
-  createUser = async (userDTO: CreateUserDto): Promise<CreatedUserDto> => {
+  createUser = async (createUserDto: CreateUserDto): Promise<CreatedUserDto> => {
     const gradeGreenId = await prisma.grade.findFirst({
       where: { name: 'Green' },
     });
@@ -12,10 +12,10 @@ class userRepository {
     }
     const newUser: any = await prisma.user.create({
       data: {
-        email: userDTO.email,
-        name: userDTO.name,
-        password: userDTO.password,
-        type: userDTO.type,
+        email: createUserDto.email,
+        name: createUserDto.name,
+        password: createUserDto.password,
+        type: createUserDto.type,
         gradeId: gradeGreenId.id,
       },
       include: { grade: true },

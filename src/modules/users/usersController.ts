@@ -21,13 +21,13 @@ class UsersController {
    */
 
   createUser = async (req: Request, res: Response) => {
-    const CreateUserDto: CreateUserDto = {
+    const createUserDto: CreateUserDto = {
       email: req.body.email,
       name: req.body.name,
       password: req.body.password,
       type: req.body.type,
     };
-    const user = await usersService.createUser(CreateUserDto);
+    const user = await usersService.createUser(createUserDto);
     res.status(201).json(user);
   };
 }
