@@ -7,13 +7,13 @@
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended",
-    "prettier",
+    "prettier"
   ],
   "env": {
     // node.js에서 console과 같은 전역변수 사용 여부
     "node": true,
     "browser": true,
-    "es6": true,
+    "es6": true
   },
   "ignorePatterns": ["node_modules/"],
   "rules": {
@@ -21,19 +21,19 @@
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "auto",
-      },
-    ],
+        "endOfLine": "auto"
+      }
+    ]
   },
   "settings": {
     "import/resolver": {
       "typescript": {
-        "project": "./tsconfig.json",
+        "project": "./tsconfig.json"
       },
       "node": {
         "paths": ["./src"],
-        "extensions": [".js", ".ts", ".tsx", ".json"],
-      },
-    },
-  },
+        "extensions": [".js", ".ts", ".tsx", ".json"]
+      }
+    }
+  }
 }
