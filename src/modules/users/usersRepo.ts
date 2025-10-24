@@ -1,9 +1,9 @@
 import { ApiError } from '@errors/ApiError';
-import { UserCreateDto, UserCreatedDto } from '@modules/users/dto/userDTO';
+import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
 import { prisma } from '@shared/prisma';
 
 class userRepository {
-  createUser = async (userDTO: UserCreateDto): Promise<UserCreatedDto> => {
+  createUser = async (userDTO: CreateUserDto): Promise<CreatedUserDto> => {
     const gradeGreenId = await prisma.grade.findFirst({
       where: { name: 'Green' },
     });

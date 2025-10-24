@@ -16,7 +16,7 @@ const emailWithMX = z.string().refine(
   },
 );
 
-export const UserCreateSchema = z.object({
+export const CreatedUserSchema = z.object({
   name: z
     .string()
     .min(2, '이름은 최소 2자 이상이어야 합니다')
@@ -30,8 +30,8 @@ export const UserCreateSchema = z.object({
   type: z.enum(['BUYER', 'SELLER'], '유효하지 않은 사용자 유형입니다.'),
 });
 
-export type UserCreateDto = z.infer<typeof UserCreateSchema>;
-export type UserCreatedDto = {
+export type CreateUserDto = z.infer<typeof CreatedUserSchema>;
+export type CreatedUserDto = {
   id: string;
   gradeId: string;
   name: string;

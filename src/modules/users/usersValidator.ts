@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { UserCreateSchema } from '@modules/users/dto/userDTO';
+import { CreatedUserSchema } from '@modules/users/dto/userDTO';
 
 class UsersValidator {
   validateUserCreate: RequestHandler = async (req, res, next) => {
@@ -11,7 +11,7 @@ class UsersValidator {
         password: req.body.password,
         type: req.body.type,
       };
-      await UserCreateSchema.parseAsync(parsedBody);
+      await CreatedUserSchema.parseAsync(parsedBody);
       next();
     } catch (err) {
       forwardZodError(err, '사용자 생성', next);
