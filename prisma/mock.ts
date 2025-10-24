@@ -4,27 +4,27 @@
 export const GRADES = [
   {
     name: 'Green',
-    rate: 0.01, // 1%
+    rate: 1, // 1%
     minAmount: 0,
   },
   {
     name: 'Orange',
-    rate: 0.02, // 2%
+    rate: 2, // 2%
     minAmount: 100000,
   },
   {
     name: 'Red',
-    rate: 0.03, // 3%
+    rate: 3, // 3%
     minAmount: 300000,
   },
   {
     name: 'Black',
-    rate: 0.05, // 5%
+    rate: 5, // 5%
     minAmount: 500000,
   },
   {
     name: 'VIP',
-    rate: 0.07, // 7%
+    rate: 7, // 7%
     minAmount: 1000000,
   },
 ];
