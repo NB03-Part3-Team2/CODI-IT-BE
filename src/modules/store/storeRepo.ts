@@ -1,22 +1,25 @@
 import { prisma } from '@shared/prisma';
 import { CreateStoreDto, UpdateStoreDto } from '@store/dto/storeDTO';
 
+// create와 update에서 사용할 select 옵션
+const selectOptionDB = {
+  id: true,
+  name: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  address: true,
+  detailAddress: true,
+  phoneNumber: true,
+  content: true,
+  image: true,
+};
+
 class StoreRepository {
   create = async (userId: string, createStoreDto: CreateStoreDto) => {
     return await prisma.store.create({
       data: { userId, ...createStoreDto },
-      select: {
-        id: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-        userId: true,
-        address: true,
-        detailAddress: true,
-        phoneNumber: true,
-        content: true,
-        image: true,
-      },
+      select: selectOptionDB,
     });
   };
 
@@ -26,18 +29,7 @@ class StoreRepository {
         id: storeId,
       },
       data: updateStoreDto,
-      select: {
-        id: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
-        userId: true,
-        address: true,
-        detailAddress: true,
-        phoneNumber: true,
-        content: true,
-        image: true,
-      },
+      select: selectOptionDB,
     });
   };
 
