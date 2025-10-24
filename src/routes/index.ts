@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import usersRouter from '@modules/users/usersRouter';
 
 /*
 	modules에서 route임포트
@@ -8,7 +9,8 @@ const router = Router();
 
 /*
 	Router 등록
-	rotuer.use('/sample', sampleRoutes);
+	router.use('/sample', sampleRoutes);
 */
+router.use('/users', usersRouter);
 
 export default router;

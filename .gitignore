@@ -13,4 +13,8 @@ public/
 document/
 
 # local file
-.env
+.env*
+!.env.example
+
+# eslint
+.eslintrc
