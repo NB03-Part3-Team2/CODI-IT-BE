@@ -7,7 +7,7 @@ import { uploadToS3 } from '../utils/s3Utils';
 import { ApiError } from '../../../errors/ApiError';
 
 // constants 모킹
-jest.mock('../utils/constants', () => ({
+jest.mock('../utils/s3Constants', () => ({
   AWS_REGION: 'ap-northeast-2',
   AWS_ACCESS_KEY_ID: 'test-key',
   AWS_SECRET_ACCESS_KEY: 'test-secret',
