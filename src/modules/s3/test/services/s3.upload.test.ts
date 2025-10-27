@@ -5,6 +5,21 @@ import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import s3Service from '../../s3Service';
 import { UploadImageDTO, UploadResponseDTO } from '../../dto/s3DTO';
 
+// 환경변수 모킹
+jest.mock('../../utils/s3Constants', () => ({
+  AWS_REGION: 'ap-northeast-2',
+  AWS_ACCESS_KEY_ID: 'test-key',
+  AWS_SECRET_ACCESS_KEY: 'test-secret',
+  AWS_S3_BUCKET_NAME: 'test-bucket',
+}));
+
+// AWS SDK 모킹
+const mockSend = jest.fn() as jest.MockedFunction<any>;
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3Client: jest.fn(() => ({ send: mockSend })),
+  PutObjectCommand: jest.fn(),
+}));
+
 describe('S3Service 단위 테스트', () => {
   // Mock 데이터 변수 선언
   let mockFile: Express.Multer.File;
