@@ -15,8 +15,7 @@ const detailAddressChecker = z
   .string()
   .min(1, '상세주소는 최소 1자 이상이어야 합니다')
   .max(20, '상세주소는 최대 20자 이하여야 합니다')
-  .nullable()
-  .optional();
+  .nullish();
 
 const contentChecker = z
   .string()
@@ -38,7 +37,7 @@ export const createStoreSchema = z.object({
   detailAddress: detailAddressChecker,
   phoneNumber: phoneNumberChecker,
   content: contentChecker,
-  image: z.url('이미지 URL 형식이 올바르지 않습니다.').nullable().optional(),
+  image: z.url('이미지 URL 형식이 올바르지 않습니다.').nullish(),
 });
 
 export const updateStoreSchema = createStoreSchema.partial();
@@ -58,7 +57,7 @@ export type UpdateStoreDto = z.infer<typeof updateStoreSchema>;
 
 export type GetMyProductListDto = z.infer<typeof paginationSchema>;
 
-export interface PubilcStoreDto {
+export interface PublicStoreDto {
   id: string;
   name: string;
   createdAt: Date;

@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client'; // raw query 작성을 위한 import
 import {
   CreateStoreDto,
   UpdateStoreDto,
-  PubilcStoreDto,
+  PublicStoreDto,
   DBProductDto,
   GetMyProductListDto,
 } from '@modules/store/dto/storeDTO';
@@ -40,7 +40,7 @@ class StoreRepository {
     });
   };
 
-  getStoreById = async (storeId: string): Promise<PubilcStoreDto | null> => {
+  getStoreById = async (storeId: string): Promise<PublicStoreDto | null> => {
     const store = await prisma.store.findUnique({
       where: {
         id: storeId,
