@@ -3,7 +3,6 @@ import storeService from '../../storeService';
 import storeRepository from '../../storeRepo';
 import { GetMyProductListDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
-import { ApiError } from '@errors/ApiError';
 
 afterEach(() => {
   jest.restoreAllMocks();
