@@ -10,16 +10,15 @@ class S3Controller {
    * 파일 유효성 검증을 통과한 후 업로드가 진행됩니다.
    * 업로드 실패 시 에러를 발생시킵니다.
    *
-   * @param {Object} req - 요청 객체 (multipart/form-data의 image 파일 포함)
-   * @param {Object} res - 응답 객체
-   * @param {Function} next - Express NextFunction
+   * @param req - 요청 객체 (multipart/form-data의 image 파일 포함)
+   * @param res - 응답 객체
    *
-   * @returns {Object} 업로드된 이미지의 URL과 키 정보 (HTTP 200)
+   * @returns 업로드된 이미지의 URL과 키 정보 (HTTP 200)
    *
    * @throws {ApiError} 400 - 잘못된 파일 형식 또는 크기
    * @throws {ApiError} 500 - S3 업로드 실패
    */
-  uploadImage = async (req: Request, res: Response, next: NextFunction) => {
+  uploadImage = async (req: Request, res: Response) => {
     const uploadImageDTO: UploadImageDTO = {
       image: req.file!,
     };

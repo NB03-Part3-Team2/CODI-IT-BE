@@ -1,7 +1,7 @@
 /**
  * S3 이미지 업로드 utils 유닛 테스트
  */
-import { afterEach, describe, test, expect, jest } from '@jest/globals';
+import { beforeEach, afterEach, describe, test, expect, jest } from '@jest/globals';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { uploadToS3 } from '../utils/s3Utils';
 import { ApiError } from '../../../errors/ApiError';

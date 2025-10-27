@@ -5,7 +5,7 @@ import s3Validator from './s3Validator';
 
 const s3Router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 s3Router
   .route('/upload')

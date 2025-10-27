@@ -1,7 +1,7 @@
 /**
  * S3 이미지 업로드 서비스 유닛 테스트
  */
-import { afterEach, describe, test, expect, jest } from '@jest/globals';
+import { beforeEach, afterEach, describe, test, expect, jest } from '@jest/globals';
 import s3Service from '../../s3Service';
 import { UploadImageDTO, UploadResponseDTO } from '../../dto/s3DTO';
 

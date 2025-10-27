@@ -24,7 +24,7 @@ const createS3Client = () => {
 /**
  * 파일을 S3에 업로드하고 URL을 반환합니다.
  * @param file - 업로드할 파일 (Express.Multer.File)
- * @returns 업로드된 파일의 URL과 키 (url: string, key: string)
+ * @returns 업로드된 파일의 URL과 키
  */
 export const uploadToS3 = async (
   file: Express.Multer.File,
