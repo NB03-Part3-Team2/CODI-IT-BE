@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import storeRouter from '@modules/store/storeRoute';
 import usersRouter from '@modules/users/usersRouter';
+import s3Router from '@modules/s3/s3Route';
 
 /*
 	modules에서 route임포트
@@ -14,5 +15,6 @@ const router = Router();
 */
 router.use('/stores', storeRouter);
 router.use('/users', usersRouter);
+router.use('/s3', s3Router);
 
 export default router;
