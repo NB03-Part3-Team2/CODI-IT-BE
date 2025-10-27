@@ -14,7 +14,9 @@ const addressChecker = z
 const detailAddressChecker = z
   .string()
   .min(1, '상세주소는 최소 1자 이상이어야 합니다')
-  .max(20, '상세주소는 최대 20자 이하여야 합니다');
+  .max(20, '상세주소는 최대 20자 이하여야 합니다')
+  .nullable()
+  .optional();
 
 const contentChecker = z
   .string()
@@ -26,6 +28,9 @@ const phoneNumberChecker = z
   .regex(/^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})$/, '올바른 핸드폰 번호가 아닙니다');
 
 const storeIdChecker = z.cuid({ message: '스토어 ID는 CUID 형식이어야 합니다.' });
+
+const pageChecker = z.coerce.number().int().min(1).default(1);
+const pageSizeChecker = z.coerce.number().int().min(1).max(100).default(10);
 
 export const createStoreSchema = z.object({
   name: nameChecker,
@@ -39,9 +44,41 @@ export const createStoreSchema = z.object({
 export const updateStoreSchema = createStoreSchema.partial();
 
 export const storeIdSchema = z.object({
-  storeId: z.cuid({ message: '사용자 ID는 CUID 형식이어야 합니다.' }),
+  storeId: storeIdChecker,
+});
+
+export const paginationSchema = z.object({
+  page: pageChecker,
+  pageSize: pageSizeChecker,
 });
 
 export type CreateStoreDto = z.infer<typeof createStoreSchema>;
 
 export type UpdateStoreDto = z.infer<typeof updateStoreSchema>;
+
+export type GetMyProductListDto = z.infer<typeof paginationSchema>;
+
+export interface PubilcStoreDto {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+  address: string;
+  detailAddress: string | null;
+  phoneNumber: string;
+  content: string;
+  image: string | null;
+  favoriteCount: number;
+}
+
+export interface DBProductDto {
+  id: string;
+  name: string;
+  price: number;
+  createdAt: Date;
+  stock: number;
+  isDiscount: boolean;
+  isSoldOut: boolean;
+  totalCount: number;
+}
