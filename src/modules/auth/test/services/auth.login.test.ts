@@ -3,13 +3,8 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import usersService from '@modules/users/usersService';
 import authService from '@modules/auth/authService';
 import { LoginDto } from '@modules/auth/dto/loginDTO';
-import { isPasswordValid } from '@modules/auth/utils/passwordUtils';
+import * as passwordUtils from '@modules/auth/utils/passwordUtils';
 import tokenUtils from '@modules/auth/utils/tokenUtils';
-
-// Mock 모듈
-jest.mock('@modules/users/usersService');
-jest.mock('@modules/auth/utils/passwordUtils');
-jest.mock('@modules/auth/utils/tokenUtils');
 
 describe('AuthService 단위 테스트', () => {
   afterEach(() => {
@@ -65,14 +60,17 @@ describe('AuthService 단위 테스트', () => {
       const getUserByEmailMock = jest
         .spyOn(usersService, 'getUserByEmail')
         .mockResolvedValue(mockUser as any);
-      (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(true);
-      // prettier-ignore
-      (tokenUtils.generateAccessToken as jest.MockedFunction<typeof tokenUtils.generateAccessToken>).
-      mockReturnValue('mock-access-token');
+      const isPasswordValidMock = jest
+        .spyOn(passwordUtils, 'isPasswordValid')
+        .mockResolvedValue(true);
+      const generateAccessTokenMock = jest
+        .spyOn(tokenUtils, 'generateAccessToken')
+        .mockReturnValue('mock-access-token');
+
       const result = await authService.login(loginDto);
 
       expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
-      expect(isPasswordValid).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+      expect(isPasswordValidMock).toHaveBeenCalledWith(loginDto.password, mockUser.password);
       expect(result).toEqual(expectedResult);
     });
 
@@ -121,7 +119,9 @@ describe('AuthService 단위 테스트', () => {
       const getUserByEmailMock = jest
         .spyOn(usersService, 'getUserByEmail')
         .mockResolvedValue(mockUser as any);
-      (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(false);
+      const isPasswordValidMock = jest
+        .spyOn(passwordUtils, 'isPasswordValid')
+        .mockResolvedValue(false);
 
       // 에러가 발생하는지 확인
       await expect(authService.login(loginDto)).rejects.toMatchObject({
@@ -131,7 +131,7 @@ describe('AuthService 단위 테스트', () => {
 
       // 메소드 호출 확인
       expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
-      expect(isPasswordValid).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+      expect(isPasswordValidMock).toHaveBeenCalledWith(loginDto.password, mockUser.password);
     });
 
     test('login 실패 테스트 - 토큰 생성 실패', async () => {
@@ -160,18 +160,19 @@ describe('AuthService 단위 테스트', () => {
       const getUserByEmailMock = jest
         .spyOn(usersService, 'getUserByEmail')
         .mockResolvedValue(mockUser as any);
-      (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(true);
+      const isPasswordValidMock = jest
+        .spyOn(passwordUtils, 'isPasswordValid')
+        .mockResolvedValue(true);
 
       // 토큰 생성에서 에러가 발생
-      // prettier-ignore
-      (tokenUtils.generateAccessToken as jest.MockedFunction<typeof tokenUtils.generateAccessToken>)
-      .mockImplementation(() => {
+      jest.spyOn(tokenUtils, 'generateAccessToken').mockImplementation(() => {
         throw new Error('토큰 생성 실패');
       });
+
       //에러 발생 확인
       await expect(authService.login(loginDto)).rejects.toThrow('토큰 생성 실패');
       expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
-      expect(isPasswordValid).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+      expect(isPasswordValidMock).toHaveBeenCalledWith(loginDto.password, mockUser.password);
     });
   });
 });

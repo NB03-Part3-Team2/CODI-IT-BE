@@ -25,13 +25,6 @@ import { ApiError } from '@errors/ApiError';
  * });
  *
  * @example
- * // 여러 라우트에 적용
- * router.use('/protected', authMiddleware); // 이후 모든 라우트에 인증 적용
- * router.get('/protected/data', (req, res) => {
- *   const userId = req.user.id; // 자동으로 사용 가능
- * });
- *
- * @example
  * // 컨트롤러에서 사용자 ID 접근
  * export const getUserProfile = async (req: Request, res: Response) => {
  *   const userId = req.user.id; // authMiddleware에서 설정된 사용자 ID
@@ -39,16 +32,6 @@ import { ApiError } from '@errors/ApiError';
  *   res.json(user);
  * };
  *
- * @example
- * // 클라이언트 요청 예시
- * fetch('/api/profile', {
- *   headers: {
- *     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
- *     'Content-Type': 'application/json'
- *   }
- * });
- *
- * @since 1.0.0
  */
 export const authMiddleware: RequestHandler = (req, res, next) => {
   const authHeader = req.headers.authorization;

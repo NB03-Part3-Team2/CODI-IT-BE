@@ -3,11 +3,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import usersService from '@modules/users/usersService';
 import usersRepository from '@modules/users/usersRepo';
 import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
-import { hashPassword } from '@modules/auth/utils/passwordUtils';
-
-// Mock 모듈
-jest.mock('@modules/users/usersRepo');
-jest.mock('@modules/auth/utils/passwordUtils');
+import * as passwordUtils from '@modules/auth/utils/passwordUtils';
 
 describe('usersService 단위 테스트', () => {
   // 각 테스트 후에 모든 모의(mock)를 복원합니다.
@@ -81,13 +77,15 @@ describe('usersService 단위 테스트', () => {
         .spyOn(usersRepository, 'createUser')
         .mockResolvedValue(mockCreatedUser);
 
-      (hashPassword as jest.MockedFunction<typeof hashPassword>).mockResolvedValue(hashedPassword);
+      const hashPasswordMock = jest
+        .spyOn(passwordUtils, 'hashPassword')
+        .mockResolvedValue(hashedPassword);
       const result = await usersService.createUser(createUserDto);
 
       // Mock된 메소드들이 올바른 인자와 함께 호출되었는지 확인합니다.
       expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
       expect(getUserByNameMock).toHaveBeenCalledWith(createUserDto.name);
-      expect(hashPassword).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
+      expect(hashPasswordMock).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
       expect(createUserMock).toHaveBeenCalledWith({
         name: '테스트유저',
         email: 'test@example.com',
@@ -207,7 +205,9 @@ describe('usersService 단위 테스트', () => {
         .mockResolvedValue(null as any);
 
       // Password hash 함수를 mock합니다.
-      (hashPassword as jest.MockedFunction<typeof hashPassword>).mockResolvedValue(hashedPassword);
+      const hashPasswordMock = jest
+        .spyOn(passwordUtils, 'hashPassword')
+        .mockResolvedValue(hashedPassword);
 
       // 에러가 발생하는지 확인합니다.
       await expect(usersService.createUser(createUserDto)).rejects.toMatchObject({
@@ -218,7 +218,7 @@ describe('usersService 단위 테스트', () => {
       // Mock된 메소드들이 호출되었는지 확인합니다.
       expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
       expect(getUserByNameMock).toHaveBeenCalledWith(createUserDto.name);
-      expect(hashPassword).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
+      expect(hashPasswordMock).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
       expect(createUserMock).toHaveBeenCalledWith({
         name: '테스트유저',
         email: 'test@example.com',
