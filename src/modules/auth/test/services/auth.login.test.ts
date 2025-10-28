@@ -71,6 +71,7 @@ describe('AuthService 단위 테스트', () => {
 
       expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
       expect(isPasswordValidMock).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+      expect(generateAccessTokenMock).toHaveBeenCalledWith({ id: mockUser.id });
       expect(result).toEqual(expectedResult);
     });
 
