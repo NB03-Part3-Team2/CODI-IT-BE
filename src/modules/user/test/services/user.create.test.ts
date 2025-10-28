@@ -1,15 +1,11 @@
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import userService from '@modules/users/usersService';
-import userRepository from '@modules/users/usersRepo';
-import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
-import { hashPassword } from '@modules/auth/utils/passwordUtils';
 import { prisma } from '@shared/prisma';
+import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import userService from '@modules/user/userService';
+import userRepository from '@modules/user/userRepo';
+import { CreateUserDto, CreatedUserDto } from '@modules/user/dto/userDTO';
+import * as passwordUtils from '@modules/auth/utils/passwordUtils';
 
-// Mock 모듈
-jest.mock('@modules/users/usersRepo');
-jest.mock('@modules/auth/utils/passwordUtils');
-
-describe('UserService 단위 테스트', () => {
+describe('userService 단위 테스트', () => {
   // 각 테스트 후에 모든 모의(mock)를 복원합니다.
   afterEach(() => {
     jest.restoreAllMocks();
@@ -79,13 +75,15 @@ describe('UserService 단위 테스트', () => {
         .spyOn(userRepository, 'createUser')
         .mockResolvedValue(mockCreatedUser);
 
-      (hashPassword as jest.MockedFunction<typeof hashPassword>).mockResolvedValue(hashedPassword);
+      const hashPasswordMock = jest
+        .spyOn(passwordUtils, 'hashPassword')
+        .mockResolvedValue(hashedPassword);
       const result = await userService.createUser(createUserDto);
 
       // Mock된 메소드들이 올바른 인자와 함께 호출되었는지 확인합니다.
       expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
       expect(getUserByNameMock).toHaveBeenCalledWith(createUserDto.name);
-      expect(hashPassword).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
+      expect(hashPasswordMock).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
       expect(createUserMock).toHaveBeenCalledWith({
         name: '테스트유저',
         email: 'test@example.com',
@@ -115,6 +113,14 @@ describe('UserService 단위 테스트', () => {
         totalAmount: 0,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
+        grade: {
+          id: 'grade123',
+          name: 'Green',
+          rate: 0.01,
+          minAmount: 0,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+        },
       };
 
       // 이미 존재하는 이메일을 mock합니다.
@@ -195,7 +201,9 @@ describe('UserService 단위 테스트', () => {
         .mockResolvedValue(null as any);
 
       // Password hash 함수를 mock합니다.
-      (hashPassword as jest.MockedFunction<typeof hashPassword>).mockResolvedValue(hashedPassword);
+      const hashPasswordMock = jest
+        .spyOn(passwordUtils, 'hashPassword')
+        .mockResolvedValue(hashedPassword);
 
       // 에러가 발생하는지 확인합니다.
       await expect(userService.createUser(createUserDto)).rejects.toMatchObject({
@@ -206,7 +214,7 @@ describe('UserService 단위 테스트', () => {
       // Mock된 메소드들이 호출되었는지 확인합니다.
       expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
       expect(getUserByNameMock).toHaveBeenCalledWith(createUserDto.name);
-      expect(hashPassword).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
+      expect(hashPasswordMock).toHaveBeenCalledWith(originalPassword); // 원본 비밀번호 사용
       expect(createUserMock).toHaveBeenCalledWith({
         name: '테스트유저',
         email: 'test@example.com',
