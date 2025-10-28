@@ -1,6 +1,6 @@
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import storeService from '../../storeService';
-import storeRepository from '../../storeRepo';
+import storeService from '@modules/store/storeService';
+import storeRepository from '@modules/store/storeRepo';
 import { GetMyProductListDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
 
