@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import s3Service from './s3Service';
-import { UploadImageDTO } from './dto/s3DTO';
+import { Request, Response } from 'express';
+import s3Service from '@modules/s3/s3Service';
+import { UploadImageDto } from '@modules/s3/dto/s3DTO';
 
 class S3Controller {
   /**
@@ -19,7 +19,7 @@ class S3Controller {
    * @throws {ApiError} 500 - S3 업로드 실패
    */
   uploadImage = async (req: Request, res: Response) => {
-    const uploadImageDTO: UploadImageDTO = {
+    const uploadImageDTO: UploadImageDto = {
       image: req.file!,
     };
 
