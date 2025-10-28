@@ -41,7 +41,7 @@ describe('createStore 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkStoreMock = jest
-      .spyOn(storeRepository, 'checkStoreByUserId')
+      .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(null);
     const createMock = jest.spyOn(storeRepository, 'create').mockResolvedValue(expectedResult);
 

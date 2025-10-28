@@ -21,7 +21,7 @@ describe('getMyProductList 메소드 테스트', () => {
       page: 1,
       pageSize: 10,
     };
-    // 서비스가 처음에 호출하는 checkStoreByUserId가 반환할 가짜 스토어 정보
+    // 서비스가 처음에 호출하는 getStoreIdByUserId가 반환할 가짜 스토어 정보
     const mockExistingStore = {
       id: storeId, // storeId가 일치해야 소유권 검사를 통과합니다.
     };
@@ -53,7 +53,7 @@ describe('getMyProductList 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkStoreMock = jest
-      .spyOn(storeRepository, 'checkStoreByUserId')
+      .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockExistingStore);
     const getProductListMock = jest
       .spyOn(storeRepository, 'getProductListByStoreId')

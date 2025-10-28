@@ -78,7 +78,7 @@ class StoreRepository {
     };
   };
 
-  checkStoreByUserId = async (userId: string) => {
+  getStoreIdByUserId = async (userId: string) => {
     // 스토어 존재 여부만 확인하기 위한 최소데이터 조회
     const store = await prisma.store.findUnique({
       where: { userId },

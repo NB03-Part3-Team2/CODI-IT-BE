@@ -5,7 +5,7 @@ import { CreateStoreDto, UpdateStoreDto, GetMyProductListDto } from '@modules/st
 class StoreService {
   createStore = async (userId: string, createStoreDto: CreateStoreDto) => {
     // 스토어가 이미 있는지 조회, swagger에는 없으나 에러 케이스 추가
-    const store = await storeRepository.checkStoreByUserId(userId);
+    const store = await storeRepository.getStoreIdByUserId(userId);
     if (store) {
       throw ApiError.conflict('이미 스토어가 있습니다.');
     }
@@ -14,7 +14,7 @@ class StoreService {
 
   updateStore = async (userId: string, storeId: string, updateStoreDto: UpdateStoreDto) => {
     // 스토어가 존재하는지 검사, swagger에는 없으나 에러 케이스 추가
-    const store = await storeRepository.checkStoreByUserId(userId);
+    const store = await storeRepository.getStoreIdByUserId(userId);
     if (!store) {
       throw ApiError.notFound('스토어가 존재하지 않습니다');
     }
@@ -38,7 +38,7 @@ class StoreService {
 
   getMyProductList = async (userId: string, pagenationDto: GetMyProductListDto) => {
     // 스토어가 존재하는지 검사, swagger에는 없으나 에러 케이스 추가
-    const store = await storeRepository.checkStoreByUserId(userId);
+    const store = await storeRepository.getStoreIdByUserId(userId);
     if (!store) {
       throw ApiError.notFound('스토어가 존재하지 않습니다');
     }
