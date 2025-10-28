@@ -16,5 +16,7 @@ const router = Router();
 */
 router.use('/stores', storeRouter);
 router.use('/users', usersRouter);
+router.use('/auth', authRouter);
+router.use('/s3', s3Router);
 
 export default router;
