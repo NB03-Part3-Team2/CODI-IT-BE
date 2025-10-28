@@ -1,8 +1,8 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { CreatedUserSchema } from '@modules/users/dto/userDTO';
+import { CreatedUserSchema } from '@modules/user/dto/userDTO';
 
-class UsersValidator {
+class UserValidator {
   validateUserCreate: RequestHandler = async (req, res, next) => {
     try {
       const parsedBody = {
@@ -19,4 +19,4 @@ class UsersValidator {
   };
 }
 
-export default new UsersValidator();
+export default new UserValidator();

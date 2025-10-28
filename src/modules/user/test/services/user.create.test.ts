@@ -1,8 +1,8 @@
 import { prisma } from '@shared/prisma';
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import usersService from '@modules/users/usersService';
-import usersRepository from '@modules/users/usersRepo';
-import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
+import usersService from '@modules/user/userService';
+import usersRepository from '@modules/user/userRepo';
+import { CreateUserDto, CreatedUserDto } from '@modules/user/dto/userDTO';
 import * as passwordUtils from '@modules/auth/utils/passwordUtils';
 
 describe('usersService 단위 테스트', () => {
