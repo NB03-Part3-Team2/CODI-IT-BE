@@ -130,6 +130,17 @@ class StoreRepository {
 
     return { list, totalCount };
   };
+
+  getUserTypeByUserId = async (userId: string) => {
+    // 스토어 생성 권한 여부만 확인하기 위한 최소데이터 조회
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        type: true,
+      },
+    });
+    return user;
+  };
 }
 
 export default new StoreRepository();
