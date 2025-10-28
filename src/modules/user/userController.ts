@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import usersService from '@modules/users/usersService';
-import { CreateUserDto } from '@modules/users/dto/usersDTO';
+import userService from '@modules/user/userService';
+import { CreateUserDto } from '@modules/user/dto/userDTO';
 
-class UsersController {
+class UserController {
   /**
    * @description
    * 새로운 유저를 생성합니다.
@@ -28,15 +28,15 @@ class UsersController {
       password: req.body.password,
       type: req.body.type,
     };
-    const user = await usersService.createUser(createUserDto);
+    const user = await userService.createUser(createUserDto);
     res.status(201).json(user);
   };
 
   getUser = async (req: Request, res: Response) => {
     const userId = req.user.id;
-    const user = await usersService.getUser(userId);
+    const user = await userService.getUser(userId);
     res.status(200).json(user);
   };
 }
 
-export default new UsersController();
+export default new UserController();

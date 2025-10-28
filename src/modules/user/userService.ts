@@ -1,9 +1,9 @@
-import usersRepository from '@modules/users/usersRepo';
-import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/usersDTO';
+import userRepository from '@modules/user/userRepo';
+import { CreateUserDto } from '@modules/user/dto/userDTO';
 import { ApiError } from '@errors/ApiError';
 import { hashPassword } from '@modules/auth/utils/passwordUtils';
 
-class UsersService {
+class UserService {
   sensitiveUserDataFilter = (user: any) => {
     const { totalAmount, gradeId, grade, password, image, ...rest } = user;
     const { createdAt, updatedAt, ...gradeInfo } = grade;
@@ -16,16 +16,16 @@ class UsersService {
   };
 
   createUser = async (createUserDto: CreateUserDto) => {
-    const existingUser = await usersRepository.getUserByEmail(createUserDto.email);
+    const existingUser = await userRepository.getUserByEmail(createUserDto.email);
     if (existingUser) {
       throw ApiError.conflict('이미 존재하는 이메일입니다.');
     }
-    const existingName = await usersRepository.getUserByName(createUserDto.name);
+    const existingName = await userRepository.getUserByName(createUserDto.name);
     if (existingName) {
       throw ApiError.conflict('이미 존재하는 이름입니다.');
     }
     createUserDto.password = await hashPassword(createUserDto.password);
-    const createdUser = await usersRepository.createUser(createUserDto);
+    const createdUser = await userRepository.createUser(createUserDto);
     if (!createdUser) {
       throw ApiError.internal('사용자 생성에 실패했습니다.');
     }
@@ -33,7 +33,7 @@ class UsersService {
   };
 
   getUser = async (userId: string) => {
-    const user = await usersRepository.getUserById(userId);
+    const user = await userRepository.getUserById(userId);
     if (!user) {
       throw ApiError.notFound('존재하지 않는 사용자입니다.');
     }
@@ -41,9 +41,9 @@ class UsersService {
   };
 
   getUserByEmail = async (email: string) => {
-    const user = await usersRepository.getUserByEmail(email);
+    const user = await userRepository.getUserByEmail(email);
     return user;
   };
 }
 
-export default new UsersService();
+export default new UserService();

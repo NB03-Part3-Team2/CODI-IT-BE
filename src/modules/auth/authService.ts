@@ -1,6 +1,6 @@
-import usersService from '@modules/users/usersService';
+import usersService from '@modules/user/userService';
 import tokenUtils from '@modules/auth/utils/tokenUtils';
-import { isPasswordValid } from './utils/passwordUtils';
+import { isPasswordValid } from '@modules/auth/utils/passwordUtils';
 import { ApiError } from '@errors/ApiError';
 import type { LoginDto } from '@modules/auth/dto/loginDTO';
 

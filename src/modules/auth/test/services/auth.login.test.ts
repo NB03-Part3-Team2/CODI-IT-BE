@@ -1,6 +1,6 @@
 import { prisma } from '@shared/prisma';
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import usersService from '@modules/users/usersService';
+import usersService from '@modules/user/userService';
 import authService from '@modules/auth/authService';
 import { LoginDto } from '@modules/auth/dto/loginDTO';
 import * as passwordUtils from '@modules/auth/utils/passwordUtils';
