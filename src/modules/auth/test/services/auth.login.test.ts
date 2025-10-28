@@ -12,7 +12,6 @@ jest.mock('@modules/auth/utils/passwordUtils');
 jest.mock('@modules/auth/utils/tokenUtils');
 
 describe('AuthService 단위 테스트', () => {
-  // 각 테스트 후에 모든 모의(mock)를 복원합니다.
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -23,7 +22,6 @@ describe('AuthService 단위 테스트', () => {
 
   describe('login 메소드 테스트', () => {
     test('login 성공 테스트 - mock방식', async () => {
-      // 테스트에 사용할 mock 데이터를 생성합니다.
       const loginDto: LoginDto = {
         email: 'test@example.com',
         password: 'password123',
@@ -63,6 +61,7 @@ describe('AuthService 단위 테스트', () => {
         accessToken: 'mock-access-token',
       };
 
+      // 사용자 조회와 비밀번호 검증, 토큰 생성을 mock
       const getUserByEmailMock = jest
         .spyOn(usersService, 'getUserByEmail')
         .mockResolvedValue(mockUser as any);
@@ -83,16 +82,16 @@ describe('AuthService 단위 테스트', () => {
         password: 'password123',
       };
 
-      // 존재하지 않는 사용자를 mock합니다.
+      // 존재하지 않는 사용자를 mock
       const getUserByEmailMock = jest.spyOn(usersService, 'getUserByEmail').mockResolvedValue(null);
 
-      // 에러가 발생하는지 확인합니다. (실제로는 404 에러가 발생함)
+      // 에러가 발생하는지 확인
       await expect(authService.login(loginDto)).rejects.toMatchObject({
         code: 404,
         message: '사용자 또는 비밀번호가 올바르지 않습니다.',
       });
 
-      // getUserByEmail이 호출되었는지 확인합니다.
+      // getUserByEmail이 호출되었는지 확인
       expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
     });
 
@@ -124,7 +123,7 @@ describe('AuthService 단위 테스트', () => {
         .mockResolvedValue(mockUser as any);
       (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(false);
 
-      // 에러가 발생하는지 확인합니다.
+      // 에러가 발생하는지 확인
       await expect(authService.login(loginDto)).rejects.toMatchObject({
         code: 401,
         message: '사용자 또는 비밀번호가 올바르지 않습니다.',
