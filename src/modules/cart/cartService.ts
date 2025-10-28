@@ -1,9 +1,9 @@
 import cartRepository from '@modules/cart/cartRepo';
-import { CreatedCartDTO } from '@modules/cart/dto/cartDTO';
+import { CreatedCartDto } from '@modules/cart/dto/cartDTO';
 
 class CartService {
   // 장바구니 생성 또는 기존 장바구니 반환
-  createOrGetCart = async (userId: string): Promise<CreatedCartDTO> => {
+  createOrGetCart = async (userId: string): Promise<CreatedCartDto> => {
     // 기존 장바구니 조회
     let cart = await cartRepository.findByUserId(userId);
 

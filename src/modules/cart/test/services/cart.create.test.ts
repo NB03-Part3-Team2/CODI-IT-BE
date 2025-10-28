@@ -1,7 +1,7 @@
 import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import cartService from '@modules/cart/cartService';
 import cartRepository from '@modules/cart/cartRepo';
-import { CreatedCartDTO } from '@modules/cart/dto/cartDTO';
+import { CreatedCartDto } from '@modules/cart/dto/cartDTO';
 
 // 각 테스트 후에 모든 모의(mock)를 복원합니다.
 afterEach(() => {
@@ -22,7 +22,7 @@ describe('createOrGetCart 메소드 테스트', () => {
       items: [], // 새로 생성된 장바구니는 items가 비어있음
     };
 
-    const expectedResult: CreatedCartDTO = {
+    const expectedResult: CreatedCartDto = {
       id: 'mock-cart-id',
       buyerId: userId,
       quantity: 0, // items가 비어있으므로 0
@@ -58,7 +58,7 @@ describe('createOrGetCart 메소드 테스트', () => {
       items: [{ quantity: 2 }, { quantity: 3 }, { quantity: 1 }], // 총 6개 아이템
     };
 
-    const expectedResult: CreatedCartDTO = {
+    const expectedResult: CreatedCartDto = {
       id: 'existing-cart-id',
       buyerId: userId,
       quantity: 6,

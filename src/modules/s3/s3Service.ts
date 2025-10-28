@@ -1,8 +1,8 @@
-import { UploadImageDTO, UploadResponseDTO } from '@modules/s3/dto/s3DTO';
+import { UploadImageDto, UploadResponseDto } from '@modules/s3/dto/s3DTO';
 import { uploadToS3 } from '@modules/s3/utils/s3Utils';
 
 class S3Service {
-  uploadImage = async (uploadImageDTO: UploadImageDTO): Promise<UploadResponseDTO> => {
+  uploadImage = async (uploadImageDTO: UploadImageDto): Promise<UploadResponseDto> => {
     const { image } = uploadImageDTO;
 
     // S3에 파일 업로드

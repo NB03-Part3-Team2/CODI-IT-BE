@@ -3,7 +3,7 @@
  */
 import { beforeEach, afterEach, describe, test, expect, jest } from '@jest/globals';
 import s3Service from '@modules/s3/s3Service';
-import { UploadImageDTO, UploadResponseDTO } from '@modules/s3/dto/s3DTO';
+import { UploadImageDto, UploadResponseDto } from '@modules/s3/dto/s3DTO';
 
 // 환경변수 모킹
 jest.mock('@modules/s3/utils/s3Constants', () => ({
@@ -57,10 +57,10 @@ describe('S3Service 단위 테스트', () => {
   describe('with Mock', () => {
     test('uploadImage 테스트 - mock방식', async () => {
       // 테스트에 사용할 mock데이터를 생성합니다.
-      const dto: UploadImageDTO = {
+      const dto: UploadImageDto = {
         image: mockFile,
       };
-      const expectedResult: UploadResponseDTO = {
+      const expectedResult: UploadResponseDto = {
         message: '업로드 성공',
         ...mockUploadToS3Result,
       };
@@ -85,7 +85,7 @@ describe('S3Service 단위 테스트', () => {
   describe('with Spy', () => {
     test('uploadImage 테스트 - spy방식', async () => {
       // 테스트에 사용할 mock데이터를 생성합니다.
-      const dto: UploadImageDTO = {
+      const dto: UploadImageDto = {
         image: mockFile,
       };
 
