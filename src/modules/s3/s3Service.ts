@@ -1,5 +1,5 @@
-import { UploadImageDTO, UploadResponseDTO } from './dto/s3DTO';
-import { uploadToS3 } from './utils/s3Utils';
+import { UploadImageDTO, UploadResponseDTO } from '@modules/s3/dto/s3DTO';
+import { uploadToS3 } from '@modules/s3/utils/s3Utils';
 
 class S3Service {
   uploadImage = async (uploadImageDTO: UploadImageDTO): Promise<UploadResponseDTO> => {

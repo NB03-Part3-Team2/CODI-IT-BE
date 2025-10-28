@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express';
-import { ApiError } from '../../errors/ApiError';
+import { ApiError } from '@errors/ApiError';
 
 const validateImageUpload: RequestHandler = async (req, res, next) => {
   try {

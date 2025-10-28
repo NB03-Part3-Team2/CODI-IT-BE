@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import s3Service from './s3Service';
-import { UploadImageDTO } from './dto/s3DTO';
+import { Request, Response } from 'express';
+import s3Service from '@modules/s3/s3Service';
+import { UploadImageDTO } from '@modules/s3/dto/s3DTO';
 
 class S3Controller {
   /**
