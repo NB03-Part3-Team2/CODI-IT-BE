@@ -52,3 +52,7 @@ export type CreatedUserDto = {
   };
   image: string | null;
 };
+
+export type ResUserDto = Omit<CreatedUserDto, 'password' | 'gradeId' | 'totalAmount' | 'grade'> & {
+  grade: Omit<CreatedUserDto['grade'], 'createdAt' | 'updatedAt'>;
+};
