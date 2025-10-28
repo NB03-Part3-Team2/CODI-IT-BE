@@ -5,6 +5,7 @@ import {
   updateStoreSchema,
   storeIdSchema,
   paginationSchema,
+  userIdSchma,
 } from '@modules/store/dto/storeDTO';
 
 class StoreValidator {
@@ -80,6 +81,21 @@ class StoreValidator {
       next();
     } catch (err) {
       forwardZodError(err, '내 스토어 등록 상품 조회', next);
+    }
+  };
+
+  validateGetMyStore: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const userId = {
+        userId: req.user.id,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      await userIdSchma.parseAsync(userId);
+      next();
+    } catch (err) {
+      forwardZodError(err, '내 스토어 상세 조회', next);
     }
   };
 }

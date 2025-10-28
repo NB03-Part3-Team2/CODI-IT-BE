@@ -1,6 +1,12 @@
 import storeRepository from '@modules/store/storeRepo';
 import { ApiError } from '@errors/ApiError';
-import { CreateStoreDto, UpdateStoreDto, GetMyProductListDto } from '@modules/store/dto/storeDTO';
+import {
+  CreateStoreDto,
+  UpdateStoreDto,
+  GetMyProductListDto,
+  PublicStoreDto,
+  PublicMyStoreDto,
+} from '@modules/store/dto/storeDTO';
 import { UserType } from '@prisma/client';
 
 class StoreService {
@@ -36,14 +42,20 @@ class StoreService {
     return await storeRepository.update(storeId, updateStoreDto);
   };
 
-  getStore = async (storeId: string) => {
-    // 스토어가 존재하는지 검사, swagger에는 없으나 에러 케이스 추가
+  getStore = async (storeId: string): Promise<PublicStoreDto> => {
+    // 스토어 조회, swagger에는 없으나 에러 케이스 추가
     const store = await storeRepository.getStoreById(storeId);
     if (!store) {
       throw ApiError.notFound('스토어가 존재하지 않습니다');
     }
-    // 스토어 정보 반환
-    return store;
+
+    // 형식에 맞게 데이터 가공
+    const { _count, ...rest } = store;
+
+    return {
+      ...rest,
+      favoriteCount: _count.storeLikes,
+    };
   };
 
   getMyProductList = async (userId: string, pagenationDto: GetMyProductListDto) => {
@@ -55,6 +67,38 @@ class StoreService {
     // 내 스토어 등록 상품들 정보 반환
     const productList = await storeRepository.getProductListByStoreId(store.id, pagenationDto);
     return productList;
+  };
+
+  getMyStore = async (userId: string): Promise<PublicMyStoreDto> => {
+    // 스토어가 존재하는지 검사 + 스토어 아이디 조회, swagger에는 없으나 에러 케이스 추가
+    const storeInfo = await storeRepository.getStoreIdByUserId(userId);
+    if (!storeInfo) {
+      throw ApiError.notFound('스토어가 존재하지 않습니다');
+    }
+
+    // 데이터 병렬 조회
+    const storePromise = storeRepository.getStoreById(storeInfo.id);
+    const monthFavoritCountPromise = storeRepository.getMonthlyLikesByStoreId(storeInfo.id);
+    const totalSoldCountPromise = storeRepository.getTotalSalesByStoreId(storeInfo.id);
+
+    const [store, monthFavoritCount, totalSoldCount] = await Promise.all([
+      storePromise,
+      monthFavoritCountPromise,
+      totalSoldCountPromise,
+    ]);
+
+    // getStoreById 결과가 null일 수 있으나,
+    // 바로 위에서 getStoreIdByUserId로 ID를 받아왔으므로 항상 데이터가 있다고 간주.
+    const { _count, ...rest } = store!;
+
+    // 최종 데이터 조합
+    return {
+      ...rest,
+      favoriteCount: _count.storeLikes,
+      productCount: _count.products,
+      monthFavoritCount,
+      totalSoldCount,
+    };
   };
 }
 
