@@ -1,11 +1,11 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { ApiError } from '../../../errors/ApiError';
+import { ApiError } from '@errors/ApiError';
 import {
   AWS_REGION,
   AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY,
   AWS_S3_BUCKET_NAME,
-} from './s3Constants';
+} from '@modules/s3/utils/s3Constants';
 
 /**
  * S3 클라이언트를 생성합니다. (테스트를 위해 함수레벨로 분리)

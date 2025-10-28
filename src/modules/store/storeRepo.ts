@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client'; // raw query 작성을 위한 import
 import {
   CreateStoreDto,
   UpdateStoreDto,
-  PublicStoreDto,
   DBProductDto,
   GetMyProductListDto,
 } from '@modules/store/dto/storeDTO';
@@ -40,11 +39,9 @@ class StoreRepository {
     });
   };
 
-  getStoreById = async (storeId: string): Promise<PublicStoreDto | null> => {
-    const store = await prisma.store.findUnique({
-      where: {
-        id: storeId,
-      },
+  getStoreById = async (storeId: string) => {
+    return await prisma.store.findUnique({
+      where: { id: storeId },
       select: {
         id: true,
         name: true,
@@ -58,27 +55,15 @@ class StoreRepository {
         image: true,
         _count: {
           select: {
-            storeLikes: true,
+            storeLikes: true, // favoriteCount
+            products: true, // productCount
           },
         },
       },
     });
-
-    // 스토어가 없으면 null 반환
-    if (!store) {
-      return null;
-    }
-
-    // 속성 명에 맞게 리턴
-    const { _count, ...rest } = store;
-
-    return {
-      ...rest,
-      favoriteCount: _count.storeLikes,
-    };
   };
 
-  checkStoreByUserId = async (userId: string) => {
+  getStoreIdByUserId = async (userId: string) => {
     // 스토어 존재 여부만 확인하기 위한 최소데이터 조회
     const store = await prisma.store.findUnique({
       where: { userId },
@@ -129,6 +114,46 @@ class StoreRepository {
     });
 
     return { list, totalCount };
+  };
+
+  getUserTypeByUserId = async (userId: string) => {
+    // 스토어 생성 권한 여부만 확인하기 위한 최소데이터 조회
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        type: true,
+      },
+    });
+    return user;
+  };
+
+  getMonthlyLikesByStoreId = async (storeId: string) => {
+    // 현재 날짜의 달을 기준으로 좋아요 수 계산
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    return await prisma.storeLike.count({
+      where: {
+        storeId: storeId,
+        createdAt: {
+          gte: firstDayOfMonth,
+        },
+      },
+    });
+  };
+
+  getTotalSalesByStoreId = async (storeId: string) => {
+    const result = await prisma.orderItem.aggregate({
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        order: {
+          storeId: storeId,
+        },
+      },
+    });
+    // _sum.quantity는 상품이 하나도 판매되지 않았을 경우 null이므로 아래와 같이 처리
+    return result._sum.quantity || 0;
   };
 }
 

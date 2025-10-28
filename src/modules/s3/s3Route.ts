@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import s3Controller from './s3Controller';
-import s3Validator from './s3Validator';
+import s3Controller from '@modules/s3/s3Controller';
+import s3Validator from '@modules/s3/s3Validator';
 
 const s3Router = express.Router();
 

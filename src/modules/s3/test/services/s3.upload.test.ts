@@ -2,11 +2,11 @@
  * S3 이미지 업로드 서비스 유닛 테스트
  */
 import { beforeEach, afterEach, describe, test, expect, jest } from '@jest/globals';
-import s3Service from '../../s3Service';
-import { UploadImageDTO, UploadResponseDTO } from '../../dto/s3DTO';
+import s3Service from '@modules/s3/s3Service';
+import { UploadImageDto, UploadResponseDto } from '@modules/s3/dto/s3DTO';
 
 // 환경변수 모킹
-jest.mock('../../utils/s3Constants', () => ({
+jest.mock('@modules/s3/utils/s3Constants', () => ({
   AWS_REGION: 'ap-northeast-2',
   AWS_ACCESS_KEY_ID: 'test-key',
   AWS_SECRET_ACCESS_KEY: 'test-secret',
@@ -57,17 +57,17 @@ describe('S3Service 단위 테스트', () => {
   describe('with Mock', () => {
     test('uploadImage 테스트 - mock방식', async () => {
       // 테스트에 사용할 mock데이터를 생성합니다.
-      const dto: UploadImageDTO = {
+      const dto: UploadImageDto = {
         image: mockFile,
       };
-      const expectedResult: UploadResponseDTO = {
+      const expectedResult: UploadResponseDto = {
         message: '업로드 성공',
         ...mockUploadToS3Result,
       };
 
       // jest.spyOn을 사용하여 uploadToS3 메소드를 모의(mock)하고 특정 값을 반환하도록 설정합니다.
       const uploadToS3Mock = jest
-        .spyOn(require('../../utils/s3Utils'), 'uploadToS3')
+        .spyOn(require('@modules/s3/utils/s3Utils'), 'uploadToS3')
         .mockResolvedValue(mockUploadToS3Result);
 
       // 서비스 함수를 실행합니다.
@@ -85,12 +85,12 @@ describe('S3Service 단위 테스트', () => {
   describe('with Spy', () => {
     test('uploadImage 테스트 - spy방식', async () => {
       // 테스트에 사용할 mock데이터를 생성합니다.
-      const dto: UploadImageDTO = {
+      const dto: UploadImageDto = {
         image: mockFile,
       };
 
       // jest.spyOn을 사용하여 uploadToS3 메소드를 감시(spy)합니다. 원본 구현은 그대로 유지.
-      const uploadToS3Spy = jest.spyOn(require('../../utils/s3Utils'), 'uploadToS3');
+      const uploadToS3Spy = jest.spyOn(require('@modules/s3/utils/s3Utils'), 'uploadToS3');
 
       // 서비스 함수 호출
       await s3Service.uploadImage(dto);
