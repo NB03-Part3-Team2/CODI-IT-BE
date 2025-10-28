@@ -5,7 +5,7 @@ import {
   updateStoreSchema,
   storeIdSchema,
   paginationSchema,
-  userIdSchma,
+  userIdSchema,
 } from '@modules/store/dto/storeDTO';
 
 class StoreValidator {
@@ -92,7 +92,7 @@ class StoreValidator {
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await userIdSchma.parseAsync(userId);
+      await userIdSchema.parseAsync(userId);
       next();
     } catch (err) {
       forwardZodError(err, '내 스토어 상세 조회', next);

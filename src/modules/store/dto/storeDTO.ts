@@ -47,7 +47,7 @@ export const storeIdSchema = z.object({
   storeId: storeIdChecker,
 });
 
-export const userIdSchma = z.object({
+export const userIdSchema = z.object({
   userId: userIdChecker,
 });
 
