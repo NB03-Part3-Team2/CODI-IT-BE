@@ -15,7 +15,7 @@ const router = Router();
 	router.use('/sample', sampleRoutes);
 */
 router.use('/stores', storeRouter);
-router.use('/users', userRouter);
+router.use('/user', userRouter);
 router.use('/auth', authRouter);
 router.use('/s3', s3Router);
 
