@@ -1,5 +1,5 @@
-import userRepository from '@modules/users/usersRepo';
-import { CreateUserDto } from '@modules/users/dto/userDTO';
+import userRepository from '@modules/user/userRepo';
+import { CreateUserDto } from '@modules/user/dto/userDTO';
 import { ApiError } from '@errors/ApiError';
 import { hashPassword } from '@modules/auth/utils/passwordUtils';
 
@@ -30,6 +30,11 @@ class UserService {
       grade: gradeInfo,
       image,
     };
+    return user;
+  };
+
+  getUserByEmail = async (email: string) => {
+    const user = await userRepository.getUserByEmail(email);
     return user;
   };
 }
