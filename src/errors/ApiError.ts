@@ -1,10 +1,5 @@
-export type ErrorType =
-  | 'BAD_REQUEST'
-  | 'NOT_FOUND'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'CONFLICT'
-  | 'INTERNAL';
+//prettier-ignore
+export type ErrorType = 'BAD_REQUEST' | 'NOT_FOUND' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'CONFLICT' | 'INTERNAL';
 
 const ERROR_DEFINITIONS: Record<ErrorType, { code: number; defaultMessage: string }> = {
   BAD_REQUEST: { code: 400, defaultMessage: '잘못된 요청입니다.' },
