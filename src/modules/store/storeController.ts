@@ -5,7 +5,7 @@ import { CreateStoreDto, UpdateStoreDto, GetMyProductListDto } from '@modules/st
 class StoreController {
   postStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
-    const userId = 'cmh494web0009weywagl76dvl'; // 인증 미들웨어 후 가져오는 로직으로 추후 변경
+    const userId = req.user.id;
     const createStoreDto: CreateStoreDto = {
       name: req.body.name,
       address: req.body.address,
@@ -24,7 +24,7 @@ class StoreController {
 
   patchStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
-    const userId = 'cmh494web0009weywagl76dvl';
+    const userId = req.user.id;
     const storeId = req.params.storeId;
     const updateStoreDto: UpdateStoreDto = {
       name: req.body.name,
@@ -55,13 +55,23 @@ class StoreController {
 
   getMyProductList = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
-    const userId = 'cmh8o77wo0007we40oeeuw6zw';
+    const userId = req.user.id;
     const getMyProductListDto: GetMyProductListDto = {
       page: parseInt(req.query.page as string, 10) || 1,
       pageSize: parseInt(req.query.pageSize as string, 10) || 10,
     };
     // 스토어 등록 상품 조회
     const store = await storeService.getMyProductList(userId, getMyProductListDto); // service 함수 호출부 입니다.
+
+    // resposn 반환
+    res.status(200).json(store);
+  };
+
+  getMyStore = async (req: Request, res: Response) => {
+    // 전달할 파라미터 및 Dto 정의
+    const userId = req.user.id;
+    // 스토어 등록 상세 조회
+    const store = await storeService.getMyStore(userId); // service 함수 호출부 입니다.
 
     // resposn 반환
     res.status(200).json(store);

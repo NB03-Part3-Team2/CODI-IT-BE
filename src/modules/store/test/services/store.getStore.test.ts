@@ -1,6 +1,6 @@
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import storeService from '../../storeService';
-import storeRepository from '../../storeRepo';
+import storeService from '@modules/store/storeService';
+import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
 
 afterEach(() => {
@@ -23,10 +23,13 @@ describe('getStore 메소드 테스트', () => {
       phoneNumber: '010-1234-5678',
       content: '트렌디한 패션 아이템을 판매하는 스토어입니다.',
       image: 'https://example.com/store1.jpg',
-      favoriteCount: 300,
       userId: 'userId',
       createdAt: new Date(),
       updatedAt: new Date(),
+      _count: {
+        storeLikes: 500,
+        products: 30,
+      },
     };
 
     // 2. 레포지토리 함수 모킹
@@ -41,6 +44,11 @@ describe('getStore 메소드 테스트', () => {
     expect(getStoreByIdMock).toHaveBeenCalledWith(storeId);
 
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인
-    expect(result).toEqual(mockStore);
+    const { _count, ...rest } = mockStore;
+    const expectedResult = {
+      ...rest,
+      favoriteCount: _count.storeLikes,
+    };
+    expect(result).toEqual(expectedResult);
   });
 });
