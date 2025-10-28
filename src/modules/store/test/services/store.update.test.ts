@@ -1,6 +1,6 @@
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import storeService from '../../storeService';
-import storeRepository from '../../storeRepo';
+import storeService from '@modules/store/storeService';
+import storeRepository from '@modules/store/storeRepo';
 import { UpdateStoreDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
 
@@ -23,7 +23,7 @@ describe('updateStore 메소드 테스트', () => {
       content: '더 트렌디해진 패션 아이템!',
     };
 
-    // 서비스가 처음에 호출하는 checkStoreByUserId가 반환할 가짜 스토어 정보
+    // 서비스가 처음에 호출하는 getStoreIdByUserId가 반환할 가짜 스토어 정보
     const mockExistingStore = {
       id: storeId, // storeId가 일치해야 소유권 검사를 통과합니다.
     };
@@ -45,7 +45,7 @@ describe('updateStore 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkStoreMock = jest
-      .spyOn(storeRepository, 'checkStoreByUserId')
+      .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockExistingStore);
     const updateMock = jest.spyOn(storeRepository, 'update').mockResolvedValue(expectedResult);
 
