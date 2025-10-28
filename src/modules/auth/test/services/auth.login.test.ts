@@ -1,0 +1,178 @@
+import { prisma } from '@shared/prisma';
+import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import usersService from '@modules/users/usersService';
+import authService from '@modules/auth/authService';
+import { LoginDto } from '@modules/auth/dto/loginDTO';
+import { isPasswordValid } from '@modules/auth/utils/passwordUtils';
+import tokenUtils from '@modules/auth/utils/tokenUtils';
+
+// Mock 모듈
+jest.mock('@modules/users/usersService');
+jest.mock('@modules/auth/utils/passwordUtils');
+jest.mock('@modules/auth/utils/tokenUtils');
+
+describe('AuthService 단위 테스트', () => {
+  // 각 테스트 후에 모든 모의(mock)를 복원합니다.
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  describe('login 메소드 테스트', () => {
+    test('login 성공 테스트 - mock방식', async () => {
+      // 테스트에 사용할 mock 데이터를 생성합니다.
+      const loginDto: LoginDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockUser = {
+        id: 'user123',
+        email: 'test@example.com',
+        name: '테스트유저',
+        password: 'hashedPassword123',
+        type: 'BUYER',
+        points: 100,
+        image: null,
+        grade: {
+          id: 'grade123',
+          name: 'Green',
+          rate: 0.01,
+          minAmount: 0,
+        },
+      };
+
+      const expectedResult = {
+        user: {
+          id: mockUser.id,
+          email: mockUser.email,
+          name: mockUser.name,
+          type: mockUser.type,
+          points: mockUser.points,
+          image: mockUser.image,
+          grade: {
+            id: mockUser.grade.id,
+            name: mockUser.grade.name,
+            discountRate: mockUser.grade.rate,
+            minAmount: mockUser.grade.minAmount,
+          },
+        },
+        accessToken: 'mock-access-token',
+      };
+
+      const getUserByEmailMock = jest
+        .spyOn(usersService, 'getUserByEmail')
+        .mockResolvedValue(mockUser as any);
+      (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(true);
+      // prettier-ignore
+      (tokenUtils.generateAccessToken as jest.MockedFunction<typeof tokenUtils.generateAccessToken>).
+      mockReturnValue('mock-access-token');
+      const result = await authService.login(loginDto);
+
+      expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
+      expect(isPasswordValid).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+      expect(result).toEqual(expectedResult);
+    });
+
+    test('login 실패 테스트 - 존재하지 않는 이메일', async () => {
+      const loginDto: LoginDto = {
+        email: 'notexist@example.com',
+        password: 'password123',
+      };
+
+      // 존재하지 않는 사용자를 mock합니다.
+      const getUserByEmailMock = jest.spyOn(usersService, 'getUserByEmail').mockResolvedValue(null);
+
+      // 에러가 발생하는지 확인합니다. (실제로는 404 에러가 발생함)
+      await expect(authService.login(loginDto)).rejects.toMatchObject({
+        code: 404,
+        message: '사용자 또는 비밀번호가 올바르지 않습니다.',
+      });
+
+      // getUserByEmail이 호출되었는지 확인합니다.
+      expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
+    });
+
+    test('login 실패 테스트 - 잘못된 비밀번호', async () => {
+      const loginDto: LoginDto = {
+        email: 'test@example.com',
+        password: 'wrongpassword',
+      };
+
+      const mockUser = {
+        id: 'user123',
+        email: 'test@example.com',
+        name: '테스트유저',
+        password: 'hashedPassword123',
+        type: 'BUYER' as const,
+        points: 100,
+        image: null,
+        grade: {
+          id: 'grade123',
+          name: 'Green',
+          rate: 0.01,
+          minAmount: 0,
+        },
+      };
+
+      // 사용자는 존재하지만 비밀번호가 틀렸을 때를 mock합니다.
+      const getUserByEmailMock = jest
+        .spyOn(usersService, 'getUserByEmail')
+        .mockResolvedValue(mockUser as any);
+      (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(false);
+
+      // 에러가 발생하는지 확인합니다.
+      await expect(authService.login(loginDto)).rejects.toMatchObject({
+        code: 401,
+        message: '사용자 또는 비밀번호가 올바르지 않습니다.',
+      });
+
+      // 메소드 호출 확인
+      expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
+      expect(isPasswordValid).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+    });
+
+    test('login 실패 테스트 - 토큰 생성 실패', async () => {
+      const loginDto: LoginDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockUser = {
+        id: 'user123',
+        email: 'test@example.com',
+        name: '테스트유저',
+        password: 'hashedPassword123',
+        type: 'BUYER' as const,
+        points: 100,
+        image: null,
+        grade: {
+          id: 'grade123',
+          name: 'Green',
+          rate: 0.01,
+          minAmount: 0,
+        },
+      };
+
+      // 사용자 조회와 비밀번호 검증은 성공하지만 토큰 생성에서 실패하는 경우
+      const getUserByEmailMock = jest
+        .spyOn(usersService, 'getUserByEmail')
+        .mockResolvedValue(mockUser as any);
+      (isPasswordValid as jest.MockedFunction<typeof isPasswordValid>).mockResolvedValue(true);
+
+      // 토큰 생성에서 에러가 발생
+      // prettier-ignore
+      (tokenUtils.generateAccessToken as jest.MockedFunction<typeof tokenUtils.generateAccessToken>)
+      .mockImplementation(() => {
+        throw new Error('토큰 생성 실패');
+      });
+      //에러 발생 확인
+      await expect(authService.login(loginDto)).rejects.toThrow('토큰 생성 실패');
+      expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
+      expect(isPasswordValid).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+    });
+  });
+});

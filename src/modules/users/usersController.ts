@@ -4,6 +4,7 @@ import { CreateUserDto } from '@modules/users/dto/userDTO';
 
 class UsersController {
   /**
+   * @description
    * 새로운 유저를 생성합니다.
    *
    * 아이디, 이름, 비밀번호 정보를 받아 새로운 유저를 생성합니다.

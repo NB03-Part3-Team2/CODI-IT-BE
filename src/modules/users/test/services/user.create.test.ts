@@ -1,15 +1,15 @@
+import { prisma } from '@shared/prisma';
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
-import userService from '@modules/users/usersService';
-import userRepository from '@modules/users/usersRepo';
+import usersService from '@modules/users/usersService';
+import usersRepository from '@modules/users/usersRepo';
 import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
 import { hashPassword } from '@modules/auth/utils/passwordUtils';
-import { prisma } from '@shared/prisma';
 
 // Mock 모듈
 jest.mock('@modules/users/usersRepo');
 jest.mock('@modules/auth/utils/passwordUtils');
 
-describe('UserService 단위 테스트', () => {
+describe('usersService 단위 테스트', () => {
   // 각 테스트 후에 모든 모의(mock)를 복원합니다.
   afterEach(() => {
     jest.restoreAllMocks();
@@ -73,14 +73,16 @@ describe('UserService 단위 테스트', () => {
 
       // Repository 메소드들을 mock합니다.
       //prettier-ignore
-      const getUserByEmailMock = jest.spyOn(userRepository, 'getUserByEmail').mockResolvedValue(null);
-      const getUserByNameMock = jest.spyOn(userRepository, 'getUserByName').mockResolvedValue(null);
+      const getUserByEmailMock = jest.spyOn(usersRepository, 'getUserByEmail').mockResolvedValue(null);
+      const getUserByNameMock = jest
+        .spyOn(usersRepository, 'getUserByName')
+        .mockResolvedValue(null);
       const createUserMock = jest
-        .spyOn(userRepository, 'createUser')
+        .spyOn(usersRepository, 'createUser')
         .mockResolvedValue(mockCreatedUser);
 
       (hashPassword as jest.MockedFunction<typeof hashPassword>).mockResolvedValue(hashedPassword);
-      const result = await userService.createUser(createUserDto);
+      const result = await usersService.createUser(createUserDto);
 
       // Mock된 메소드들이 올바른 인자와 함께 호출되었는지 확인합니다.
       expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
@@ -115,15 +117,23 @@ describe('UserService 단위 테스트', () => {
         totalAmount: 0,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
+        grade: {
+          id: 'grade123',
+          name: 'Green',
+          rate: 0.01,
+          minAmount: 0,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+        },
       };
 
       // 이미 존재하는 이메일을 mock합니다.
       const getUserByEmailMock = jest
-        .spyOn(userRepository, 'getUserByEmail')
+        .spyOn(usersRepository, 'getUserByEmail')
         .mockResolvedValue(existingUser);
 
       // 에러가 발생하는지 확인합니다.
-      await expect(userService.createUser(createUserDto)).rejects.toMatchObject({
+      await expect(usersService.createUser(createUserDto)).rejects.toMatchObject({
         code: 409,
         message: '이미 존재하는 이메일입니다.',
       });
@@ -156,15 +166,15 @@ describe('UserService 단위 테스트', () => {
 
       // 이메일은 중복되지 않도록 mock합니다.
       const getUserByEmailMock = jest
-        .spyOn(userRepository, 'getUserByEmail')
+        .spyOn(usersRepository, 'getUserByEmail')
         .mockResolvedValue(null);
       // 이미 존재하는 이름을 mock합니다.
       const getUserByNameMock = jest
-        .spyOn(userRepository, 'getUserByName')
+        .spyOn(usersRepository, 'getUserByName')
         .mockResolvedValue(existingUser);
 
       // 에러가 발생하는지 확인합니다.
-      await expect(userService.createUser(createUserDto)).rejects.toMatchObject({
+      await expect(usersService.createUser(createUserDto)).rejects.toMatchObject({
         code: 409,
         message: '이미 존재하는 이름입니다.',
       });
@@ -187,18 +197,20 @@ describe('UserService 단위 테스트', () => {
 
       // Repository 메소드들을 mock합니다.
       const getUserByEmailMock = jest
-        .spyOn(userRepository, 'getUserByEmail')
+        .spyOn(usersRepository, 'getUserByEmail')
         .mockResolvedValue(null);
-      const getUserByNameMock = jest.spyOn(userRepository, 'getUserByName').mockResolvedValue(null);
+      const getUserByNameMock = jest
+        .spyOn(usersRepository, 'getUserByName')
+        .mockResolvedValue(null);
       const createUserMock = jest
-        .spyOn(userRepository, 'createUser')
+        .spyOn(usersRepository, 'createUser')
         .mockResolvedValue(null as any);
 
       // Password hash 함수를 mock합니다.
       (hashPassword as jest.MockedFunction<typeof hashPassword>).mockResolvedValue(hashedPassword);
 
       // 에러가 발생하는지 확인합니다.
-      await expect(userService.createUser(createUserDto)).rejects.toMatchObject({
+      await expect(usersService.createUser(createUserDto)).rejects.toMatchObject({
         code: 500,
         message: '사용자 생성에 실패했습니다.',
       });
