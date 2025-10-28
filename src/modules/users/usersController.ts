@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import usersService from '@modules/users/usersService';
-import { CreateUserDto } from '@modules/users/dto/userDTO';
+import { CreateUserDto } from '@modules/users/dto/usersDTO';
 
 class UsersController {
   /**
@@ -30,6 +30,12 @@ class UsersController {
     };
     const user = await usersService.createUser(createUserDto);
     res.status(201).json(user);
+  };
+
+  getUser = async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const user = await usersService.getUser(userId);
+    res.status(200).json(user);
   };
 }
 

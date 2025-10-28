@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { CreatedUserSchema } from '@modules/users/dto/userDTO';
+import { CreatedUserSchema } from '@modules/users/dto/usersDTO';
 
 class UsersValidator {
   validateUserCreate: RequestHandler = async (req, res, next) => {

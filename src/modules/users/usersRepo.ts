@@ -1,5 +1,5 @@
 import { ApiError } from '@errors/ApiError';
-import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
+import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/usersDTO';
 import { prisma } from '@shared/prisma';
 
 class UsersRepository {
@@ -23,7 +23,14 @@ class UsersRepository {
     return newUser;
   };
 
-  getUserByEmail = async (email: string) => {
+  getUserById = async (id: string): Promise<CreatedUserDto | null> => {
+    return await prisma.user.findUnique({
+      where: { id },
+      include: { grade: true },
+    });
+  };
+
+  getUserByEmail = async (email: string): Promise<CreatedUserDto | null> => {
     return await prisma.user.findUnique({
       where: { email },
       include: { grade: true },

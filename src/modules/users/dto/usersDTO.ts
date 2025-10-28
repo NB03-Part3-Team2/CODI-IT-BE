@@ -50,5 +50,5 @@ export type CreatedUserDto = {
     createdAt: Date;
     updatedAt: Date;
   };
-  image?: string;
+  image: string | null;
 };

@@ -2,7 +2,7 @@ import { prisma } from '@shared/prisma';
 import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
 import usersService from '@modules/users/usersService';
 import usersRepository from '@modules/users/usersRepo';
-import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/userDTO';
+import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/usersDTO';
 import * as passwordUtils from '@modules/auth/utils/passwordUtils';
 
 describe('usersService 단위 테스트', () => {
@@ -47,7 +47,7 @@ describe('usersService 단위 테스트', () => {
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
         },
-        image: undefined,
+        image: null,
       };
 
       const expectedResult = {
@@ -64,7 +64,7 @@ describe('usersService 단위 테스트', () => {
           rate: 0.01,
           minAmount: 0,
         },
-        image: undefined,
+        image: null,
       };
 
       // Repository 메소드들을 mock합니다.

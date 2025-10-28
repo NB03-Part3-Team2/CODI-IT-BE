@@ -1,11 +1,17 @@
 import usersRepository from '@modules/users/usersRepo';
-import { CreateUserDto } from '@modules/users/dto/userDTO';
+import { CreateUserDto, CreatedUserDto } from '@modules/users/dto/usersDTO';
 import { ApiError } from '@errors/ApiError';
 import { hashPassword } from '@modules/auth/utils/passwordUtils';
 
 class UsersService {
   sensitiveUserDataFilter = (user: any) => {
-    const { password, ...filteredUser } = user;
+    const { totalAmount, gradeId, grade, password, image, ...rest } = user;
+    const { createdAt, updatedAt, ...gradeInfo } = grade;
+    const filteredUser = {
+      ...rest,
+      grade: gradeInfo,
+      image,
+    };
     return filteredUser;
   };
 
@@ -23,14 +29,15 @@ class UsersService {
     if (!createdUser) {
       throw ApiError.internal('사용자 생성에 실패했습니다.');
     }
-    const { totalAmount, gradeId, grade, password, image, ...filteredUser } = createdUser;
-    const { createdAt, updatedAt, ...gradeInfo } = grade;
-    const user = {
-      ...filteredUser,
-      grade: gradeInfo,
-      image,
-    };
-    return user;
+    return this.sensitiveUserDataFilter(createdUser);
+  };
+
+  getUser = async (userId: string) => {
+    const user = await usersRepository.getUserById(userId);
+    if (!user) {
+      throw ApiError.notFound('존재하지 않는 사용자입니다.');
+    }
+    return this.sensitiveUserDataFilter(user);
   };
 
   getUserByEmail = async (email: string) => {
