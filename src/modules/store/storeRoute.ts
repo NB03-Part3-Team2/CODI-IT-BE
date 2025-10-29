@@ -12,9 +12,7 @@ storeRouter
   .route('/detail/my/product')
   .get(authMiddleware, storeValidator.validateGetMyProductList, storeController.getMyProductList);
 
-storeRouter
-  .route('/detail/my')
-  .get(authMiddleware, storeValidator.validateGetMyStore, storeController.getMyStore);
+storeRouter.route('/detail/my').get(authMiddleware, storeController.getMyStore);
 
 storeRouter
   .route('/:storeId')
