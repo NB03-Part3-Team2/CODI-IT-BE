@@ -104,23 +104,23 @@ class StoreService {
   };
 
   favoriteStore = async (userId: string, storeId: string): Promise<PublicFavoriteStoreDto> => {
-    // 실재 스토어가 존재하는지 검사 + 스토어 정보 조회, swagger에는 없으나 에러 케이스 추가
-    const store = await storeRepository.getStoreById(storeId);
-    if (!store) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
-
     // 이미 관심 스토어인지 확인
     const existingLike = await storeRepository.getStoreLike(userId, storeId);
     if (existingLike) {
       throw ApiError.conflict('이미 관심 스토어로 등록되어 있습니다.');
     }
 
+    // 스토어 정보 조회 + 타입 좁히기, swagger에는 없으나 에러 케이스 추가
+    const store = await storeRepository.getStoreById(storeId);
+    if (!store) {
+      throw ApiError.notFound('스토어가 존재하지 않습니다');
+    }
+
     // 관심 스토어 등록
     await storeRepository.favoriteStore(userId, storeId);
 
     // 결과 반환
-    const { _count, ...rest } = store;
+    const { _count, ...rest } = store!;
     return {
       type: 'register',
       store: rest,
