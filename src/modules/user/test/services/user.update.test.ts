@@ -3,6 +3,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import userService from '@modules/user/userService';
 import userRepository from '@modules/user/userRepo';
 import * as passwordUtils from '@modules/auth/utils/passwordUtils';
+import { ApiError } from '@errors/ApiError';
 import { MOCK_CONSTANTS, MOCK_DATA } from '@modules/user/test/services/mock';
 
 describe('userUpdate 단위 테스트', () => {
@@ -100,7 +101,9 @@ describe('userUpdate 단위 테스트', () => {
       jest.spyOn(userRepository, 'getUserById').mockResolvedValue(mockExistingUser);
       jest.spyOn(passwordUtils, 'isPasswordValid').mockResolvedValue(true);
       jest.spyOn(passwordUtils, 'hashPassword').mockResolvedValue(hashedPassword);
-      jest.spyOn(userRepository, 'updateUser').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'updateUser').mockImplementation(() => {
+        throw ApiError.internal('사용자 업데이트에 실패했습니다.');
+      });
 
       await expect(userService.updateUser(updateUserDto)).rejects.toMatchObject({
         code: 500,

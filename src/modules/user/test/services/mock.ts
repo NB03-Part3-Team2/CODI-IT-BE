@@ -62,7 +62,7 @@ export const MOCK_DATA = {
   } as CreateUserDto,
 
   // 기본 생성된 사용자
-  createdUser: baseCreatedUser as CreatedUserDto,
+  createdUser: baseCreatedUser,
 
   // 기본 응답용 사용자
   resUser: {
@@ -72,28 +72,28 @@ export const MOCK_DATA = {
     email: MOCK_CONSTANTS.USER_EMAIL,
     points: 0,
     grade: baseGrade,
-  } as ResUserDto,
+  },
 
   // 이메일 중복 검사용 기존 사용자
   existingUserByEmail: {
     ...baseCreatedUser,
     id: 'existing123',
     name: '기존유저',
-  } as CreatedUserDto,
+  },
 
   // 이름 중복 검사용 기존 사용자
   existingUserByName: {
     ...baseCreatedUser,
     id: 'existing123',
     email: 'existing@example.com',
-  } as CreatedUserDto,
+  },
 
   // getUser 테스트용 (points, totalAmount가 다른 값)
   getUser: {
     ...baseCreatedUser,
     points: 100,
     totalAmount: 5000,
-  } as CreatedUserDto,
+  },
 
   // getUser 응답용
   getUserResponse: {
@@ -103,7 +103,7 @@ export const MOCK_DATA = {
     email: MOCK_CONSTANTS.USER_EMAIL,
     points: 100,
     grade: baseGrade,
-  } as ResUserDto,
+  },
 
   // 업데이트용 DTO
   updateUserDto: {
@@ -112,7 +112,7 @@ export const MOCK_DATA = {
     password: MOCK_CONSTANTS.NEW_PASSWORD,
     currentPassword: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
     image: MOCK_CONSTANTS.IMAGE,
-  } as UpdateUserDto,
+  },
 
   // 업데이트된 사용자
   updatedUser: {
@@ -132,5 +132,5 @@ export const MOCK_DATA = {
     points: 100,
     grade: baseGrade,
     image: MOCK_CONSTANTS.IMAGE,
-  } as ResUserDto,
+  },
 } as const;

@@ -1,10 +1,15 @@
 import userRepository from '@modules/user/userRepo';
-import { CreateUserDto, UpdateUserDto } from '@modules/user/dto/userDTO';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  CreatedUserDto,
+  ResUserDto,
+} from '@modules/user/dto/userDTO';
 import { ApiError } from '@errors/ApiError';
 import { hashPassword, isPasswordValid } from '@modules/auth/utils/passwordUtils';
 
 class UserService {
-  sensitiveUserDataFilter = (user: any) => {
+  sensitiveUserDataFilter = (user: CreatedUserDto): ResUserDto => {
     const { totalAmount, gradeId, grade, password, image, ...rest } = user;
     const { createdAt, updatedAt, ...gradeInfo } = grade;
     const filteredUser = {
@@ -15,7 +20,7 @@ class UserService {
     return filteredUser;
   };
 
-  createUser = async (createUserDto: CreateUserDto) => {
+  createUser = async (createUserDto: CreateUserDto): Promise<ResUserDto> => {
     const existingUser = await userRepository.getUserByEmail(createUserDto.email);
     if (existingUser) {
       throw ApiError.conflict('이미 존재하는 이메일입니다.');
@@ -32,7 +37,7 @@ class UserService {
     return this.sensitiveUserDataFilter(createdUser);
   };
 
-  getUser = async (userId: string) => {
+  getUser = async (userId: string): Promise<ResUserDto> => {
     const user = await userRepository.getUserById(userId);
     if (!user) {
       throw ApiError.notFound('존재하지 않는 사용자입니다.');
@@ -40,7 +45,7 @@ class UserService {
     return this.sensitiveUserDataFilter(user);
   };
 
-  updateUser = async (updateUserDto: UpdateUserDto) => {
+  updateUser = async (updateUserDto: UpdateUserDto): Promise<ResUserDto> => {
     if (updateUserDto.password === updateUserDto.currentPassword) {
       throw ApiError.badRequest('새 비밀번호는 현재 비밀번호와 다르게 설정해야 합니다.');
     }
@@ -60,7 +65,7 @@ class UserService {
     return this.sensitiveUserDataFilter(updatedUser);
   };
 
-  getUserByEmail = async (email: string) => {
+  getUserByEmail = async (email: string): Promise<CreatedUserDto | null> => {
     const user = await userRepository.getUserByEmail(email);
     return user;
   };
