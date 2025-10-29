@@ -18,6 +18,39 @@ export const MOCK_CONSTANTS = {
   IMAGE: 'http://example.com/image.jpg',
 } as const;
 
+// 기본 객체들
+const baseGrade = {
+  id: MOCK_CONSTANTS.GRADE_ID,
+  name: 'Green',
+  rate: 1,
+  minAmount: 0,
+} as const;
+
+const baseGradeWithDates = {
+  ...baseGrade,
+  createdAt: MOCK_CONSTANTS.MOCK_DATE,
+  updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+} as const;
+
+const baseUser = {
+  type: 'BUYER',
+  createdAt: MOCK_CONSTANTS.MOCK_DATE,
+  updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+  image: null,
+} as const;
+
+const baseCreatedUser = {
+  ...baseUser,
+  id: MOCK_CONSTANTS.USER_ID,
+  gradeId: MOCK_CONSTANTS.GRADE_ID,
+  name: MOCK_CONSTANTS.USER_NAME,
+  email: MOCK_CONSTANTS.USER_EMAIL,
+  password: MOCK_CONSTANTS.HASHED_PASSWORD,
+  points: 0,
+  totalAmount: 0,
+  grade: baseGradeWithDates,
+} as const;
+
 // 미리 정의된 mock 데이터들
 export const MOCK_DATA = {
   // 기본 사용자 생성 DTO
@@ -29,131 +62,47 @@ export const MOCK_DATA = {
   } as CreateUserDto,
 
   // 기본 생성된 사용자
-  createdUser: {
-    id: MOCK_CONSTANTS.USER_ID,
-    gradeId: MOCK_CONSTANTS.GRADE_ID,
-    name: MOCK_CONSTANTS.USER_NAME,
-    email: MOCK_CONSTANTS.USER_EMAIL,
-    password: MOCK_CONSTANTS.HASHED_PASSWORD,
-    type: 'BUYER',
-    points: 0,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    totalAmount: 0,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-      createdAt: MOCK_CONSTANTS.MOCK_DATE,
-      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    },
-    image: null,
-  } as CreatedUserDto,
+  createdUser: baseCreatedUser as CreatedUserDto,
 
   // 기본 응답용 사용자
   resUser: {
+    ...baseUser,
     id: MOCK_CONSTANTS.USER_ID,
     name: MOCK_CONSTANTS.USER_NAME,
     email: MOCK_CONSTANTS.USER_EMAIL,
-    type: 'BUYER',
     points: 0,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-    },
-    image: null,
+    grade: baseGrade,
   } as ResUserDto,
 
   // 이메일 중복 검사용 기존 사용자
   existingUserByEmail: {
+    ...baseCreatedUser,
     id: 'existing123',
-    gradeId: MOCK_CONSTANTS.GRADE_ID,
     name: '기존유저',
-    email: MOCK_CONSTANTS.USER_EMAIL,
-    password: MOCK_CONSTANTS.HASHED_PASSWORD,
-    type: 'BUYER',
-    points: 0,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    totalAmount: 0,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-      createdAt: MOCK_CONSTANTS.MOCK_DATE,
-      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    },
-    image: null,
   } as CreatedUserDto,
 
   // 이름 중복 검사용 기존 사용자
   existingUserByName: {
+    ...baseCreatedUser,
     id: 'existing123',
-    gradeId: MOCK_CONSTANTS.GRADE_ID,
-    name: MOCK_CONSTANTS.USER_NAME,
     email: 'existing@example.com',
-    password: MOCK_CONSTANTS.HASHED_PASSWORD,
-    type: 'BUYER',
-    points: 0,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    totalAmount: 0,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-      createdAt: MOCK_CONSTANTS.MOCK_DATE,
-      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    },
-    image: null,
   } as CreatedUserDto,
 
   // getUser 테스트용 (points, totalAmount가 다른 값)
   getUser: {
-    id: MOCK_CONSTANTS.USER_ID,
-    gradeId: MOCK_CONSTANTS.GRADE_ID,
-    name: MOCK_CONSTANTS.USER_NAME,
-    email: MOCK_CONSTANTS.USER_EMAIL,
-    password: MOCK_CONSTANTS.HASHED_PASSWORD,
-    type: 'BUYER',
+    ...baseCreatedUser,
     points: 100,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
     totalAmount: 5000,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-      createdAt: MOCK_CONSTANTS.MOCK_DATE,
-      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    },
-    image: null,
   } as CreatedUserDto,
 
   // getUser 응답용
   getUserResponse: {
+    ...baseUser,
     id: MOCK_CONSTANTS.USER_ID,
     name: MOCK_CONSTANTS.USER_NAME,
     email: MOCK_CONSTANTS.USER_EMAIL,
-    type: 'BUYER',
     points: 100,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-    },
-    image: null,
+    grade: baseGrade,
   } as ResUserDto,
 
   // 업데이트용 DTO
@@ -165,42 +114,23 @@ export const MOCK_DATA = {
     image: MOCK_CONSTANTS.IMAGE,
   } as UpdateUserDto,
 
+  // 업데이트된 사용자
   updatedUser: {
-    id: MOCK_CONSTANTS.USER_ID,
-    gradeId: MOCK_CONSTANTS.GRADE_ID,
+    ...baseCreatedUser,
     name: '업데이트된이름',
-    email: MOCK_CONSTANTS.USER_EMAIL,
-    password: MOCK_CONSTANTS.HASHED_PASSWORD,
-    type: 'BUYER',
     points: 100,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
     totalAmount: 5000,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-      createdAt: MOCK_CONSTANTS.MOCK_DATE,
-      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    },
     image: MOCK_CONSTANTS.IMAGE,
   },
 
+  // 업데이트된 사용자 응답
   updatedUserResponse: {
+    ...baseUser,
     id: MOCK_CONSTANTS.USER_ID,
     name: '업데이트된이름',
     email: MOCK_CONSTANTS.USER_EMAIL,
-    type: 'BUYER',
     points: 100,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-    grade: {
-      id: MOCK_CONSTANTS.GRADE_ID,
-      name: 'Green',
-      rate: 1,
-      minAmount: 0,
-    },
+    grade: baseGrade,
     image: MOCK_CONSTANTS.IMAGE,
   } as ResUserDto,
 } as const;
