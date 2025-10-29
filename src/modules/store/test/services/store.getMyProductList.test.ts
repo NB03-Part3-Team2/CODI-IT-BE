@@ -3,6 +3,7 @@ import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { GetMyProductListDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
+import { userId, storeId, mockProducts } from '../mock';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -15,8 +16,6 @@ afterAll(async () => {
 describe('getMyProductList 메소드 테스트', () => {
   test('성공', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
-    const userId = 'test-user-id';
-    const storeId = 'test-store-id';
     const getMyProductListDto: GetMyProductListDto = {
       page: 1,
       pageSize: 10,
@@ -28,24 +27,24 @@ describe('getMyProductList 메소드 테스트', () => {
     const mockProductList = {
       list: [
         {
-          id: 'product-id-1',
-          name: 'T-Shirt',
-          price: 25000,
-          image: 'image-url-1',
+          id: mockProducts[0].id,
+          name: mockProducts[0].name,
+          price: mockProducts[0].price,
+          image: mockProducts[0].image,
           stock: 0,
           isDiscount: false,
           isSoldOut: true,
-          createdAt: new Date(),
+          createdAt: mockProducts[0].createdAt,
         },
         {
-          id: 'product-id-2',
-          name: 'Jeans',
-          price: 60000,
-          image: 'image-url-2',
+          id: mockProducts[1].id,
+          name: mockProducts[0].name,
+          price: mockProducts[0].price,
+          image: mockProducts[0].image,
           stock: 5,
           isDiscount: true,
           isSoldOut: false,
-          createdAt: new Date(),
+          createdAt: mockProducts[0].createdAt,
         },
       ],
       totalCount: 2,

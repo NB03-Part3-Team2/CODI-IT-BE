@@ -2,6 +2,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
+import { userId, storeId, mockStore } from '../mock';
 
 describe('getMyStore 메소드 테스트', () => {
   afterEach(() => {
@@ -14,20 +15,9 @@ describe('getMyStore 메소드 테스트', () => {
 
   test('성공', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
-    const userId = 'test-user-id';
-    const storeId = 'test-store-id';
     const storeInfo = { id: storeId };
-    const store = {
-      id: storeId,
-      name: '패션스토어',
-      address: '서울시 강남구 테헤란로 123',
-      detailAddress: '456호',
-      phoneNumber: '010-1234-5678',
-      content: '트렌디한 패션 아이템을 판매하는 스토어입니다.',
-      image: 'https://example.com/store1.jpg',
-      userId: userId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    const mockStoreFromDB = {
+      ...mockStore,
       _count: {
         products: 10,
         storeLikes: 150,
@@ -40,7 +30,9 @@ describe('getMyStore 메소드 테스트', () => {
     const getStoreIdByUserIdMock = jest
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(storeInfo);
-    const getStoreByIdMock = jest.spyOn(storeRepository, 'getStoreById').mockResolvedValue(store);
+    const getStoreByIdMock = jest
+      .spyOn(storeRepository, 'getStoreById')
+      .mockResolvedValue(mockStoreFromDB);
     const countMonthlyLikesByStoreIdMock = jest
       .spyOn(storeRepository, 'getMonthlyLikesByStoreId')
       .mockResolvedValue(monthFavoritCount);
@@ -58,11 +50,10 @@ describe('getMyStore 메소드 테스트', () => {
     expect(sumTotalSalesByStoreIdMock).toHaveBeenCalledWith(storeId);
 
     // 5. 서비스 메소드가 예상된 결과를 반환하는지 확인
-    const { _count, ...rest } = store;
     const expectedResult = {
-      ...rest,
-      productCount: 10,
-      favoriteCount: 150,
+      ...mockStore,
+      productCount: mockStoreFromDB._count.products,
+      favoriteCount: mockStoreFromDB._count.storeLikes,
       monthFavoritCount,
       totalSoldCount,
     };
