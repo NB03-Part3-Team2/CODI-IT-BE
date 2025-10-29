@@ -82,6 +82,21 @@ class StoreValidator {
       forwardZodError(err, '내 스토어 등록 상품 조회', next);
     }
   };
+
+  validateFavoriteStore: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const storeId = {
+        storeId: req.params.storeId,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      await storeIdSchema.parseAsync(storeId);
+      next();
+    } catch (err) {
+      forwardZodError(err, '관심 스토어 등록/해제', next);
+    }
+  };
 }
 
 export default new StoreValidator();

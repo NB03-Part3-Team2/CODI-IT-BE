@@ -155,6 +155,34 @@ class StoreRepository {
     // _sum.quantity는 상품이 하나도 판매되지 않았을 경우 null이므로 아래와 같이 처리
     return result._sum.quantity || 0;
   };
+
+  getStoreLike = async (userId: string, storeId: string) => {
+    return await prisma.storeLike.findUnique({
+      where: {
+        storeId_userId: {
+          storeId,
+          userId,
+        },
+      },
+    });
+  };
+
+  favoriteStore = async (userId: string, storeId: string) => {
+    await prisma.storeLike.create({
+      data: {
+        userId,
+        storeId,
+      },
+    });
+  };
+
+  unfavoriteStore = async (userId: string, storeId: string) => {
+    await prisma.storeLike.delete({
+      where: {
+        storeId_userId: { userId, storeId },
+      },
+    });
+  };
 }
 
 export default new StoreRepository();

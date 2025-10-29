@@ -15,6 +15,11 @@ storeRouter
 storeRouter.route('/detail/my').get(authMiddleware, storeController.getMyStore);
 
 storeRouter
+  .route('/:storeId/favorite')
+  .post(authMiddleware, storeValidator.validateFavoriteStore, storeController.favoriteStore)
+  .delete(authMiddleware, storeValidator.validateFavoriteStore, storeController.unfavoriteStore);
+
+storeRouter
   .route('/:storeId')
   .get(storeValidator.validateGetStore, storeController.getStore)
   .patch(authMiddleware, storeValidator.validateUpdateStore, storeController.patchStore);

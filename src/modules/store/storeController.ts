@@ -76,6 +76,28 @@ class StoreController {
     // resposn 반환
     res.status(200).json(store);
   };
+
+  favoriteStore = async (req: Request, res: Response) => {
+    // 전달할 파라미터 및 Dto 정의
+    const userId = req.user.id;
+    const storeId = req.params.storeId;
+    // 관심 스토어 등록
+    const store = await storeService.favoriteStore(userId, storeId); // service 함수 호출부 입니다.
+
+    // resposn 반환
+    res.status(201).json(store);
+  };
+
+  unfavoriteStore = async (req: Request, res: Response) => {
+    // 전달할 파라미터 및 Dto 정의
+    const userId = req.user.id;
+    const storeId = req.params.storeId;
+    // 관심 스토어 해제
+    const store = await storeService.unfavoriteStore(userId, storeId); // service 함수 호출부 입니다.
+
+    // resposn 반환
+    res.status(200).json(store);
+  };
 }
 
 export default new StoreController(); // default import로 객체처럼 사용하기 위해 인스턴스를 만들어 export 합니다.
