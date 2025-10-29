@@ -12,9 +12,12 @@ storeRouter
   .route('/detail/my/product')
   .get(authMiddleware, storeValidator.validateGetMyProductList, storeController.getMyProductList);
 
+storeRouter.route('/detail/my').get(authMiddleware, storeController.getMyStore);
+
 storeRouter
-  .route('/detail/my')
-  .get(authMiddleware, storeValidator.validateGetMyStore, storeController.getMyStore);
+  .route('/:storeId/favorite')
+  .post(authMiddleware, storeValidator.validateFavoriteStore, storeController.favoriteStore)
+  .delete(authMiddleware, storeValidator.validateFavoriteStore, storeController.unfavoriteStore);
 
 storeRouter
   .route('/:storeId')

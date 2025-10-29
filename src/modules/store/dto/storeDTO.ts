@@ -27,7 +27,6 @@ const phoneNumberChecker = z
   .regex(/^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})$/, '올바른 핸드폰 번호가 아닙니다');
 
 const storeIdChecker = z.cuid({ message: '스토어 ID는 CUID 형식이어야 합니다.' });
-const userIdChecker = z.cuid({ message: '유저 ID는 CUID 형식이어야 합니다.' });
 
 const pageChecker = z.coerce.number().int().min(1).default(1);
 const pageSizeChecker = z.coerce.number().int().min(1).max(100).default(10);
@@ -45,10 +44,6 @@ export const updateStoreSchema = createStoreSchema.partial();
 
 export const storeIdSchema = z.object({
   storeId: storeIdChecker,
-});
-
-export const userIdSchema = z.object({
-  userId: userIdChecker,
 });
 
 export const paginationSchema = z.object({
@@ -91,4 +86,22 @@ export interface DBProductDto {
   isDiscount: boolean;
   isSoldOut: boolean;
   totalCount: number;
+}
+
+export type FavoriteStoreAction = 'register' | 'delete';
+
+export interface PublicFavoriteStoreDto {
+  type: FavoriteStoreAction;
+  store: {
+    id: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    address: string;
+    detailAddress: string | null;
+    phoneNumber: string;
+    content: string;
+    image: string | null;
+  };
 }

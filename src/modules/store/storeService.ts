@@ -6,12 +6,14 @@ import {
   GetMyProductListDto,
   PublicStoreDto,
   PublicMyStoreDto,
+  PublicFavoriteStoreDto,
 } from '@modules/store/dto/storeDTO';
 import { UserType } from '@prisma/client';
 
 class StoreService {
   createStore = async (userId: string, createStoreDto: CreateStoreDto) => {
     // 유저가 있는지 검사,swagger에는 없으나 에러 케이스 추가 - 404
+    // 토큰으로 전달받기에 없는 경우는 없으나 타입 좁히기
     const user = await storeRepository.getUserTypeByUserId(userId);
     if (!user) {
       throw ApiError.notFound('존재하지 않는 유저입니다.');
@@ -98,6 +100,51 @@ class StoreService {
       productCount: _count.products,
       monthFavoritCount,
       totalSoldCount,
+    };
+  };
+
+  favoriteStore = async (userId: string, storeId: string): Promise<PublicFavoriteStoreDto> => {
+    // 이미 관심 스토어인지 확인
+    const existingLike = await storeRepository.getStoreLike(userId, storeId);
+    if (existingLike) {
+      throw ApiError.conflict('이미 관심 스토어로 등록되어 있습니다.');
+    }
+
+    // 실제 존재하는 스토어인지 확인 + 정보 조회 + 타입 좁히기, swagger에는 없으나 에러 케이스 추가
+    const store = await storeRepository.getStoreById(storeId);
+    if (!store) {
+      throw ApiError.notFound('스토어가 존재하지 않습니다');
+    }
+
+    // 관심 스토어 등록
+    await storeRepository.favoriteStore(userId, storeId);
+
+    // 결과 반환
+    const { _count, ...rest } = store!;
+    return {
+      type: 'register',
+      store: rest,
+    };
+  };
+
+  unfavoriteStore = async (userId: string, storeId: string): Promise<PublicFavoriteStoreDto> => {
+    // 관심 스토어로 등록되어 있는지 확인
+    const existingLike = await storeRepository.getStoreLike(userId, storeId);
+    if (!existingLike) {
+      throw ApiError.notFound('관심 스토어로 등록되지 않은 스토어입니다.');
+    }
+
+    // 관심 스토어 해제
+    await storeRepository.unfavoriteStore(userId, storeId);
+
+    // 스토어 정보 조회
+    const store = await storeRepository.getStoreById(storeId);
+
+    // 결과 반환
+    const { _count, ...rest } = store!; // getStoreLike에서 스토어가 있었다면 실제 존재하는 스토어이므로
+    return {
+      type: 'delete',
+      store: rest,
     };
   };
 }

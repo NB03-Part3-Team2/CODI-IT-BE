@@ -3,6 +3,7 @@ import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
 import { UserType } from '@prisma/client';
+import { userId, createStoreDto } from '../mock';
 
 describe('createStore 메소드 테스트', () => {
   afterEach(() => {
@@ -15,21 +16,17 @@ describe('createStore 메소드 테스트', () => {
 
   test('성공', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
-    const userId = 'test-user-id';
-    const createStoreDto = {
-      name: '패션스토어',
-      address: '서울시 강남구 테헤란로 123',
-      detailAddress: '456호',
-      phoneNumber: '010-1234-5678',
-      content: '트렌디한 패션 아이템을 판매하는 스토어입니다.',
-      image: 'https://example.com/store1.jpg',
-    };
     const expectedResult = {
-      id: 'mock-store-id',
+      id: 'created-Store-Id',
       userId: userId,
       createdAt: new Date(),
       updatedAt: new Date(),
-      ...createStoreDto,
+      name: createStoreDto.name,
+      address: createStoreDto.address,
+      detailAddress: createStoreDto.detailAddress ?? null,
+      phoneNumber: createStoreDto.phoneNumber,
+      content: createStoreDto.content,
+      image: createStoreDto.image ?? null,
     };
 
     // 2. 레포지토리 함수 모킹

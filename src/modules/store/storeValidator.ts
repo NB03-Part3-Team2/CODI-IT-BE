@@ -5,7 +5,6 @@ import {
   updateStoreSchema,
   storeIdSchema,
   paginationSchema,
-  userIdSchema,
 } from '@modules/store/dto/storeDTO';
 
 class StoreValidator {
@@ -84,18 +83,18 @@ class StoreValidator {
     }
   };
 
-  validateGetMyStore: RequestHandler = async (req, res, next) => {
+  validateFavoriteStore: RequestHandler = async (req, res, next) => {
     try {
       // 1. 검사할 속성 정의
-      const userId = {
-        userId: req.user.id,
+      const storeId = {
+        storeId: req.params.storeId,
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await userIdSchema.parseAsync(userId);
+      await storeIdSchema.parseAsync(storeId);
       next();
     } catch (err) {
-      forwardZodError(err, '내 스토어 상세 조회', next);
+      forwardZodError(err, '관심 스토어 등록/해제', next);
     }
   };
 }
