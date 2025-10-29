@@ -3,7 +3,7 @@ import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { GetMyProductListDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
-import { userId, storeId, mockProducts } from '../mock';
+import { userId, storeId, mockProducts } from '@modules/store/test/mock';
 
 afterEach(() => {
   jest.restoreAllMocks();

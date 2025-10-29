@@ -2,7 +2,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
-import { storeId, mockStore } from '../mock';
+import { storeId, mockStore } from '@modules/store/test/mock';
 
 afterEach(() => {
   jest.restoreAllMocks();

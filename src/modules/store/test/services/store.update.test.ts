@@ -2,7 +2,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
-import { userId, storeId, mockStore, updateStoreDto } from '../mock';
+import { userId, storeId, mockStore, updateStoreDto } from '@modules/store/test/mock';
 
 // 각 테스트 후에 모든 모의(mock)를 복원합니다.
 afterEach(() => {

@@ -2,7 +2,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
-import { userId, storeId, mockStore, mockStoreLike } from '../mock';
+import { userId, storeId, mockStore, mockStoreLike } from '@modules/store/test/mock';
 
 describe('unfavoriteStore 메소드 테스트', () => {
   afterEach(() => {
