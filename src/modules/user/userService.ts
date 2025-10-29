@@ -58,12 +58,9 @@ class UserService {
       throw ApiError.unauthorized('현재 비밀번호가 올바르지 않습니다.');
     }
     updateUserDto.password = await hashPassword(updateUserDto.password);
-    try {
-      const updatedUser = await userRepository.updateUser(updateUserDto);
-      return this.sensitiveUserDataFilter(updatedUser);
-    } catch (error) {
-      throw ApiError.internal('사용자 업데이트에 실패했습니다.');
-    }
+
+    const updatedUser = await userRepository.updateUser(updateUserDto);
+    return this.sensitiveUserDataFilter(updatedUser);
   };
 
   getUserByEmail = async (email: string): Promise<CreatedUserDto | null> => {
