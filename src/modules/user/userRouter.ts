@@ -5,10 +5,10 @@ import { authMiddleware } from '@middlewares/authMiddleware';
 
 const userRouter = express.Router();
 
-userRouter.route('/').post(userValidator.validateUserCreate, userController.createUser);
+userRouter.route('/').post(userValidator.validateCreateUser, userController.createUser);
 userRouter
   .route('/me')
   .get(authMiddleware, userController.getUser)
-  .patch(authMiddleware, userValidator.validateUserUpdate, userController.updateUser);
+  .patch(authMiddleware, userValidator.validateUpdateUser, userController.updateUser);
 
 export default userRouter;

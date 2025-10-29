@@ -3,7 +3,7 @@ import { forwardZodError } from '@utils/zod';
 import { createUserSchema, updateUserSchema } from '@modules/user/dto/userDTO';
 
 class UserValidator {
-  validateUserCreate: RequestHandler = async (req, res, next) => {
+  validateCreateUser: RequestHandler = async (req, res, next) => {
     try {
       const parsedBody = {
         email: req.body.email,
@@ -18,7 +18,7 @@ class UserValidator {
     }
   };
 
-  validateUserUpdate: RequestHandler = async (req, res, next) => {
+  validateUpdateUser: RequestHandler = async (req, res, next) => {
     try {
       const parsedBody = {
         name: req.body.name,
