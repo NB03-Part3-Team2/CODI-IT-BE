@@ -5,7 +5,7 @@ class CartService {
   // 장바구니 생성 또는 기존 장바구니 반환
   createOrGetCart = async (userId: string): Promise<CreatedCartDto> => {
     // 기존 장바구니 조회
-    let cart = await cartRepository.findByUserId(userId);
+    let cart = await cartRepository.getByUserId(userId);
 
     // 장바구니가 없으면 생성
     if (!cart) {
@@ -28,7 +28,7 @@ class CartService {
   // 장바구니 조회 (상세 정보 포함)
   getCart = async (userId: string): Promise<GetCartDto> => {
     // 기존 장바구니 조회
-    let cart = await cartRepository.findCartWithDetails(userId);
+    let cart = await cartRepository.getCartWithDetails(userId);
 
     // 장바구니가 없으면 생성
     if (!cart) {

@@ -76,7 +76,7 @@ const selectCartWithDetailsDB = {
 
 class CartRepository {
   // 사용자 ID로 장바구니 조회
-  findByUserId = async (userId: string) => {
+  getByUserId = async (userId: string) => {
     return await prisma.cart.findUnique({
       where: { userId },
       select: selectOptionDB,
@@ -84,7 +84,7 @@ class CartRepository {
   };
 
   // 사용자 ID로 장바구니 상세 조회
-  findCartWithDetails = async (userId: string) => {
+  getCartWithDetails = async (userId: string) => {
     return await prisma.cart.findUnique({
       where: { userId },
       select: selectCartWithDetailsDB,
