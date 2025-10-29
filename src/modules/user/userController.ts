@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import userService from '@modules/user/userService';
-import { CreateUserDto } from '@modules/user/dto/userDTO';
+import { CreateUserDto, UpdateUserDto } from '@modules/user/dto/userDTO';
 
 class UserController {
   /**
@@ -32,9 +32,34 @@ class UserController {
     res.status(201).json(user);
   };
 
+  /**
+   * @description
+   * 본인의 정보를 조회합니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns {Object} 사용자 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 404 - 존재하지 않는 사용자
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+
   getUser = async (req: Request, res: Response) => {
     const userId = req.user.id;
     const user = await userService.getUser(userId);
+    res.status(200).json(user);
+  };
+
+  updateUser = async (req: Request, res: Response) => {
+    const updateUserDto: UpdateUserDto = {
+      userId: req.user.id,
+      name: req.body.name,
+      password: req.body.password,
+      currentPassword: req.body.currentPassword,
+      image: req.body.image,
+    };
+    const user = await userService.updateUser(updateUserDto);
     res.status(200).json(user);
   };
 }

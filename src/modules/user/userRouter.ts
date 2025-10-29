@@ -6,6 +6,9 @@ import { authMiddleware } from '@middlewares/authMiddleware';
 const userRouter = express.Router();
 
 userRouter.route('/').post(userValidator.validateUserCreate, userController.createUser);
-userRouter.route('/me').get(authMiddleware, userController.getUser);
+userRouter
+  .route('/me')
+  .get(authMiddleware, userController.getUser)
+  .patch(authMiddleware, userValidator.validateUserUpdate, userController.updateUser);
 
 export default userRouter;

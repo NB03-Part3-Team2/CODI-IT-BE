@@ -18,7 +18,7 @@ const emailWithMX = z.string().refine(
   },
 );
 
-export const CreatedUserSchema = z.object({
+export const createUserSchema = z.object({
   name: z
     .string()
     .min(2, '이름은 최소 2자 이상이어야 합니다')
@@ -32,7 +32,7 @@ export const CreatedUserSchema = z.object({
   type: z.enum(['BUYER', 'SELLER'], '유효하지 않은 사용자 유형입니다.'),
 });
 
-export type CreateUserDto = z.infer<typeof CreatedUserSchema>;
+export type CreateUserDto = z.infer<typeof createUserSchema>;
 export type CreatedUserDto = {
   id: string;
   gradeId: string;
@@ -75,7 +75,9 @@ export const updateUserSchema = z.object({
     .string()
     .min(8, '현재 비밀번호는 최소 8자 이상이어야 합니다')
     .max(20, '현재 비밀번호는 최대 20자 이하여야 합니다'),
-  image: z.url('유효한 이미지 URL이어야 합니다.').nullable(),
+  image: z.url('유효한 이미지 URL이어야 합니다.').nullable().optional(),
 });
 
-export type UpdateUserDto = z.infer<typeof updateUserSchema>;
+export type UpdateUserDto = z.infer<typeof updateUserSchema> & {
+  userId: string;
+};

@@ -21,7 +21,7 @@ export const isPasswordValid = async (plain: string, hash: string): Promise<bool
   try {
     return await argon2.verify(hash, `${PEPPER}${normalize(plain)}`);
   } catch (err) {
-    console.error('Password verify error:', err);
+    console.error('비밀번호 검증 오류:', err);
     return false;
   }
 };

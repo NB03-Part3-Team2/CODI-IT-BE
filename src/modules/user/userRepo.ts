@@ -1,5 +1,5 @@
 import { ApiError } from '@errors/ApiError';
-import { CreateUserDto, CreatedUserDto } from '@modules/user/dto/userDTO';
+import { CreateUserDto, CreatedUserDto, UpdateUserDto } from '@modules/user/dto/userDTO';
 import { prisma } from '@shared/prisma';
 
 class UserRepository {
@@ -28,6 +28,19 @@ class UserRepository {
       where: { id },
       include: { grade: true },
     });
+  };
+
+  updateUser = async (updateUserDto: UpdateUserDto): Promise<CreatedUserDto | null> => {
+    const updatedUser = await prisma.user.update({
+      where: { id: updateUserDto.userId },
+      data: {
+        name: updateUserDto.name,
+        password: updateUserDto.password,
+        image: updateUserDto.image,
+      },
+      include: { grade: true },
+    });
+    return updatedUser;
   };
 
   getUserByEmail = async (email: string): Promise<CreatedUserDto | null> => {
