@@ -110,7 +110,7 @@ class StoreService {
       throw ApiError.conflict('이미 관심 스토어로 등록되어 있습니다.');
     }
 
-    // 스토어 정보 조회 + 타입 좁히기, swagger에는 없으나 에러 케이스 추가
+    // 실제 존재하는 스토어인지 확인 + 정보 조회 + 타입 좁히기, swagger에는 없으나 에러 케이스 추가
     const store = await storeRepository.getStoreById(storeId);
     if (!store) {
       throw ApiError.notFound('스토어가 존재하지 않습니다');
@@ -137,14 +137,11 @@ class StoreService {
     // 관심 스토어 해제
     await storeRepository.unfavoriteStore(userId, storeId);
 
-    // 스토어 정보 조회 + 타입 좁히기, swagger에는 없으나 에러 케이스 추가
+    // 스토어 정보 조회
     const store = await storeRepository.getStoreById(storeId);
-    if (!store) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
 
     // 결과 반환
-    const { _count, ...rest } = store;
+    const { _count, ...rest } = store!; // getStoreLike에서 스토어가 있었다면 실제 존재하는 스토어이므로
     return {
       type: 'delete',
       store: rest,
