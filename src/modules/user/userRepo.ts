@@ -1,9 +1,9 @@
 import { ApiError } from '@errors/ApiError';
-import { CreateUserDto, CreatedUserDto } from '@modules/user/dto/userDTO';
+import { CreateUserDto, UpdateUserDto } from '@modules/user/dto/userDTO';
 import { prisma } from '@shared/prisma';
 
 class UserRepository {
-  createUser = async (createUserDto: CreateUserDto): Promise<CreatedUserDto> => {
+  createUser = async (createUserDto: CreateUserDto) => {
     const gradeGreenId = await prisma.grade.findFirst({
       where: { name: 'Green' },
     });
@@ -21,6 +21,26 @@ class UserRepository {
       include: { grade: true },
     });
     return newUser;
+  };
+
+  getUserById = async (id: string) => {
+    return await prisma.user.findUnique({
+      where: { id },
+      include: { grade: true },
+    });
+  };
+
+  updateUser = async (updateUserDto: UpdateUserDto) => {
+    const updatedUser = await prisma.user.update({
+      where: { id: updateUserDto.userId },
+      data: {
+        name: updateUserDto.name,
+        password: updateUserDto.password,
+        image: updateUserDto.image,
+      },
+      include: { grade: true },
+    });
+    return updatedUser;
   };
 
   getUserByEmail = async (email: string) => {

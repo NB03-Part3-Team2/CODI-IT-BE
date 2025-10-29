@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import userService from '@modules/user/userService';
-import { CreateUserDto } from '@modules/user/dto/userDTO';
+import { CreateUserDto, UpdateUserDto } from '@modules/user/dto/userDTO';
 
 class UserController {
   /**
@@ -30,6 +30,53 @@ class UserController {
     };
     const user = await userService.createUser(createUserDto);
     res.status(201).json(user);
+  };
+
+  /**
+   * @description
+   * 본인의 정보를 조회합니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns {Object} 사용자 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 404 - 존재하지 않는 사용자
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+
+  getUser = async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const user = await userService.getUser(userId);
+    res.status(200).json(user);
+  };
+
+  /**
+   * @description
+   * 사용자 정보를 업데이트합니다.
+   *
+   * 이름, 비밀번호, 이미지 정보를 받아 사용자를 업데이트합니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns {Object} 업데이트된 사용자 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 400 - 잘못된 요청 데이터, 새 비밀번호가 현재 비밀번호와 동일함
+   * @throws {ApiError} 404 - 존재하지 않는 사용자
+   * @throws {ApiError} 401 - 현재 비밀번호가 올바르지 않음
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+  updateUser = async (req: Request, res: Response) => {
+    const updateUserDto: UpdateUserDto = {
+      userId: req.user.id,
+      name: req.body.name,
+      password: req.body.password,
+      currentPassword: req.body.currentPassword,
+      image: req.body.image,
+    };
+    const user = await userService.updateUser(updateUserDto);
+    res.status(200).json(user);
   };
 }
 

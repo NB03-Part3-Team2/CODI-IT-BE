@@ -2,10 +2,10 @@ import usersService from '@modules/user/userService';
 import tokenUtils from '@modules/auth/utils/tokenUtils';
 import { isPasswordValid } from '@modules/auth/utils/passwordUtils';
 import { ApiError } from '@errors/ApiError';
-import type { LoginDto } from '@modules/auth/dto/loginDTO';
+import type { LoginDto, LoginResponseDto } from '@modules/auth/dto/loginDTO';
 
 class AuthService {
-  login = async (loginDto: LoginDto) => {
+  login = async (loginDto: LoginDto): Promise<LoginResponseDto> => {
     const message = '사용자 또는 비밀번호가 올바르지 않습니다.';
     const user = await usersService.getUserByEmail(loginDto.email);
     if (!user) throw ApiError.notFound(message);
@@ -14,7 +14,7 @@ class AuthService {
     if (!isValid) throw ApiError.unauthorized(message);
     const accessToken = tokenUtils.generateAccessToken({ id: user.id });
 
-    const data = {
+    const data: LoginResponseDto = {
       user: {
         id: user.id,
         email: user.email,
