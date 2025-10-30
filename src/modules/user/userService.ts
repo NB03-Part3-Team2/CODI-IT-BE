@@ -46,7 +46,7 @@ class UserService {
   };
 
   updateUser = async (updateUserDto: UpdateUserDto): Promise<ResUserDto> => {
-    if (updateUserDto.password === updateUserDto.currentPassword) {
+    if (updateUserDto.newPassword === updateUserDto.currentPassword) {
       throw ApiError.badRequest('새 비밀번호는 현재 비밀번호와 다르게 설정해야 합니다.');
     }
     const user = await userRepository.getUserById(updateUserDto.userId);

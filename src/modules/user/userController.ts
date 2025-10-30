@@ -71,7 +71,7 @@ class UserController {
     const updateUserDto: UpdateUserDto = {
       userId: req.user.id,
       name: req.body.name,
-      password: req.body.password,
+      newPassword: req.body.newPassword,
       currentPassword: req.body.currentPassword,
       image: req.body.image,
     };

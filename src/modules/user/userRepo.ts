@@ -35,7 +35,7 @@ class UserRepository {
       where: { id: updateUserDto.userId },
       data: {
         name: updateUserDto.name,
-        password: updateUserDto.password,
+        password: updateUserDto.newPassword,
         image: updateUserDto.image,
       },
       include: { grade: true },
