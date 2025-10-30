@@ -9,8 +9,12 @@ const app: Express = express();
 /**
  * CORS
  */
-app.use(cors());
-
+app.use(
+  cors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+  }),
+);
 /**
  * Body & Cookie 파서
  */
