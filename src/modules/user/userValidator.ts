@@ -22,7 +22,7 @@ class UserValidator {
     try {
       const parsedBody = {
         name: req.body.name,
-        password: req.body.password,
+        newPassword: req.body.newPassword,
         currentPassword: req.body.currentPassword,
         image: req.body.image,
       };
