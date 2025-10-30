@@ -57,7 +57,7 @@ class UserService {
     if (!isValid) {
       throw ApiError.unauthorized('현재 비밀번호가 올바르지 않습니다.');
     }
-    updateUserDto.password = await hashPassword(updateUserDto.password);
+    updateUserDto.newPassword = await hashPassword(updateUserDto.newPassword);
 
     const updatedUser = await userRepository.updateUser(updateUserDto);
     return this.sensitiveUserDataFilter(updatedUser);
