@@ -1,9 +1,4 @@
-import {
-  CreateUserDto,
-  CreatedUserDto,
-  ResUserDto,
-  UpdateUserDto,
-} from '@modules/user/dto/userDTO';
+import { CreateUserDto } from '@modules/user/dto/userDTO';
 
 // 공통 상수
 export const MOCK_CONSTANTS = {

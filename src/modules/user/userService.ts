@@ -63,6 +63,14 @@ class UserService {
     return this.sensitiveUserDataFilter(updatedUser);
   };
 
+  deleteUser = async (userId: string): Promise<void> => {
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+      throw ApiError.notFound('존재하지 않는 사용자입니다.');
+    }
+    await userRepository.deleteUser(userId);
+  };
+
   getUserByEmail = async (email: string): Promise<CreatedUserDto | null> => {
     const user = await userRepository.getUserByEmail(email);
     return user;

@@ -43,6 +43,12 @@ class UserRepository {
     return updatedUser;
   };
 
+  deleteUser = async (userId: string) => {
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+  };
+
   getUserByEmail = async (email: string) => {
     return await prisma.user.findUnique({
       where: { email },
