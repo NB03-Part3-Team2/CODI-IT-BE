@@ -79,12 +79,36 @@ class UserController {
     res.status(200).json(user);
   };
 
+  /**
+   * @description
+   * 사용자를 삭제합니다.
+   *
+   * 사용자의 ID를 받아 해당 사용자를 삭제합니다.
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns {void} (HTTP 204)
+   *
+   * @throws {ApiError} 404 - 존재하지 않는 사용자
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
   deleteUser = async (req: Request, res: Response) => {
     const userId = req.user.id;
     await userService.deleteUser(userId);
     res.sendStatus(204);
   };
 
+  /**
+   * @description
+   * 좋아요한 상점 목록을 조회합니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns {Object[]} 좋아요한 상점 목록 (HTTP 200)
+   *
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
   getFavoriteStoreList = async (req: Request, res: Response) => {
     const userId = req.user.id;
     const favoriteStores = await userService.getFavoriteStoreList(userId);
