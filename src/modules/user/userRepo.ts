@@ -35,12 +35,18 @@ class UserRepository {
       where: { id: updateUserDto.userId },
       data: {
         name: updateUserDto.name,
-        password: updateUserDto.password,
+        password: updateUserDto.newPassword,
         image: updateUserDto.image,
       },
       include: { grade: true },
     });
     return updatedUser;
+  };
+
+  deleteUser = async (userId: string) => {
+    await prisma.user.delete({
+      where: { id: userId },
+    });
   };
 
   getUserByEmail = async (email: string) => {

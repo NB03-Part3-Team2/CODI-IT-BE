@@ -67,7 +67,7 @@ export const updateUserSchema = z.object({
     .min(2, '이름은 최소 2자 이상이어야 합니다')
     .max(10, '이름은 최대 10자 이하여야 합니다')
     .regex(/^[a-zA-Z0-9가-힣]+$/, '이름에 특수문자는 사용할 수 없습니다.'),
-  password: z
+  newPassword: z
     .string()
     .min(8, '비밀번호는 최소 8자 이상이어야 합니다')
     .max(20, '비밀번호는 최대 20자 이하여야 합니다'),

@@ -1,9 +1,4 @@
-import {
-  CreateUserDto,
-  CreatedUserDto,
-  ResUserDto,
-  UpdateUserDto,
-} from '@modules/user/dto/userDTO';
+import { CreateUserDto } from '@modules/user/dto/userDTO';
 
 // 공통 상수
 export const MOCK_CONSTANTS = {
@@ -109,7 +104,7 @@ export const MOCK_DATA = {
   updateUserDto: {
     userId: MOCK_CONSTANTS.USER_ID,
     name: '업데이트된이름',
-    password: MOCK_CONSTANTS.NEW_PASSWORD,
+    newPassword: MOCK_CONSTANTS.NEW_PASSWORD,
     currentPassword: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
     image: MOCK_CONSTANTS.IMAGE,
   },

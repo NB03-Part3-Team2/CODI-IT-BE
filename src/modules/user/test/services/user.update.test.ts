@@ -49,7 +49,7 @@ describe('userUpdate 단위 테스트', () => {
       expect(updateUserMock).toHaveBeenCalledWith(
         expect.objectContaining({
           name: updateUserDto.name,
-          password: hashedPassword,
+          newPassword: hashedPassword,
           image: updateUserDto.image,
         }),
       );
@@ -59,7 +59,7 @@ describe('userUpdate 단위 테스트', () => {
     test('updateUser 실패 테스트 - 새 비밀번호가 현재 비밀번호와 동일', async () => {
       const updateUserDto = {
         ...MOCK_DATA.updateUserDto,
-        password: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
+        newPassword: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
         currentPassword: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
       };
 
@@ -93,7 +93,7 @@ describe('userUpdate 단위 테스트', () => {
       });
     });
 
-    test('updateUser 실패 테스트 - 업데이트 실패', async () => {
+    test('updateUser 실패 테스트 - prisma 업데이트 에러', async () => {
       const updateUserDto = MOCK_DATA.updateUserDto;
       const mockExistingUser = MOCK_DATA.getUser;
       const hashedPassword = MOCK_CONSTANTS.HASHED_PASSWORD;
@@ -101,14 +101,8 @@ describe('userUpdate 단위 테스트', () => {
       jest.spyOn(userRepository, 'getUserById').mockResolvedValue(mockExistingUser);
       jest.spyOn(passwordUtils, 'isPasswordValid').mockResolvedValue(true);
       jest.spyOn(passwordUtils, 'hashPassword').mockResolvedValue(hashedPassword);
-      jest.spyOn(userRepository, 'updateUser').mockImplementation(() => {
-        throw ApiError.internal('사용자 업데이트에 실패했습니다.');
-      });
-
-      await expect(userService.updateUser(updateUserDto)).rejects.toMatchObject({
-        code: 500,
-        message: '사용자 업데이트에 실패했습니다.',
-      });
+      jest.spyOn(userRepository, 'updateUser').mockRejectedValue(new Error('Prisma Client Error'));
+      await expect(userService.updateUser(updateUserDto)).rejects.toThrow('Prisma Client Error');
     });
   });
 });

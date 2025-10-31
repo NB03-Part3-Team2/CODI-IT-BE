@@ -71,12 +71,18 @@ class UserController {
     const updateUserDto: UpdateUserDto = {
       userId: req.user.id,
       name: req.body.name,
-      password: req.body.password,
+      newPassword: req.body.newPassword,
       currentPassword: req.body.currentPassword,
       image: req.body.image,
     };
     const user = await userService.updateUser(updateUserDto);
     res.status(200).json(user);
+  };
+
+  deleteUser = async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    await userService.deleteUser(userId);
+    res.sendStatus(204);
   };
 }
 

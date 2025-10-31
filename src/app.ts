@@ -9,8 +9,12 @@ const app: Express = express();
 /**
  * CORS
  */
-app.use(cors());
-
+app.use(
+  cors({
+    origin: process.env.FRONT_BASE_URL,
+    credentials: true,
+  }),
+);
 /**
  * Body & Cookie 파서
  */

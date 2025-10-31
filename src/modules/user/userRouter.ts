@@ -10,5 +10,6 @@ userRouter
   .route('/me')
   .get(authMiddleware, userController.getUser)
   .patch(authMiddleware, userValidator.validateUpdateUser, userController.updateUser);
+userRouter.delete('/delete', authMiddleware, userController.deleteUser);
 
 export default userRouter;
