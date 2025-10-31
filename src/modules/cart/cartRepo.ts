@@ -98,6 +98,81 @@ class CartRepository {
       select: selectOptionDB,
     });
   };
+
+  // 상품 존재 여부 확인
+  checkProductExists = async (productId: string) => {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true },
+    });
+    return product !== null;
+  };
+
+  // 재고 확인
+  getStock = async (productId: string, sizeId: number) => {
+    return await prisma.stock.findUnique({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      select: {
+        quantity: true,
+      },
+    });
+  };
+
+  // CartItem upsert (존재하면 업데이트, 없으면 생성)
+  upsertCartItem = async (cartId: string, productId: string, sizeId: number, quantity: number) => {
+    return await prisma.cartItem.upsert({
+      where: {
+        cartId_productId_sizeId: {
+          cartId,
+          productId,
+          sizeId,
+        },
+      },
+      update: {
+        quantity,
+        updatedAt: new Date(),
+      },
+      create: {
+        cartId,
+        productId,
+        sizeId,
+        quantity,
+      },
+      select: {
+        id: true,
+        cartId: true,
+        productId: true,
+        sizeId: true,
+        quantity: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  };
+
+  // 특정 상품의 CartItem들 조회
+  getCartItemsByProductId = async (cartId: string, productId: string) => {
+    return await prisma.cartItem.findMany({
+      where: {
+        cartId,
+        productId,
+      },
+      select: {
+        id: true,
+        cartId: true,
+        productId: true,
+        sizeId: true,
+        quantity: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  };
 }
 
 export default new CartRepository();

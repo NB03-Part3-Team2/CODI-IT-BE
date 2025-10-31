@@ -34,7 +34,6 @@ class CartController {
    * 사용자의 장바구니와 장바구니 아이템들을 조회합니다.
    * 각 아이템에는 상품, 스토어, 재고 정보가 포함됩니다.
    * 장바구니가 없으면 빈 장바구니를 생성하고 빈 items 배열을 반환합니다.
-   * 인증된 사용자만 접근 가능합니다.
    *
    * @param req - 요청 객체
    * @param res - 응답 객체
@@ -53,6 +52,34 @@ class CartController {
 
     // response 반환
     res.status(200).json(cart);
+  };
+
+  /**
+   * 장바구니를 수정합니다 (아이템 추가/수량 수정).
+   *
+   * 상품을 장바구니에 추가하거나 기존 아이템의 수량을 수정합니다.
+   * 여러 사이즈의 상품을 한 번에 추가/수정할 수 있습니다.
+   * 재고가 부족하거나 상품/사이즈가 존재하지 않으면 에러를 반환합니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns 수정된 장바구니 아이템 배열 (HTTP 200)
+   *
+   * @throws {ApiError} 400 - 잘못된 요청 (유효성 검사 실패, 재고 부족)
+   * @throws {ApiError} 401 - 인증되지 않은 사용자
+   * @throws {ApiError} 404 - 상품 또는 사이즈를 찾을 수 없음
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+  updateCart = async (req: Request, res: Response) => {
+    // 인증 미들웨어에서 사용자 ID 가져오기
+    const userId = req.user.id;
+
+    // 장바구니 수정 (유효성 검사는 미들웨어에서 완료됨)
+    const updatedItems = await cartService.updateCart(userId, req.body);
+
+    // response 반환
+    res.status(200).json(updatedItems);
   };
 }
 

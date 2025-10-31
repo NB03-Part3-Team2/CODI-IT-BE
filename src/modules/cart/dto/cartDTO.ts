@@ -1,3 +1,23 @@
+import { z } from 'zod';
+
+const idChecker = z.cuid({ message: 'ID는 CUID 형식이어야 합니다.' });
+
+// 장바구니 수정 요청 스키마
+export const updateCartSchema = z.object({
+  productId: idChecker,
+  sizes: z
+    .array(
+      z.object({
+        sizeId: z.number().int().positive('사이즈 ID는 양의 정수여야 합니다.'),
+        quantity: z.number().int().positive('수량은 양의 정수여야 합니다.'),
+      }),
+    )
+    .min(1, '최소 하나의 사이즈 정보가 필요합니다.'),
+});
+
+// 장바구니 수정 요청 DTO
+export type UpdateCartDto = z.infer<typeof updateCartSchema>;
+
 // 장바구니 생성 응답 DTO (buyerId는 userId를 매핑한 것)
 export interface CreatedCartDto {
   id: string;
@@ -69,4 +89,15 @@ export interface SizeInCartDto {
     en: string;
     ko: string;
   };
+}
+
+// 장바구니 수정 응답 DTO (CartItem)
+export interface CartItemResponseDto {
+  id: string;
+  cartId: string;
+  productId: string;
+  sizeId: number;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
