@@ -116,12 +116,12 @@ export const CATEGORIES = [
 
 // 사이즈 데이터
 export const SIZES = [
-  { en: 'Free', ko: '프리' },
-  { en: 'XS', ko: 'XS' },
-  { en: 'S', ko: 'S' },
-  { en: 'M', ko: 'M' },
-  { en: 'L', ko: 'L' },
-  { en: 'XL', ko: 'XL' },
+  { id: 1, en: 'Free', ko: '프리' },
+  { id: 2, en: 'XS', ko: 'XS' },
+  { id: 3, en: 'S', ko: 'S' },
+  { id: 4, en: 'M', ko: 'M' },
+  { id: 5, en: 'L', ko: 'L' },
+  { id: 6, en: 'XL', ko: 'XL' },
 ];
 
 // 상품 데이터

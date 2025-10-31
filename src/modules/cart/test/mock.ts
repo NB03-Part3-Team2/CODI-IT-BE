@@ -220,6 +220,33 @@ export const createCartWithDetailsMock = (
 });
 
 /**
+ * CartItem 응답용 Mock 데이터 (updateCart 응답용 - 간단한 형태)
+ */
+export interface SimpleCartItemMock {
+  id: string;
+  cartId: string;
+  productId: string;
+  sizeId: number;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const createSimpleCartItemMock = (
+  testDate: Date,
+  override?: Partial<SimpleCartItemMock>
+): SimpleCartItemMock => ({
+  id: 'cart-item-1',
+  cartId: 'cart-id',
+  productId: 'product-1',
+  sizeId: 1,
+  quantity: 3,
+  createdAt: testDate,
+  updatedAt: testDate,
+  ...override,
+});
+
+/**
  * 복잡한 테스트용 장바구니 데이터 생성 (2개의 아이템 포함)
  */
 export const createComplexCartMock = (testDate: Date): DetailedCartMock => {

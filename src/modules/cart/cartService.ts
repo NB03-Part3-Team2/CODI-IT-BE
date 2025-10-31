@@ -1,5 +1,11 @@
 import cartRepository from '@modules/cart/cartRepo';
-import { CreatedCartDto, GetCartDto } from '@modules/cart/dto/cartDTO';
+import {
+  CreatedCartDto,
+  GetCartDto,
+  UpdateCartDto,
+  CartItemResponseDto,
+} from '@modules/cart/dto/cartDTO';
+import { ApiError } from '@errors/ApiError';
 
 class CartService {
   // 장바구니 생성 또는 기존 장바구니 반환
@@ -100,6 +106,47 @@ class CartService {
         },
       })),
     };
+  };
+
+  // 장바구니 수정 (아이템 추가/수량 수정)
+  updateCart = async (userId: string, data: UpdateCartDto): Promise<CartItemResponseDto[]> => {
+    const { productId, sizes } = data;
+
+    // 1. 상품 존재 여부 확인
+    const productExists = await cartRepository.checkProductExists(productId);
+    if (!productExists) {
+      throw ApiError.notFound('상품을 찾을 수 없습니다.');
+    }
+
+    // 2. 장바구니 조회 또는 생성
+    let cart = await cartRepository.getByUserId(userId);
+    if (!cart) {
+      cart = await cartRepository.create(userId);
+    }
+
+    // 3. 각 사이즈별로 재고 확인 및 CartItem upsert
+    const updatedItems: CartItemResponseDto[] = [];
+
+    for (const sizeInfo of sizes) {
+      const { sizeId, quantity } = sizeInfo;
+
+      // 재고 확인
+      const stock = await cartRepository.getStock(productId, sizeId);
+      if (!stock) {
+        throw ApiError.notFound(`사이즈 ID ${sizeId}에 대한 재고를 찾을 수 없습니다.`);
+      }
+      if (stock.quantity < quantity) {
+        throw ApiError.badRequest(
+          `사이즈 ID ${sizeId}의 재고가 부족합니다. (요청: ${quantity}, 재고: ${stock.quantity})`,
+        );
+      }
+
+      // CartItem upsert
+      const cartItem = await cartRepository.upsertCartItem(cart.id, productId, sizeId, quantity);
+      updatedItems.push(cartItem);
+    }
+
+    return updatedItems;
   };
 }
 
