@@ -15,7 +15,7 @@ describe('getMyStore 메소드 테스트', () => {
 
   test('성공', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
-    const storeInfo = { id: storeId };
+    const storeInfo = { id: storeId, name: mockStore.name };
     const mockStoreFromDB = {
       ...mockStore,
       _count: {

@@ -20,6 +20,7 @@ describe('updateStore 메소드 테스트', () => {
     // 서비스가 처음에 호출하는 getStoreIdByUserId가 반환할 가짜 스토어 정보
     const mockExistingStore = {
       id: storeId, // storeId가 일치해야 소유권 검사를 통과합니다.
+      name: mockStore.name,
     };
 
     // 최종적으로 update 메소드가 반환할 기대 결과

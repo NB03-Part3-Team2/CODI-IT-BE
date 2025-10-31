@@ -3,7 +3,7 @@ import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { GetMyProductListDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
-import { userId, storeId, mockProducts } from '@modules/store/test/mock';
+import { userId, storeId, mockStore, mockProducts } from '@modules/store/test/mock';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -23,6 +23,7 @@ describe('getMyProductList 메소드 테스트', () => {
     // 서비스가 처음에 호출하는 getStoreIdByUserId가 반환할 가짜 스토어 정보
     const mockExistingStore = {
       id: storeId, // storeId가 일치해야 소유권 검사를 통과합니다.
+      name: mockStore.name,
     };
     const mockProductList = {
       list: [
