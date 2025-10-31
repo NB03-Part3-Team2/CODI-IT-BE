@@ -49,7 +49,7 @@ describe('userUpdate 단위 테스트', () => {
       expect(updateUserMock).toHaveBeenCalledWith(
         expect.objectContaining({
           name: updateUserDto.name,
-          password: hashedPassword,
+          newPassword: hashedPassword,
           image: updateUserDto.image,
         }),
       );
@@ -59,7 +59,7 @@ describe('userUpdate 단위 테스트', () => {
     test('updateUser 실패 테스트 - 새 비밀번호가 현재 비밀번호와 동일', async () => {
       const updateUserDto = {
         ...MOCK_DATA.updateUserDto,
-        password: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
+        newPassword: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
         currentPassword: MOCK_CONSTANTS.ORIGINAL_PASSWORD,
       };
 
