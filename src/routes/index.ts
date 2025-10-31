@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import storeRouter from '@modules/store/storeRoute';
-import userRouter from '@modules/user/userRouter';
+import userRouter from '@modules/user/userRoute';
 import s3Router from '@modules/s3/s3Route';
-import authRouter from '@modules/auth/authRouter';
+import authRouter from '@modules/auth/authRoute';
 import cartRouter from '@modules/cart/cartRoute';
 
 /*
