@@ -11,6 +11,16 @@ export const MOCK_CONSTANTS = {
   MOCK_DATE: new Date('2024-01-01'),
   NEW_PASSWORD: 'newPassword123',
   IMAGE: 'http://example.com/image.jpg',
+  STORE_ID_1: 'store123',
+  STORE_ID_2: 'store456',
+  SELLER_ID: 'seller123',
+  STORE_NAME_1: '테스트상점1',
+  STORE_NAME_2: '테스트상점2',
+  STORE_ADDRESS: '서울시 강남구 테스트로 123',
+  STORE_DETAIL_ADDRESS: '1층',
+  STORE_PHONE: '02-1234-5678',
+  STORE_CONTENT: '테스트 상점 설명',
+  STORE_IMAGE: 'http://example.com/store.jpg',
 } as const;
 
 // 기본 객체들
@@ -128,4 +138,43 @@ export const MOCK_DATA = {
     grade: baseGrade,
     image: MOCK_CONSTANTS.IMAGE,
   },
-} as const;
+
+  // 찜한 상점 리스트
+  favoriteStoreList: [
+    {
+      storeId: MOCK_CONSTANTS.STORE_ID_1,
+      userId: MOCK_CONSTANTS.USER_ID,
+      store: {
+        id: MOCK_CONSTANTS.STORE_ID_1,
+        name: MOCK_CONSTANTS.STORE_NAME_1,
+        createdAt: MOCK_CONSTANTS.MOCK_DATE,
+        updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+        userId: MOCK_CONSTANTS.SELLER_ID,
+        address: MOCK_CONSTANTS.STORE_ADDRESS,
+        detailAddress: MOCK_CONSTANTS.STORE_DETAIL_ADDRESS,
+        phoneNumber: MOCK_CONSTANTS.STORE_PHONE,
+        content: MOCK_CONSTANTS.STORE_CONTENT,
+        image: MOCK_CONSTANTS.STORE_IMAGE,
+      },
+    },
+    {
+      storeId: MOCK_CONSTANTS.STORE_ID_2,
+      userId: MOCK_CONSTANTS.USER_ID,
+      store: {
+        id: MOCK_CONSTANTS.STORE_ID_2,
+        name: MOCK_CONSTANTS.STORE_NAME_2,
+        createdAt: MOCK_CONSTANTS.MOCK_DATE,
+        updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+        userId: MOCK_CONSTANTS.SELLER_ID,
+        address: MOCK_CONSTANTS.STORE_ADDRESS,
+        detailAddress: MOCK_CONSTANTS.STORE_DETAIL_ADDRESS,
+        phoneNumber: MOCK_CONSTANTS.STORE_PHONE,
+        content: MOCK_CONSTANTS.STORE_CONTENT,
+        image: MOCK_CONSTANTS.STORE_IMAGE,
+      },
+    },
+  ],
+
+  // 빈 찜한 상점 리스트
+  emptyFavoriteStoreList: [],
+};

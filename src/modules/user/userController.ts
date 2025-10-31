@@ -84,6 +84,12 @@ class UserController {
     await userService.deleteUser(userId);
     res.sendStatus(204);
   };
+
+  getFavoriteStoreList = async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const favoriteStores = await userService.getFavoriteStoreList(userId);
+    res.status(200).json(favoriteStores);
+  };
 }
 
 export default new UserController();

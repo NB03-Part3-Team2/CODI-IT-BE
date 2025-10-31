@@ -16,7 +16,7 @@ describe('userCreate 단위 테스트', () => {
   });
 
   describe('createUser 메소드 테스트', () => {
-    test('createUser 성공 테스트 - mock방식', async () => {
+    test('createUser 성공 테스트', async () => {
       // 공통 mock 데이터 사용
       const createUserDto = MOCK_DATA.createUserDto;
       const hashedPassword = MOCK_CONSTANTS.HASHED_PASSWORD;
