@@ -197,4 +197,106 @@ describe('updateCart 메소드 테스트', () => {
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인
     expect(result).toEqual(expectedResult);
   });
+  test('실패 - 상품이 존재하지 않는 경우', async () => {
+    // 1. 테스트에 사용할 mock 데이터 생성
+    const userId = TEST_USER_ID;
+    const productId = 'non-existent-product';
+
+    const requestData = {
+      productId,
+      sizes: [{ sizeId: 1, quantity: 3 }],
+    };
+
+    // 2. 레포지토리 함수 모킹
+    const checkProductExistsMock = jest
+      .spyOn(cartRepository, 'checkProductExists')
+      .mockResolvedValue(false); // 상품 존재하지 않음
+
+    // 3. 서비스 함수를 실행하고 에러가 발생하는지 확인
+    await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(ApiError);
+    await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(
+      '상품을 찾을 수 없습니다.',
+    );
+
+    // 4. 모킹된 메소드가 호출되었는지 확인
+    expect(checkProductExistsMock).toHaveBeenCalled();
+  });
+
+  test('실패 - 재고가 존재하지 않는 경우', async () => {
+    // 1. 테스트에 사용할 mock 데이터 생성
+    const userId = TEST_USER_ID;
+    const testDate = new Date();
+    const productId = 'product-1';
+    const sizeId = 999; // 존재하지 않는 사이즈
+
+    const requestData = {
+      productId,
+      sizes: [{ sizeId, quantity: 3 }],
+    };
+
+    const mockExistingCart = createEmptyCartMock(testDate, {
+      id: 'existing-cart-id',
+    });
+
+    // 2. 레포지토리 함수 모킹
+    const checkProductExistsMock = jest
+      .spyOn(cartRepository, 'checkProductExists')
+      .mockResolvedValue(true);
+    const getByUserIdMock = jest
+      .spyOn(cartRepository, 'getByUserId')
+      .mockResolvedValue(mockExistingCart);
+    const getStockMock = jest.spyOn(cartRepository, 'getStock').mockResolvedValue(null); // 재고 존재하지 않음
+
+    // 3. 서비스 함수를 실행하고 에러가 발생하는지 확인
+    await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(ApiError);
+    await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(
+      `사이즈 ID ${sizeId}에 대한 재고를 찾을 수 없습니다.`,
+    );
+
+    // 4. 모킹된 메소드가 호출되었는지 확인
+    expect(checkProductExistsMock).toHaveBeenCalledWith(productId);
+    expect(getByUserIdMock).toHaveBeenCalledWith(userId);
+    expect(getStockMock).toHaveBeenCalledWith(productId, sizeId);
+  });
+
+  test('실패 - 재고가 부족한 경우', async () => {
+    // 1. 테스트에 사용할 mock 데이터 생성
+    const userId = TEST_USER_ID;
+    const testDate = new Date();
+    const productId = 'product-1';
+    const sizeId = 1;
+    const requestedQuantity = 100;
+    const availableStock = 50; // 재고 부족
+
+    const requestData = {
+      productId,
+      sizes: [{ sizeId, quantity: requestedQuantity }],
+    };
+
+    const mockExistingCart = createEmptyCartMock(testDate, {
+      id: 'existing-cart-id',
+    });
+
+    const mockStock = { quantity: availableStock }; // 재고 부족
+
+    // 2. 레포지토리 함수 모킹
+    const checkProductExistsMock = jest
+      .spyOn(cartRepository, 'checkProductExists')
+      .mockResolvedValue(true);
+    const getByUserIdMock = jest
+      .spyOn(cartRepository, 'getByUserId')
+      .mockResolvedValue(mockExistingCart);
+    const getStockMock = jest.spyOn(cartRepository, 'getStock').mockResolvedValue(mockStock);
+
+    // 3. 서비스 함수를 실행하고 에러가 발생하는지 확인
+    await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(ApiError);
+    await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(
+      `사이즈 ID ${sizeId}의 재고가 부족합니다. (요청: ${requestedQuantity}, 재고: ${availableStock})`,
+    );
+
+    // 4. 모킹된 메소드가 호출되었는지 확인
+    expect(checkProductExistsMock).toHaveBeenCalledWith(productId);
+    expect(getByUserIdMock).toHaveBeenCalledWith(userId);
+    expect(getStockMock).toHaveBeenCalledWith(productId, sizeId);
+  });
 });
