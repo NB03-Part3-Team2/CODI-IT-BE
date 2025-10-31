@@ -1,0 +1,41 @@
+import { z } from 'zod';
+
+const nameChecker = z
+  .string()
+  .min(2, '상품 이름은 최소 2자 이상이어야 합니다')
+  .max(50, '상품 이름은 최대 50자 이하여야 합니다');
+
+const priceChecker = z
+  .number()
+  .min(0, '가격은 0 이상이어야 합니다.')
+  .int('가격은 정수여야 합니다.');
+
+const imageChecker = z.url('이미지 URL 형식이 올바르지 않습니다.').nullish();
+
+const contentChecker = z
+  .string()
+  .min(1, '내용은 최소 1자 이상이어야 합니다')
+  .max(500, '내용은 최대 500자 이하여야 합니다');
+
+const discountRateChecker = z.number().int('할인율은 정수여야 합니다.').min(0).max(100).nullish();
+
+const dateChecker = z.coerce.date();
+
+const stockChecker = z.object({
+  sizeId: z.number().int(),
+  quantity: z.number().int().min(0, '재고는 0 이상이어야 합니다.'),
+});
+
+export const createProductSchema = z.object({
+  categoryName: z.string(),
+  name: nameChecker,
+  price: priceChecker,
+  image: imageChecker.nullish(),
+  discountRate: discountRateChecker,
+  discountStartTime: dateChecker.nullish(),
+  discountEndTime: dateChecker.nullish(),
+  content: contentChecker,
+  stocks: z.array(stockChecker).min(1, '재고를 하나 이상 추가해주세요.'),
+});
+
+export type CreateProductDto = z.infer<typeof createProductSchema>;

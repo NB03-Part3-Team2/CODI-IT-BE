@@ -69,6 +69,7 @@ class StoreRepository {
       where: { userId },
       select: {
         id: true,
+        name: true,
       },
     });
     return store;

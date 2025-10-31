@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import productRouter from '@modules/product/productRoute';
 import storeRouter from '@modules/store/storeRoute';
 import userRouter from '@modules/user/userRouter';
 import s3Router from '@modules/s3/s3Route';
@@ -15,6 +16,7 @@ const router = Router();
 	Router 등록
 	router.use('/sample', sampleRoutes);
 */
+router.use('/products', productRouter);
 router.use('/stores', storeRouter);
 router.use('/users', userRouter);
 router.use('/auth', authRouter);
