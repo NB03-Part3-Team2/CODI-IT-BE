@@ -16,7 +16,7 @@ describe('userUpdate 단위 테스트', () => {
   });
 
   describe('updateUser 메소드 테스트', () => {
-    test('updateUser 성공 테스트 - mock방식', async () => {
+    test('updateUser 성공 테스트', async () => {
       // 공통 mock 데이터 사용
       const updateUserDto = MOCK_DATA.updateUserDto;
       const hashedPassword = MOCK_CONSTANTS.HASHED_PASSWORD;

@@ -61,6 +61,31 @@ class UserRepository {
       where: { name },
     });
   };
+
+  getFavoriteStoreList = async (userId: string) => {
+    const favoriteStores = await prisma.storeLike.findMany({
+      where: { userId },
+      select: {
+        storeId: true,
+        userId: true,
+        store: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            updatedAt: true,
+            userId: true,
+            address: true,
+            detailAddress: true,
+            phoneNumber: true,
+            content: true,
+            image: true,
+          },
+        },
+      },
+    });
+    return favoriteStores;
+  };
 }
 
 export default new UserRepository();
