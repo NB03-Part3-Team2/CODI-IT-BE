@@ -3,7 +3,7 @@ import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
 import { UserType } from '@prisma/client';
-import { userId, createStoreDto } from '../mock';
+import { userId, createStoreDto } from '@modules/store/test/mock';
 
 describe('createStore 메소드 테스트', () => {
   afterEach(() => {
