@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import authService from '@modules/auth/authService';
 import type { LoginDto } from '@modules/auth/dto/loginDTO';
+import { ApiError } from '@errors/ApiError';
 
 class AuthController {
   /**
@@ -24,7 +25,29 @@ class AuthController {
       password: req.body.password,
     };
     const tokens = await authService.login(loginDto);
-    res.json(tokens);
+    const { refreshToken, ...resUser } = tokens;
+
+    // 배포 환경에서는 https로 무조건 설정
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax', // 개발: lax, 프로덕션: none
+      path: '/',
+      maxAge: 14 * 24 * 60 * 60 * 1000,
+    });
+    res.json(resUser);
+  };
+
+  refreshToken = async (req: Request, res: Response) => {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      throw ApiError.unauthorized('리프레시 토큰이 없습니다.');
+    }
+
+    const accessToken = await authService.refreshToken(refreshToken);
+    res.json({ accessToken });
   };
 }
 

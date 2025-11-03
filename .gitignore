@@ -19,3 +19,6 @@ document/
 # Claude Code
 CLAUDE.md
 .claude/
+
+#임시
+s3Middleware.ts
