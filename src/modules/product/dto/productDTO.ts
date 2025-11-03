@@ -39,3 +39,12 @@ export const createProductSchema = z.object({
 });
 
 export type CreateProductDto = z.infer<typeof createProductSchema>;
+export type StockDto = z.infer<typeof stockChecker>;
+
+//repository 레이어로 넘길때에는 데이터의 형태가 다름
+export interface CreateProductRepoDto
+  extends Omit<CreateProductDto, 'categoryName' | 'discountRate'> {
+  categoryId: string;
+  discountRate: number; // prisam에서는 null을 허용하지 않으므로 숫자로 들어가게
+  discountPrice?: number;
+}
