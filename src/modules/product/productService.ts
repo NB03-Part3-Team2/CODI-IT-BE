@@ -84,7 +84,7 @@ class ProductService {
       storeName: store.name,
       stocks: transformedStocks,
       reviewsRating,
-      reviews: [ratingCounts],
+      reviews: ratingCounts,
       isSoldOut,
     };
   };
