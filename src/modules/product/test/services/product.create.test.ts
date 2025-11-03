@@ -4,14 +4,13 @@ import productRepository from '@modules/product/productRepo';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
 import {
-  userId,
+  mockUser,
   createProductDto,
   mockStore,
   mockCategory,
   mockProduct,
-  categoryId,
-  stockId,
-  sizeId,
+  mockStock,
+  mockSize,
 } from '@modules/product/test/mock';
 
 describe('createProduct 메소드 테스트', () => {
@@ -28,16 +27,14 @@ describe('createProduct 메소드 테스트', () => {
     const expectedResult = {
       id: mockProduct.id,
       storeName: mockStore.name,
-      reviews: [
-        {
-          rate1Length: 0,
-          rate2Length: 0,
-          rate3Length: 0,
-          rate4Length: 0,
-          rate5Length: 0,
-          sumScore: 0,
-        },
-      ],
+      reviews: {
+        rate1Length: 0,
+        rate2Length: 0,
+        rate3Length: 0,
+        rate4Length: 0,
+        rate5Length: 0,
+        sumScore: 0,
+      },
       price: mockProduct.price,
       discountPrice: mockProduct.discountPrice,
       discountRate: mockProduct.discountRate,
@@ -49,21 +46,21 @@ describe('createProduct 메소드 테스트', () => {
       updatedAt: mockProduct.updatedAt,
       image: mockProduct.image,
       reviewsRating: 0,
-      categoryId: categoryId,
+      categoryId: mockCategory.id,
       content: mockProduct.content,
       isSoldOut: false,
       stocks: [
         {
-          id: stockId,
-          quantity: 100,
+          id: mockStock.id,
+          quantity: mockStock.quantity,
           size: {
-            id: sizeId,
-            name: 'M',
+            id: mockSize.id,
+            name: mockSize.en,
           },
         },
       ],
       category: {
-        id: categoryId,
+        id: mockCategory.id,
         name: mockCategory.name,
       },
       inquiries: [],
@@ -78,10 +75,10 @@ describe('createProduct 메소드 테스트', () => {
     const createMock = jest.spyOn(productRepository, 'create').mockResolvedValue(mockProduct);
 
     // 3. 서비스 함수 호출
-    const result = await productService.createProduct(userId, createProductDto);
+    const result = await productService.createProduct(mockUser.id, createProductDto);
 
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
-    expect(getStoreIdMock).toHaveBeenCalledWith(userId);
+    expect(getStoreIdMock).toHaveBeenCalledWith(mockUser.id);
     expect(findCategoryMock).toHaveBeenCalledWith(createProductDto.categoryName);
     expect(createMock).toHaveBeenCalled();
 

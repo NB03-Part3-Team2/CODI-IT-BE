@@ -1,10 +1,31 @@
 import { CreateProductDto } from '@modules/product/dto/productDTO';
 
-export const userId = 'test-user-id';
-export const storeId = 'test-store-id';
-export const categoryId = 'test-category-id';
-export const stockId = 'test-stock-id';
-export const sizeId = 1;
+export const mockUser = {
+  id: 'test-user-id',
+};
+
+export const mockStore = {
+  id: 'test-store-id',
+  name: '테스트 스토어',
+};
+
+export const mockCategory = {
+  id: 'test-category-id',
+  name: 'TOP',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+export const mockSize = {
+  id: 1,
+  en: 'M',
+};
+
+export const mockStock = {
+  id: 'test-stock-id',
+  sizeId: mockSize.id,
+  quantity: 100,
+};
 
 export const createProductDto: CreateProductDto = {
   categoryName: '상의',
@@ -17,28 +38,16 @@ export const createProductDto: CreateProductDto = {
   discountEndTime: new Date('2025-12-31'),
   stocks: [
     {
-      sizeId: sizeId,
-      quantity: 100,
+      sizeId: mockStock.sizeId,
+      quantity: mockStock.quantity,
     },
   ],
 };
 
-export const mockStore = {
-  id: storeId,
-  name: '테스트 스토어',
-};
-
-export const mockCategory = {
-  id: categoryId,
-  name: 'TOP',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
 export const mockProduct = {
   id: 'product-id-1',
-  storeId: storeId,
-  categoryId: categoryId,
+  storeId: mockStore.id,
+  categoryId: mockCategory.id,
   name: '테스트 상품',
   content: '테스트 상품입니다.',
   image: 'https://example.com/product.jpg',
@@ -56,13 +65,13 @@ export const mockProduct = {
   },
   stocks: [
     {
-      id: stockId,
+      id: mockStock.id,
       productId: 'product-id-1',
-      sizeId: sizeId,
-      quantity: 100,
+      sizeId: mockSize.id,
+      quantity: mockStock.quantity,
       size: {
-        id: sizeId,
-        en: 'M',
+        id: mockSize.id,
+        en: mockSize.en,
       },
     },
   ],
