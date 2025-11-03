@@ -2,6 +2,7 @@ import express from 'express';
 import userValidator from '@modules/user/userValidator';
 import userController from '@modules/user/userController';
 import { authMiddleware } from '@middlewares/authMiddleware';
+import { uploadSingleImage } from '@middlewares/s3Middleware';
 
 const userRouter = express.Router();
 
@@ -11,7 +12,12 @@ userRouter.route('/').post(userValidator.validateCreateUser, userController.crea
 userRouter
   .route('/me')
   .get(authMiddleware, userController.getUser)
-  .patch(authMiddleware, userValidator.validateUpdateUser, userController.updateUser);
+  .patch(
+    authMiddleware,
+    uploadSingleImage,
+    userValidator.validateUpdateUser,
+    userController.updateUser,
+  );
 //회원탈퇴
 userRouter.delete('/delete', authMiddleware, userController.deleteUser);
 //좋아하는 store 목록 조회
