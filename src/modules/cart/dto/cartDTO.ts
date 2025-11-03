@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 const idChecker = z.cuid({ message: 'ID는 CUID 형식이어야 합니다.' });
 
+// 장바구니 아이템 ID 검증 스키마
+export const cartItemIdSchema = z.object({
+  cartItemId: idChecker,
+});
+
 // 장바구니 수정 요청 스키마
 export const updateCartSchema = z.object({
   productId: idChecker,
@@ -14,6 +19,9 @@ export const updateCartSchema = z.object({
     )
     .min(1, '최소 하나의 사이즈 정보가 필요합니다.'),
 });
+
+// 장바구니 아이템 ID 검증 타입
+export type CartItemIdDto = z.infer<typeof cartItemIdSchema>;
 
 // 장바구니 수정 요청 DTO
 export type UpdateCartDto = z.infer<typeof updateCartSchema>;
