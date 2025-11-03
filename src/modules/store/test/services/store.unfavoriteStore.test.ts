@@ -2,7 +2,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
-import { userId, storeId, mockStore, mockStoreLike } from '@modules/store/test/mock';
+import { mockUser, mockStore, mockStoreLike } from '@modules/store/test/mock';
 
 describe('unfavoriteStore 메소드 테스트', () => {
   afterEach(() => {
@@ -31,12 +31,12 @@ describe('unfavoriteStore 메소드 테스트', () => {
       .mockResolvedValue(undefined); // void 반환
 
     // 3. 서비스 함수 호출
-    const result = await storeService.unfavoriteStore(userId, storeId);
+    const result = await storeService.unfavoriteStore(mockUser.id, mockStore.id);
 
     // 4. 모킹된 메소드가 올바른 인자와 함께 호출되었는지 확인
-    expect(getStoreByIdMock).toHaveBeenCalledWith(storeId);
-    expect(getStoreLikeMock).toHaveBeenCalledWith(userId, storeId);
-    expect(unfavoriteStoreMock).toHaveBeenCalledWith(userId, storeId);
+    expect(getStoreByIdMock).toHaveBeenCalledWith(mockStore.id);
+    expect(getStoreLikeMock).toHaveBeenCalledWith(mockUser.id, mockStore.id);
+    expect(unfavoriteStoreMock).toHaveBeenCalledWith(mockUser.id, mockStore.id);
 
     // 5. 서비스 메소드가 예상된 결과를 반환하는지 확인
     const expectedResult = {

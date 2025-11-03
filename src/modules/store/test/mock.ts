@@ -1,9 +1,29 @@
 import { CreateStoreDto, UpdateStoreDto } from '@modules/store/dto/storeDTO';
 
-export const userId = 'test-user-id';
-export const storeId = 'test-store-id';
-export const storeOwnerId = 'store-owner-id';
-export const categoryId = 'category-id';
+export const mockUser = {
+  id: 'test-user-id',
+};
+
+export const mockStoreOwner = {
+  id: 'store-owner-id',
+};
+
+export const mockCategory = {
+  id: 'category-id',
+};
+
+export const mockStore = {
+  id: 'test-store-id',
+  name: '테스트 스토어',
+  userId: mockStoreOwner.id,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  address: '서울시 테스트구 테스트동',
+  detailAddress: '123-456',
+  phoneNumber: '010-0000-0000',
+  content: '테스트 스토어입니다.',
+  image: 'test.jpg',
+};
 
 export const createStoreDto: CreateStoreDto = {
   name: '생성스토어',
@@ -19,24 +39,11 @@ export const updateStoreDto: UpdateStoreDto = {
   content: '수정된 내용!',
 };
 
-export const mockStore = {
-  id: storeId,
-  name: '테스트 스토어',
-  userId: storeOwnerId,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  address: '서울시 테스트구 테스트동',
-  detailAddress: '123-456',
-  phoneNumber: '010-0000-0000',
-  content: '테스트 스토어입니다.',
-  image: 'test.jpg',
-};
-
 export const mockProducts = [
   {
     id: 'product-id-1',
-    storeId: storeId,
-    categoryId: categoryId,
+    storeId: mockStore.id,
+    categoryId: mockCategory.id,
     name: 'mock-product1-name',
     content: 'mock product 설명.',
     image: 'image-url-1',
@@ -50,8 +57,8 @@ export const mockProducts = [
   },
   {
     id: 'product-id-2',
-    storeId: storeId,
-    categoryId: categoryId,
+    storeId: mockStore.id,
+    categoryId: mockCategory.id,
     name: 'mock-product2-name',
     content: 'mock product2 설명.',
     image: 'image-url-2',
@@ -67,7 +74,7 @@ export const mockProducts = [
 
 export const mockStoreLike = {
   id: 'like-id',
-  userId,
-  storeId,
+  userId: mockUser.id,
+  storeId: mockStore.id,
   createdAt: new Date(),
 };
