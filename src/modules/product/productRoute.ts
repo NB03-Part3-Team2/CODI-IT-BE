@@ -7,8 +7,6 @@ import { uploadSingleImage } from '@middlewares/s3Middleware';
 
 const productRouter = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
-
 productRouter
   .route('/')
   .post(
