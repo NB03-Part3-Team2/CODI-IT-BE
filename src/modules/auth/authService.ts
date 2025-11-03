@@ -36,10 +36,10 @@ class AuthService {
     return data;
   };
 
-  refreshToken = (refreshToken: string) => {
+  refreshToken = (refreshToken: string): string => {
     const decoded = tokenUtils.verifyRefreshToken(refreshToken);
-    const AccessToken = tokenUtils.generateAccessToken({ id: decoded.id });
-    return AccessToken;
+    const accessToken = tokenUtils.generateAccessToken({ id: decoded.id });
+    return accessToken;
   };
 }
 
