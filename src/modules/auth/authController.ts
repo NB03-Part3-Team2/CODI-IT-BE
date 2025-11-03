@@ -39,6 +39,18 @@ class AuthController {
     res.json(resUser);
   };
 
+  /**
+   * @description
+   * 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.
+   * 리프레시 토큰은 쿠키에서 추출되며, 유효한 경우 새로운 액세스 토큰을 반환합니다.
+   *
+   * @param req - Express 요청 객체
+   * @param res - Express 응답 객체
+   * @return {Object} 새로운 액세스 토큰
+   * @throws {ApiError} 401 - 리프레시 토큰이 없거나 유효하지 않은 경우
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+
   refreshToken = async (req: Request, res: Response) => {
     const { refreshToken } = req.cookies;
 
