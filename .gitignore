@@ -19,6 +19,3 @@ document/
 # Claude Code
 CLAUDE.md
 .claude/
-
-# 임시 (S3 설정 완료 전까지)
-src/middlewares/s3Middleware.ts
