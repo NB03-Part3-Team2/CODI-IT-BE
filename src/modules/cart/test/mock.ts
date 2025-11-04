@@ -247,6 +247,39 @@ export const createSimpleCartItemMock = (
 });
 
 /**
+ * CartItem with Cart 정보 Mock 데이터 (deleteCartItem용)
+ */
+export interface MockCartItemWithCart {
+  id: string;
+  cartId: string;
+  productId: string;
+  sizeId: number;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
+  cart: {
+    userId: string;
+  };
+}
+
+export const createMockCartItemWithCart = (
+  testDate: Date,
+  override?: Partial<MockCartItemWithCart>
+): MockCartItemWithCart => ({
+  id: 'cart-item-1',
+  cartId: 'cart-id',
+  productId: 'product-1',
+  sizeId: 1,
+  quantity: 2,
+  createdAt: testDate,
+  updatedAt: testDate,
+  cart: {
+    userId: TEST_USER_ID,
+  },
+  ...override,
+});
+
+/**
  * 복잡한 테스트용 장바구니 데이터 생성 (2개의 아이템 포함)
  */
 export const createComplexCartMock = (testDate: Date): DetailedCartMock => {

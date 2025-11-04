@@ -1,6 +1,7 @@
 import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import cartService from '@modules/cart/cartService';
 import cartRepository from '@modules/cart/cartRepo';
+import productRepository from '@modules/product/productRepo';
 import { CartItemResponseDto } from '@modules/cart/dto/cartDTO';
 import { ApiError } from '@errors/ApiError';
 import { TEST_USER_ID, createEmptyCartMock, createSimpleCartItemMock } from '../mock';
@@ -42,11 +43,11 @@ describe('updateCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkProductExistsMock = jest
-      .spyOn(cartRepository, 'checkProductExists')
+      .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(true); // 상품 존재
     const getByUserIdMock = jest.spyOn(cartRepository, 'getByUserId').mockResolvedValue(null); // 장바구니 없음
     const createMock = jest.spyOn(cartRepository, 'create').mockResolvedValue(mockNewCart); // 새 장바구니 생성
-    const getStockMock = jest.spyOn(cartRepository, 'getStock').mockResolvedValue(mockStock); // 재고 충분
+    const getStockMock = jest.spyOn(productRepository, 'getStock').mockResolvedValue(mockStock); // 재고 충분
     const upsertCartItemMock = jest
       .spyOn(cartRepository, 'upsertCartItem')
       .mockResolvedValue(mockCartItem);
@@ -96,13 +97,13 @@ describe('updateCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkProductExistsMock = jest
-      .spyOn(cartRepository, 'checkProductExists')
+      .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(true);
     const getByUserIdMock = jest
       .spyOn(cartRepository, 'getByUserId')
       .mockResolvedValue(mockExistingCart); // 기존 장바구니 존재
     const createMock = jest.spyOn(cartRepository, 'create');
-    const getStockMock = jest.spyOn(cartRepository, 'getStock').mockResolvedValue(mockStock);
+    const getStockMock = jest.spyOn(productRepository, 'getStock').mockResolvedValue(mockStock);
     const upsertCartItemMock = jest
       .spyOn(cartRepository, 'upsertCartItem')
       .mockResolvedValue(mockCartItem);
@@ -167,13 +168,13 @@ describe('updateCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkProductExistsMock = jest
-      .spyOn(cartRepository, 'checkProductExists')
+      .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(true);
     const getByUserIdMock = jest
       .spyOn(cartRepository, 'getByUserId')
       .mockResolvedValue(mockExistingCart);
     const getStockMock = jest
-      .spyOn(cartRepository, 'getStock')
+      .spyOn(productRepository, 'getStock')
       .mockResolvedValueOnce(mockStock1) // 첫 번째 사이즈
       .mockResolvedValueOnce(mockStock2); // 두 번째 사이즈
     const upsertCartItemMock = jest
@@ -209,7 +210,7 @@ describe('updateCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkProductExistsMock = jest
-      .spyOn(cartRepository, 'checkProductExists')
+      .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(false); // 상품 존재하지 않음
 
     // 3. 서비스 함수를 실행하고 에러가 발생하는지 확인
@@ -240,12 +241,12 @@ describe('updateCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkProductExistsMock = jest
-      .spyOn(cartRepository, 'checkProductExists')
+      .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(true);
     const getByUserIdMock = jest
       .spyOn(cartRepository, 'getByUserId')
       .mockResolvedValue(mockExistingCart);
-    const getStockMock = jest.spyOn(cartRepository, 'getStock').mockResolvedValue(null); // 재고 존재하지 않음
+    const getStockMock = jest.spyOn(productRepository, 'getStock').mockResolvedValue(null); // 재고 존재하지 않음
 
     // 3. 서비스 함수를 실행하고 에러가 발생하는지 확인
     await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(ApiError);
@@ -281,12 +282,12 @@ describe('updateCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const checkProductExistsMock = jest
-      .spyOn(cartRepository, 'checkProductExists')
+      .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(true);
     const getByUserIdMock = jest
       .spyOn(cartRepository, 'getByUserId')
       .mockResolvedValue(mockExistingCart);
-    const getStockMock = jest.spyOn(cartRepository, 'getStock').mockResolvedValue(mockStock);
+    const getStockMock = jest.spyOn(productRepository, 'getStock').mockResolvedValue(mockStock);
 
     // 3. 서비스 함수를 실행하고 에러가 발생하는지 확인
     await expect(cartService.updateCart(userId, requestData)).rejects.toThrow(ApiError);

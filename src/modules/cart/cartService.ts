@@ -1,4 +1,5 @@
 import cartRepository from '@modules/cart/cartRepo';
+import productRepository from '@modules/product/productRepo';
 import {
   CreatedCartDto,
   GetCartDto,
@@ -113,7 +114,7 @@ class CartService {
     const { productId, sizes } = data;
 
     // 1. 상품 존재 여부 확인
-    const productExists = await cartRepository.checkProductExists(productId);
+    const productExists = await productRepository.checkProductExists(productId);
     if (!productExists) {
       throw ApiError.notFound('상품을 찾을 수 없습니다.');
     }
@@ -131,7 +132,7 @@ class CartService {
       const { sizeId, quantity } = sizeInfo;
 
       // 재고 확인
-      const stock = await cartRepository.getStock(productId, sizeId);
+      const stock = await productRepository.getStock(productId, sizeId);
       if (!stock) {
         throw ApiError.notFound(`사이즈 ID ${sizeId}에 대한 재고를 찾을 수 없습니다.`);
       }
@@ -147,6 +148,25 @@ class CartService {
     }
 
     return updatedItems;
+  };
+
+  // 장바구니 아이템 삭제
+  deleteCartItem = async (userId: string, cartItemId: string): Promise<void> => {
+    // 1. 장바구니 아이템 조회
+    const cartItem = await cartRepository.getCartItemById(cartItemId);
+
+    // 2. 아이템이 없으면 404 에러
+    if (!cartItem) {
+      throw ApiError.notFound('장바구니에 아이템이 없습니다.');
+    }
+
+    // 3. 권한 확인 (요청한 사용자의 장바구니 아이템인지 확인)
+    if (cartItem.cart.userId !== userId) {
+      throw ApiError.forbidden('접근 권한이 없습니다.');
+    }
+
+    // 4. 장바구니 아이템 삭제
+    await cartRepository.deleteCartItem(cartItemId);
   };
 }
 

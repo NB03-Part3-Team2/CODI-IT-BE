@@ -58,6 +58,37 @@ class ProductRepository {
       },
     });
   };
+
+  /**
+   * CartService에서 사용하는 메소드입니다.
+   * 작성자: 박재성 (Cart API 담당)
+   * - checkProductExists: 상품 존재 여부 확인
+   * - getStock: 재고 확인
+   */
+
+  // 상품 존재 여부 확인
+  checkProductExists = async (productId: string) => {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true },
+    });
+    return product !== null;
+  };
+
+  // 재고 확인
+  getStock = async (productId: string, sizeId: number) => {
+    return await prisma.stock.findUnique({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      select: {
+        quantity: true,
+      },
+    });
+  };
 }
 
 export default new ProductRepository();

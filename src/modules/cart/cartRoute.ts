@@ -14,4 +14,13 @@ cartRouter
   .get(authMiddleware, cartController.getCart)
   .patch(authMiddleware, cartValidator.validateUpdateCart, cartController.updateCart);
 
+// DELETE /api/cart/items/:cartItemId - 장바구니 아이템 삭제 (인증 필요)
+cartRouter
+  .route('/items/:cartItemId')
+  .delete(
+    authMiddleware,
+    cartValidator.validateDeleteCartItem,
+    cartController.deleteCartItem,
+  );
+
 export default cartRouter;

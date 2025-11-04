@@ -81,6 +81,36 @@ class CartController {
     // response 반환
     res.status(200).json(updatedItems);
   };
+
+  /**
+   * 장바구니 아이템을 삭제합니다.
+   *
+   * 특정 장바구니 아이템을 삭제합니다.
+   * 아이템의 소유자(장바구니의 사용자)만 삭제할 수 있습니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns 204 No Content
+   *
+   * @throws {ApiError} 401 - 인증되지 않은 사용자
+   * @throws {ApiError} 403 - 권한이 없음 (다른 사용자의 장바구니 아이템)
+   * @throws {ApiError} 404 - 장바구니에 아이템이 없음
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+  deleteCartItem = async (req: Request, res: Response) => {
+    // 인증 미들웨어에서 사용자 ID 가져오기
+    const userId = req.user.id;
+
+    // 경로 파라미터에서 cartItemId 가져오기 (유효성 검사는 미들웨어에서 완료됨)
+    const { cartItemId } = req.params;
+
+    // 장바구니 아이템 삭제
+    await cartService.deleteCartItem(userId, cartItemId);
+
+    // 204 No Content 응답
+    res.status(204).send();
+  };
 }
 
 export default new CartController();
