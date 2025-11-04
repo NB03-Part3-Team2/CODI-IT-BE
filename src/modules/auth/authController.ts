@@ -20,10 +20,7 @@ class AuthController {
    */
 
   login = async (req: Request, res: Response) => {
-    const loginDto: LoginDto = {
-      email: req.body.email,
-      password: req.body.password,
-    };
+    const loginDto: LoginDto = { ...req.validatedBody };
     const tokens = await authService.login(loginDto);
     const { refreshToken, ...resUser } = tokens;
 
@@ -60,6 +57,17 @@ class AuthController {
 
     const accessToken = await authService.refreshToken(refreshToken);
     res.json({ accessToken });
+  };
+
+  logout = async (req: Request, res: Response) => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+    });
+    res.status(204).send();
   };
 }
 

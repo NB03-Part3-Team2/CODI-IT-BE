@@ -11,7 +11,7 @@ class UserValidator {
         password: req.body.password,
         type: req.body.type,
       };
-      await createUserSchema.parseAsync(parsedBody);
+      req.validatedBody = await createUserSchema.parseAsync(parsedBody);
       next();
     } catch (err) {
       forwardZodError(err, '사용자 생성', next);
@@ -26,7 +26,7 @@ class UserValidator {
         currentPassword: req.body.currentPassword,
         image: req.body.image,
       };
-      await updateUserSchema.parseAsync(parsedBody);
+      req.validatedBody = await updateUserSchema.parseAsync(parsedBody);
       next();
     } catch (err) {
       forwardZodError(err, '사용자 수정', next);
