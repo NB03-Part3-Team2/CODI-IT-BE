@@ -1,10 +1,13 @@
 import productRepository from '@modules/product/productRepo';
 import storeRepository from '@modules/store/storeRepo';
 import { ApiError } from '@errors/ApiError';
-import { CreateProductDto } from '@modules/product/dto/productDTO';
+import { CreateProductDto, CreateProductResponseDto } from '@modules/product/dto/productDTO';
 
 class ProductService {
-  createProduct = async (userId: string, createProductDto: CreateProductDto) => {
+  createProduct = async (
+    userId: string,
+    createProductDto: CreateProductDto,
+  ): Promise<CreateProductResponseDto> => {
     const store = await storeRepository.getStoreIdByUserId(userId);
     if (!store) {
       throw ApiError.notFound('스토어를 찾을수 없습니다.');

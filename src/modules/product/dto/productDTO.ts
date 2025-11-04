@@ -48,3 +48,37 @@ export interface CreateProductRepoDto
   discountRate: number; // prisam에서는 null을 허용하지 않으므로 숫자로 들어가게
   discountPrice?: number;
 }
+
+interface TransformedStock {
+  id: string;
+  quantity: number;
+  size: {
+    id: number;
+    name: string;
+  };
+}
+
+interface RatingCounts {
+  [key: string]: number;
+}
+
+export interface CreateProductResponseDto {
+  id: string;
+  storeId: string;
+  categoryId: string;
+  name: string;
+  content: string;
+  image: string | null;
+  price: number;
+  discountPrice: number | null;
+  discountRate: number;
+  discountStartTime: Date | null;
+  discountEndTime: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  storeName: string;
+  stocks: TransformedStock[];
+  reviewsRating: number;
+  reviews: RatingCounts;
+  isSoldOut: boolean;
+}
