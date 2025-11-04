@@ -30,12 +30,12 @@ class ProductValidator {
     try {
       // 1. 검사할 속성 정의
       const parsedQuery = {
-        page: req.query.page ? parseInt(req.query.page as string, 10) : undefined,
-        pageSize: req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : undefined,
+        page: req.query.page ? (req.query.page as string, 10) : undefined,
+        pageSize: req.query.pageSize ? (req.query.pageSize as string, 10) : undefined,
         search: req.query.search as string | undefined,
         sort: req.query.sort as string | undefined,
-        priceMin: req.query.priceMin ? parseInt(req.query.priceMin as string, 10) : undefined,
-        priceMax: req.query.priceMax ? parseInt(req.query.priceMax as string, 10) : undefined,
+        priceMin: req.query.priceMin ? (req.query.priceMin as string, 10) : undefined,
+        priceMax: req.query.priceMax ? (req.query.priceMax as string, 10) : undefined,
         size: req.query.size as string | undefined,
         favoriteStore: req.query.favoriteStore ? (req.query.favoriteStore as string) : undefined,
         categoryName: req.query.categoryName
