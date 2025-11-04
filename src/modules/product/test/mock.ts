@@ -77,3 +77,26 @@ export const mockProduct = {
   ],
   inquiries: [],
 };
+
+export const mockReview = {
+  id: 'test-review-id',
+  userId: 'test-user-id',
+  productId: 'product-id-1',
+  orderItemId: 'test-order-item-id',
+  content: '테스트 리뷰입니다.',
+  rating: 5,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+export const mockOrderItem = {
+  id: 'test-order-item-id',
+  orderId: 'test-order-id',
+  productId: 'product-id-1',
+  sizeId: mockSize.id,
+  price: 30000,
+  quantity: 2,
+  isReviewed: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
