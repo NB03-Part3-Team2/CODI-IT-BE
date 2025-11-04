@@ -54,6 +54,7 @@ describe('AuthService 단위 테스트', () => {
           },
         },
         accessToken: 'mock-access-token',
+        refreshToken: 'mock-refresh-token',
       };
 
       // 사용자 조회와 비밀번호 검증, 토큰 생성을 mock
@@ -66,12 +67,16 @@ describe('AuthService 단위 테스트', () => {
       const generateAccessTokenMock = jest
         .spyOn(tokenUtils, 'generateAccessToken')
         .mockReturnValue('mock-access-token');
+      const generateRefreshTokenMock = jest
+        .spyOn(tokenUtils, 'generateRefreshToken')
+        .mockReturnValue('mock-refresh-token');
 
       const result = await authService.login(loginDto);
 
       expect(getUserByEmailMock).toHaveBeenCalledWith(loginDto.email);
       expect(isPasswordValidMock).toHaveBeenCalledWith(loginDto.password, mockUser.password);
       expect(generateAccessTokenMock).toHaveBeenCalledWith({ id: mockUser.id });
+      expect(generateRefreshTokenMock).toHaveBeenCalledWith({ id: mockUser.id });
       expect(result).toEqual(expectedResult);
     });
 

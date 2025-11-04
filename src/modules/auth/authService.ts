@@ -13,6 +13,7 @@ class AuthService {
     const isValid = await isPasswordValid(loginDto.password, user.password);
     if (!isValid) throw ApiError.unauthorized(message);
     const accessToken = tokenUtils.generateAccessToken({ id: user.id });
+    const refreshToken = tokenUtils.generateRefreshToken({ id: user.id });
 
     const data: LoginResponseDto = {
       user: {
@@ -30,8 +31,15 @@ class AuthService {
         },
       },
       accessToken,
+      refreshToken,
     };
     return data;
+  };
+
+  refreshToken = (refreshToken: string): string => {
+    const decoded = tokenUtils.verifyRefreshToken(refreshToken);
+    const accessToken = tokenUtils.generateAccessToken({ id: decoded.id });
+    return accessToken;
   };
 }
 
