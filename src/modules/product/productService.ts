@@ -25,7 +25,7 @@ class ProductService {
     const productData = {
       ...restOfDto,
       price,
-      discountRate,
+      discountRate: discountRate ?? 0,
       discountPrice,
       categoryId: category.id,
       stocks: createProductDto.stocks,
@@ -84,7 +84,7 @@ class ProductService {
       storeName: store.name,
       stocks: transformedStocks,
       reviewsRating,
-      reviews: [ratingCounts],
+      reviews: ratingCounts,
       isSoldOut,
     };
   };

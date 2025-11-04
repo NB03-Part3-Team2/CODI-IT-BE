@@ -1,19 +1,19 @@
 import { prisma } from '@shared/prisma';
-import { CreateProductDto } from '@modules/product/dto/productDTO';
+import { StockDto, CreateProductRepoDto } from '@modules/product/dto/productDTO';
 
 class ProductRepository {
-  create = async (storeId: string, createProductDto: any) => {
-    const { stocks, ...productData } = createProductDto;
+  create = async (storeId: string, productData: CreateProductRepoDto) => {
+    const { stocks, ...restProductData } = productData;
 
     return await prisma.$transaction(async (tx) => {
       const product = await tx.product.create({
         data: {
           storeId,
-          ...productData,
+          ...restProductData,
         },
       });
 
-      const stockData = stocks.map((stock: any) => ({
+      const stockData = stocks.map((stock: StockDto) => ({
         ...stock,
         productId: product.id,
       }));

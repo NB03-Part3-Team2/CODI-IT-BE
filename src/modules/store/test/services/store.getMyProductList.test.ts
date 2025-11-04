@@ -3,7 +3,7 @@ import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { GetMyProductListDto } from '@modules/store/dto/storeDTO';
 import { prisma } from '@shared/prisma';
-import { userId, storeId, mockStore, mockProducts } from '@modules/store/test/mock';
+import { mockUser, mockStore, mockProducts } from '@modules/store/test/mock';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -22,7 +22,7 @@ describe('getMyProductList 메소드 테스트', () => {
     };
     // 서비스가 처음에 호출하는 getStoreIdByUserId가 반환할 가짜 스토어 정보
     const mockExistingStore = {
-      id: storeId, // storeId가 일치해야 소유권 검사를 통과합니다.
+      id: mockStore.id, // storeId가 일치해야 소유권 검사를 통과합니다.
       name: mockStore.name,
     };
     const mockProductList = {
@@ -60,10 +60,10 @@ describe('getMyProductList 메소드 테스트', () => {
       .mockResolvedValue(mockProductList);
 
     // 3. 서비스 함수 호출
-    const result = await storeService.getMyProductList(userId, getMyProductListDto);
+    const result = await storeService.getMyProductList(mockUser.id, getMyProductListDto);
 
     // 4. 모킹된 메소드가 올바른 인자와 함께 호출되었는지 확인
-    expect(checkStoreMock).toHaveBeenCalledWith(userId);
+    expect(checkStoreMock).toHaveBeenCalledWith(mockUser.id);
     expect(getProductListMock).toHaveBeenCalledWith(mockExistingStore.id, getMyProductListDto);
 
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인
