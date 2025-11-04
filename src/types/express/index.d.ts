@@ -4,7 +4,7 @@ declare global {
   namespace Express {
     interface Request {
       user: Pick<User, 'id'>;
-      validatedBody?: any; // ✅ 초기에는 이렇게
+      validatedBody?: any;
       validatedQuery?: any;
       validatedParams?: any;
     }
