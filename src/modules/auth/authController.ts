@@ -20,10 +20,7 @@ class AuthController {
    */
 
   login = async (req: Request, res: Response) => {
-    const loginDto: LoginDto = {
-      email: req.validatedBody.email,
-      password: req.validatedBody.password,
-    };
+    const loginDto: LoginDto = { ...req.validatedBody };
     const tokens = await authService.login(loginDto);
     const { refreshToken, ...resUser } = tokens;
 
