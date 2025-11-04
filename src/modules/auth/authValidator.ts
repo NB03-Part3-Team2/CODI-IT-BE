@@ -9,7 +9,7 @@ class AuthValidator {
         email: req.body.email,
         password: req.body.password,
       };
-      await loginSchema.parseAsync(parsedBody);
+      req.validatedBody = await loginSchema.parseAsync(parsedBody);
       next();
     } catch (err) {
       forwardZodError(err, '로그인', next);

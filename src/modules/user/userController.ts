@@ -22,12 +22,7 @@ class UserController {
    */
 
   createUser = async (req: Request, res: Response) => {
-    const createUserDto: CreateUserDto = {
-      email: req.body.email,
-      name: req.body.name,
-      password: req.body.password,
-      type: req.body.type,
-    };
+    const createUserDto: CreateUserDto = { ...req.validatedBody };
     const user = await userService.createUser(createUserDto);
     res.status(201).json(user);
   };
@@ -70,10 +65,7 @@ class UserController {
   updateUser = async (req: Request, res: Response) => {
     const updateUserDto: UpdateUserDto = {
       userId: req.user.id,
-      name: req.body.name,
-      newPassword: req.body.newPassword,
-      currentPassword: req.body.currentPassword,
-      image: req.body.image,
+      ...req.validatedBody,
     };
     const user = await userService.updateUser(updateUserDto);
     res.status(200).json(user);
