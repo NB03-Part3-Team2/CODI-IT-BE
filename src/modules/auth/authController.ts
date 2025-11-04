@@ -61,6 +61,17 @@ class AuthController {
     const accessToken = await authService.refreshToken(refreshToken);
     res.json({ accessToken });
   };
+
+  logout = async (req: Request, res: Response) => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+    });
+    res.status(204).send();
+  };
 }
 
 export default new AuthController();
