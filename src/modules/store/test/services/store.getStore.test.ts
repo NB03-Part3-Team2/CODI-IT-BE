@@ -2,7 +2,7 @@ import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals
 import storeService from '@modules/store/storeService';
 import storeRepository from '@modules/store/storeRepo';
 import { prisma } from '@shared/prisma';
-import { storeId, mockStore } from '@modules/store/test/mock';
+import { mockStore } from '@modules/store/test/mock';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -29,10 +29,10 @@ describe('getStore 메소드 테스트', () => {
       .mockResolvedValue(mockStoreFromDB);
 
     // 3. 서비스 함수 호출
-    const result = await storeService.getStore(storeId);
+    const result = await storeService.getStore(mockStore.id);
 
     // 4. 모킹된 메소드가 올바른 인자와 함께 호출되었는지 확인
-    expect(getStoreByIdMock).toHaveBeenCalledWith(storeId);
+    expect(getStoreByIdMock).toHaveBeenCalledWith(mockStore.id);
 
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인
     const expectedResult = {
