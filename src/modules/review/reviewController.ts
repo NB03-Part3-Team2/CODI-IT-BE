@@ -9,8 +9,8 @@ class ReviewController {
       ...req.validatedBody,
       userId,
     };
-    const newReview = await reviewService.createReview(createReviewDto);
-    res.status(201).json(newReview);
+    const review = await reviewService.createReview(createReviewDto);
+    res.status(201).json(review);
   };
 }
 
