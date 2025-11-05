@@ -7,7 +7,7 @@ const nameChecker = z
   .max(50, '상품 이름은 최대 50자 이하여야 합니다');
 
 const priceChecker = z
-  .number()
+  .coerce.number()
   .min(0, '가격은 0 이상이어야 합니다.')
   .int('가격은 정수여야 합니다.');
 
@@ -18,13 +18,13 @@ const contentChecker = z
   .min(1, '내용은 최소 1자 이상이어야 합니다')
   .max(500, '내용은 최대 500자 이하여야 합니다');
 
-const discountRateChecker = z.number().int('할인율은 정수여야 합니다.').min(0).max(100).nullish();
+const discountRateChecker = z.coerce.number().int('할인율은 정수여야 합니다.').min(0).max(100).nullish();
 
 const dateChecker = z.coerce.date();
 
 const stockChecker = z.object({
-  sizeId: z.number().int(),
-  quantity: z.number().int().min(0, '재고는 0 이상이어야 합니다.'),
+  sizeId: z.coerce.number().int(),
+  quantity: z.coerce.number().int().min(0, '재고는 0 이상이어야 합니다.'),
 });
 
 export const createProductSchema = z.object({
