@@ -37,15 +37,6 @@ const baseUser = {
   },
 } as const;
 
-const baseProduct = {
-  id: MOCK_CONSTANTS.PRODUCT_ID,
-  name: '테스트 상품',
-  price: 10000,
-  stockQuantity: 100,
-  createdAt: MOCK_CONSTANTS.MOCK_DATE,
-  updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-} as const;
-
 const baseReview = {
   id: MOCK_CONSTANTS.REVIEW_ID,
   userId: MOCK_CONSTANTS.USER_ID,
@@ -57,7 +48,7 @@ const baseReview = {
 
 // 미리 정의된 mock 데이터들
 export const MOCK_DATA = {
-  // 기본 리뷰 생성 DTO
+  // 리뷰 생성 DTO
   createReviewDto: {
     userId: MOCK_CONSTANTS.USER_ID,
     productId: MOCK_CONSTANTS.PRODUCT_ID,
@@ -66,10 +57,10 @@ export const MOCK_DATA = {
     content: MOCK_CONSTANTS.CONTENT,
   } as CreateReviewDto,
 
-  // 기본 생성된 리뷰
+  // 생성된 리뷰
   createdReview: baseReview,
 
-  // 기본 응답용 리뷰
+  // 응답용 리뷰
   resReview: {
     id: MOCK_CONSTANTS.REVIEW_ID,
     userId: MOCK_CONSTANTS.USER_ID,
@@ -81,34 +72,4 @@ export const MOCK_DATA = {
 
   // 사용자 데이터
   existingUser: baseUser,
-
-  // 상품 데이터
-  existingProduct: baseProduct,
-
-  // 유효하지 않은 별점 (0점)
-  invalidRatingZero: {
-    userId: MOCK_CONSTANTS.USER_ID,
-    productId: MOCK_CONSTANTS.PRODUCT_ID,
-    orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
-    rating: 0,
-    content: MOCK_CONSTANTS.CONTENT,
-  } as CreateReviewDto,
-
-  // 유효하지 않은 별점 (6점)
-  invalidRatingSix: {
-    userId: MOCK_CONSTANTS.USER_ID,
-    productId: MOCK_CONSTANTS.PRODUCT_ID,
-    orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
-    rating: 6,
-    content: MOCK_CONSTANTS.CONTENT,
-  } as CreateReviewDto,
-
-  // 너무 짧은 내용
-  shortContent: {
-    userId: MOCK_CONSTANTS.USER_ID,
-    productId: MOCK_CONSTANTS.PRODUCT_ID,
-    orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
-    rating: MOCK_CONSTANTS.RATING,
-    content: '짧음',
-  } as CreateReviewDto,
 };
