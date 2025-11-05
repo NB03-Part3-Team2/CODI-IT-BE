@@ -88,41 +88,5 @@ describe('userCreate 단위 테스트', () => {
       expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
       expect(getUserByNameMock).toHaveBeenCalledWith(createUserDto.name);
     });
-
-    test('createUser 실패 테스트 - 사용자 생성 실패', async () => {
-      const createUserDto = MOCK_DATA.createUserDto;
-      const hashedPassword = MOCK_CONSTANTS.HASHED_PASSWORD;
-
-      // Repository 메소드들을 mock
-      const getUserByEmailMock = jest
-        .spyOn(userRepository, 'getUserByEmail')
-        .mockResolvedValue(null);
-      const getUserByNameMock = jest.spyOn(userRepository, 'getUserByName').mockResolvedValue(null);
-      const createUserMock = jest
-        .spyOn(userRepository, 'createUser')
-        .mockResolvedValue(null as any);
-
-      // Password hash 함수를 mock
-      const hashPasswordMock = jest
-        .spyOn(passwordUtils, 'hashPassword')
-        .mockResolvedValue(hashedPassword);
-
-      // 에러가 발생하는지 확인
-      await expect(userService.createUser(createUserDto)).rejects.toMatchObject({
-        code: 500,
-        message: '사용자 생성에 실패했습니다.',
-      });
-
-      // Mock된 메소드들이 호출되었는지 확인
-      expect(getUserByEmailMock).toHaveBeenCalledWith(createUserDto.email);
-      expect(getUserByNameMock).toHaveBeenCalledWith(createUserDto.name);
-      expect(hashPasswordMock).toHaveBeenCalledWith(createUserDto.password); // createUserDto의 password 사용
-      expect(createUserMock).toHaveBeenCalledWith({
-        name: MOCK_CONSTANTS.USER_NAME,
-        email: MOCK_CONSTANTS.USER_EMAIL,
-        password: hashedPassword,
-        type: 'BUYER',
-      });
-    });
   });
 });

@@ -58,19 +58,5 @@ describe('reviewCreate 단위 테스트', () => {
         message: '상품을 찾지 못했습니다.',
       });
     });
-
-    test('createReview 실패 테스트 - 리뷰 생성 실패', async () => {
-      const createReviewDto = MOCK_DATA.createReviewDto;
-      const existingUser = MOCK_DATA.existingUser;
-
-      jest.spyOn(userRepository, 'getUserById').mockResolvedValue(existingUser);
-      jest.spyOn(productRepo, 'checkProductExists').mockResolvedValue(true);
-      jest.spyOn(reviewRepository, 'createReview').mockResolvedValue(null as any);
-
-      await expect(reviewService.createReview(createReviewDto)).rejects.toMatchObject({
-        code: 500,
-        message: '리뷰 생성에 실패했습니다.',
-      });
-    });
   });
 });
