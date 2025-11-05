@@ -21,7 +21,7 @@ class StoreValidator {
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await createStoreSchema.parseAsync(parsedBody);
+      req.validatedBody = await createStoreSchema.parseAsync(parsedBody);
       next();
     } catch (err) {
       forwardZodError(err, '스토어 등록', next);
@@ -39,13 +39,13 @@ class StoreValidator {
         content: req.body.content,
         image: req.body.image,
       };
-      const storeId = {
+      const parsedParams = {
         storeId: req.params.storeId,
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await updateStoreSchema.parseAsync(parsedBody);
-      await storeIdSchema.parseAsync(storeId);
+      req.validatedBody = await updateStoreSchema.parseAsync(parsedBody);
+      req.validatedParams = await storeIdSchema.parseAsync(parsedParams);
       next();
     } catch (err) {
       forwardZodError(err, '스토어 수정', next);
@@ -55,12 +55,12 @@ class StoreValidator {
   validateGetStore: RequestHandler = async (req, res, next) => {
     try {
       // 1. 검사할 속성 정의
-      const storeId = {
+      const parsedParams = {
         storeId: req.params.storeId,
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await storeIdSchema.parseAsync(storeId);
+      req.validatedParams = await storeIdSchema.parseAsync(parsedParams);
       next();
     } catch (err) {
       forwardZodError(err, '스토어 상세 조회', next);
@@ -76,7 +76,7 @@ class StoreValidator {
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await paginationSchema.parseAsync(parsedQuery);
+      req.validatedQuery = await paginationSchema.parseAsync(parsedQuery);
       next();
     } catch (err) {
       forwardZodError(err, '내 스토어 등록 상품 조회', next);
@@ -86,12 +86,12 @@ class StoreValidator {
   validateFavoriteStore: RequestHandler = async (req, res, next) => {
     try {
       // 1. 검사할 속성 정의
-      const storeId = {
+      const parsedParams = {
         storeId: req.params.storeId,
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      await storeIdSchema.parseAsync(storeId);
+      req.validatedParams = await storeIdSchema.parseAsync(parsedParams);
       next();
     } catch (err) {
       forwardZodError(err, '관심 스토어 등록/해제', next);

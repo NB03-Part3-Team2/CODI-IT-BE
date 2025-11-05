@@ -6,14 +6,7 @@ class StoreController {
   postStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
-    const createStoreDto: CreateStoreDto = {
-      name: req.body.name,
-      address: req.body.address,
-      detailAddress: req.body.detailAddress,
-      phoneNumber: req.body.phoneNumber,
-      content: req.body.content,
-      image: req.body.image ?? null, // 프론트가 어떻게 구현되있을지 모르므로 undefined나 null일 경우 null로 되도록
-    };
+    const createStoreDto: CreateStoreDto = { ...req.validatedBody };
 
     // 스토어 생성
     const store = await storeService.createStore(userId, createStoreDto); // service 함수 호출부 입니다.
@@ -25,15 +18,8 @@ class StoreController {
   patchStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
-    const storeId = req.params.storeId;
-    const updateStoreDto: UpdateStoreDto = {
-      name: req.body.name,
-      address: req.body.address,
-      detailAddress: req.body.detailAddress,
-      phoneNumber: req.body.phoneNumber,
-      content: req.body.content,
-      image: req.body.image,
-    };
+    const { storeId } = req.validatedParams;
+    const updateStoreDto: UpdateStoreDto = { ...req.validatedBody };
 
     // 스토어 업데이트
     const store = await storeService.updateStore(userId, storeId, updateStoreDto); // service 함수 호출부 입니다.
@@ -44,7 +30,7 @@ class StoreController {
 
   getStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
-    const storeId = req.params.storeId;
+    const { storeId } = req.validatedParams;
 
     // 스토어 상세 조회
     const store = await storeService.getStore(storeId); // service 함수 호출부 입니다.
@@ -56,10 +42,7 @@ class StoreController {
   getMyProductList = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
-    const getMyProductListDto: GetMyProductListDto = {
-      page: parseInt(req.query.page as string, 10) || 1,
-      pageSize: parseInt(req.query.pageSize as string, 10) || 10,
-    };
+    const getMyProductListDto: GetMyProductListDto = { ...req.validatedQuery };
     // 스토어 등록 상품 조회
     const store = await storeService.getMyProductList(userId, getMyProductListDto); // service 함수 호출부 입니다.
 
@@ -80,7 +63,7 @@ class StoreController {
   favoriteStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
-    const storeId = req.params.storeId;
+    const { storeId } = req.validatedParams;
     // 관심 스토어 등록
     const store = await storeService.favoriteStore(userId, storeId); // service 함수 호출부 입니다.
 
@@ -91,7 +74,7 @@ class StoreController {
   unfavoriteStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
-    const storeId = req.params.storeId;
+    const { storeId } = req.validatedParams;
     // 관심 스토어 해제
     const store = await storeService.unfavoriteStore(userId, storeId); // service 함수 호출부 입니다.
 
