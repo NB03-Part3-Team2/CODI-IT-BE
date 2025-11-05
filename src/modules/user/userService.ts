@@ -32,9 +32,6 @@ class UserService {
     }
     createUserDto.password = await hashPassword(createUserDto.password);
     const createdUser = await userRepository.createUser(createUserDto);
-    if (!createdUser) {
-      throw ApiError.internal('사용자 생성에 실패했습니다.');
-    }
     return this.sensitiveUserDataFilter(createdUser);
   };
 
