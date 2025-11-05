@@ -23,9 +23,6 @@ class ReviewService {
     //   throw ApiError.badRequest('주문 내역을 찾지 못했습니다.');
     // }
     const review = await reviewRepository.createReview(createReviewDto);
-    if (!review) {
-      throw ApiError.internal('리뷰 생성에 실패했습니다.');
-    }
     return review;
   };
 }
