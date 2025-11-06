@@ -9,6 +9,7 @@ import {
   UpdateProductRepoDto,
 } from '@modules/product/dto/productDTO';
 import { CATEGORY_NAMES } from '@modules/product/dto/productConstant';
+import { deleteImageFromS3 } from '@utils/s3DeleteUtils';
 
 class ProductService {
   createProduct = async (
@@ -146,6 +147,11 @@ class ProductService {
 
     // product 업데이트 레포지토리 메소드 호출
     const updatedProduct = await productRepository.update(productId, repoDto);
+
+    // 새 이미지가 제공되고 기존 이미지가 있는 경우, 기존 S3 이미지 삭제
+    if (repoDto.image && product.image) {
+      await deleteImageFromS3(product.image);
+    }
 
     // 반환값 수치 계산
     const { reviews, stocks, ...restOfProduct } = updatedProduct;
