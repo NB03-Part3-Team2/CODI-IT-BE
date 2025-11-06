@@ -15,7 +15,7 @@ productRouter
     authMiddleware,
     uploadSingleImage,
     productValidator.validateCreateProduct,
-    productController.postProduct,
+    productController.createProduct,
   );
 
 productRouter

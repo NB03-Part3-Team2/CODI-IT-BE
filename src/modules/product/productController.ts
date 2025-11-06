@@ -7,7 +7,7 @@ import {
 } from '@modules/product/dto/productDTO';
 
 class ProductController {
-  postProduct = async (req: Request, res: Response) => {
+  createProduct = async (req: Request, res: Response) => {
     // 1. DTO 생성 (validator + 인증 미들웨어로 검증한 데이터 사용)
     const userId = req.user.id;
     const createProductDto: CreateProductDto = { ...req.validatedBody };
