@@ -1,6 +1,11 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { createProductSchema, getProductListSchema } from '@modules/product/dto/productDTO';
+import {
+  createProductSchema,
+  getProductListSchema,
+  updateProductSchema,
+  productIdSchema,
+} from '@modules/product/dto/productDTO';
 
 class ProductValidator {
   validateCreateProduct: RequestHandler = async (req, res, next) => {
@@ -15,7 +20,7 @@ class ProductValidator {
         discountStartTime: req.body.discountStartTime,
         discountEndTime: req.body.discountEndTime,
         content: req.body.content,
-        stocks: JSON.parse(req.body.stocks), // stocks는 JSON 문자열로 올 것임
+        stocks: JSON.parse(req.body.stocks), // stocks는 JSON 배열로 올 것임
       };
 
       // 2. 스키마에 맞춰 유효성 검사
@@ -50,6 +55,34 @@ class ProductValidator {
       next();
     } catch (err) {
       forwardZodError(err, '상품 목록 조회', next);
+    }
+  };
+
+  validateUpdateProduct: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const parsedBody = {
+        name: req.body.name,
+        categoryName: req.body.categoryName ? req.body.categoryName.toUpperCase() : undefined,
+        price: req.body.price,
+        image: req.body.image,
+        discountRate: req.body.discountRate,
+        discountStartTime: req.body.discountStartTime,
+        discountEndTime: req.body.discountEndTime,
+        content: req.body.content,
+        stocks: JSON.parse(req.body.stocks), // stocks는 JSON 배열로 올 것임 + 필수값이라 무조건 들어옴
+      };
+      const parsedParams = {
+        id: req.params.productId,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      req.validatedBody = await updateProductSchema.parseAsync(parsedBody);
+      req.validatedParams = await productIdSchema.parseAsync(parsedParams);
+
+      next();
+    } catch (err) {
+      forwardZodError(err, '상품 수정', next);
     }
   };
 }
