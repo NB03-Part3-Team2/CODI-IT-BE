@@ -77,7 +77,7 @@ class ProductService {
     // 반환 형태에 맞게 가공
     const formattedProducts = products.map((product) => {
       // Prisma 쿼리 결과에서 필요한 속성들을 추출합니다。
-      const { store, ...restOfProduct } = product;
+      const { reviews, stocks, store, orderItems, category, content, ...restOfProduct } = product;
 
       const { reviewsCount, reviewsRating, sales, isSoldOut } = this._processProductStats(product);
 

@@ -37,7 +37,15 @@ describe('getProductList 메소드 테스트', () => {
         category: mockCategory,
         reviews: [mockReview],
         orderItems: [mockOrderItem],
-        stocks: [mockStock],
+        stocks: [
+          {
+            ...mockStock,
+            size: {
+              id: 1,
+              en: 'M',
+            },
+          },
+        ],
       },
     ];
 
