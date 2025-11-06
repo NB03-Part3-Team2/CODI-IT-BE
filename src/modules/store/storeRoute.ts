@@ -12,7 +12,7 @@ storeRouter
     authMiddleware,
     uploadSingleImage,
     storeValidator.validateCreateStore,
-    storeController.postStore,
+    storeController.createStore,
   );
 
 storeRouter
@@ -33,7 +33,7 @@ storeRouter
     authMiddleware,
     uploadSingleImage,
     storeValidator.validateUpdateStore,
-    storeController.patchStore,
+    storeController.updateStore,
   );
 
 export default storeRouter;
