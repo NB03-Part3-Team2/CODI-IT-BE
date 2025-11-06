@@ -28,7 +28,7 @@ class ProductRepository {
         data: stockData,
       });
 
-      return await tx.product.findUnique({
+      return await tx.product.findUniqueOrThrow({
         where: { id: product.id },
         include: {
           category: {

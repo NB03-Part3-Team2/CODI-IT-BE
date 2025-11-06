@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import productService from '@modules/product/productService';
-import { CreateProductDto, GetProductListDto, UpdateProductDto } from '@modules/product/dto/productDTO';
+import {
+  CreateProductDto,
+  GetProductListDto,
+  UpdateProductDto,
+} from '@modules/product/dto/productDTO';
 
 class ProductController {
   postProduct = async (req: Request, res: Response) => {

@@ -41,54 +41,15 @@ class ProductService {
       stocks: createProductDto.stocks,
     };
 
+    // product 생성 레포지토리 메소드 호출
     const product = await productRepository.create(store.id, productData);
 
-    if (!product) {
-      throw ApiError.internal('상품 생성에 실패했습니다.');
-    }
-
+    // 반환값 수치 계산
     const { reviews, stocks, ...restOfProduct } = product;
+    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
+      this._processProductStats(product);
 
-    // 리뷰 점수에 따른 분류 시작
-    const ratingCountsArray = [0, 0, 0, 0, 0];
-    // 리뷰 점수 총합
-    let sumScore = 0;
-    // 리뷰가 없으면 건너뛰기
-    if (reviews) {
-      for (const review of reviews) {
-        // 각 평점별로 인덱스에 맞게 값 넣어주기
-        ratingCountsArray[review.rating - 1]++;
-        // 총점에 더하기
-        sumScore += review.rating;
-      }
-    }
-    // 배열로 정렬된 값을 리스폰스 형태에 맞게 가공
-    const ratingCounts: { [key: string]: number } = {};
-    for (let i = 0; i < 5; i++) {
-      ratingCounts[`rate${i + 1}Length`] = ratingCountsArray[i];
-    }
-    ratingCounts['sumScore'] = sumScore;
-
-    // 리뷰 평균 점수 구하기
-    let reviewsRating = 0;
-    if (reviews && reviews.length > 0) {
-      reviewsRating = sumScore / reviews.length;
-    }
-
-    // stocks 필드 en을 name으로 변경
-    const transformedStocks = stocks.map((stock) => ({
-      id: stock.id,
-      quantity: stock.quantity,
-      size: {
-        id: stock.size.id,
-        name: stock.size.en,
-      },
-    }));
-
-    // isSoldOut 계산
-    const totalQuantity = stocks.reduce((sum, stock) => sum + stock.quantity, 0);
-    const isSoldOut = totalQuantity === 0; // 수량이 0이면 true 아니면 false
-
+    // 리스폰스 형식에 맞게 가공
     return {
       ...restOfProduct,
       storeName: store.name,
@@ -115,23 +76,9 @@ class ProductService {
     // 반환 형태에 맞게 가공
     const formattedProducts = products.map((product) => {
       // Prisma 쿼리 결과에서 필요한 속성들을 추출합니다。
-      const { reviews, stocks, store, orderItems, category, content, ...restOfProduct } = product;
+      const { store, ...restOfProduct } = product;
 
-      // 1. 리뷰 개수 계산: 해당 상품에 달린 리뷰의 총 개수
-      const reviewsCount = reviews.length;
-      // 2. 리뷰 평균 점수 계산: 리뷰가 있을 경우에만 계산하며, 없을 경우 0으로 설정
-      let reviewsRating = 0;
-      if (reviewsCount > 0) {
-        const sumScore = reviews.reduce((sum, review) => sum + review.rating, 0);
-        reviewsRating = sumScore / reviewsCount;
-      }
-
-      // 3. 판매량 계산: 해당 상품의 모든 주문 항목(orderItems)의 수량을 합산
-      const sales = orderItems.reduce((sum, item) => sum + item.quantity, 0);
-
-      // 4. 품절 여부 계산: 모든 재고(stocks)의 총 수량이 0이면 품절
-      const totalQuantity = stocks.reduce((sum, stock) => sum + stock.quantity, 0);
-      const isSoldOut = totalQuantity === 0;
+      const { reviewsCount, reviewsRating, sales, isSoldOut } = this._processProductStats(product);
 
       // 최종적으로 클라이언트에 반환될 상품 정보를 구성합니다。
       return {
@@ -200,14 +147,33 @@ class ProductService {
     // product 업데이트 레포지토리 메소드 호출
     const updatedProduct = await productRepository.update(productId, repoDto);
 
+    // 반환값 수치 계산
     const { reviews, stocks, ...restOfProduct } = updatedProduct;
+    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
+      this._processProductStats(updatedProduct);
 
-    // 리뷰 점수에 따른 분류 시작
-    const ratingCountsArray = [0, 0, 0, 0, 0];
-    // 리뷰 점수 총합
+    // 리스폰스 형식에 맞게 가공
+    return {
+      ...restOfProduct,
+      storeName: store.name,
+      stocks: transformedStocks,
+      reviewsRating,
+      reviews: ratingCounts,
+      isSoldOut,
+    };
+  };
+
+  // Repository에서 받은 값을 활용해서 필요한 값 계산하는 함수
+  private _processProductStats = (product: any) => {
+    const { reviews, stocks, orderItems } = product;
+
+    // 1. 리뷰 관련 수치 계산
+    // 리뷰 개수
+    const reviewsCount = reviews.length;
     let sumScore = 0;
-    // 리뷰가 없으면 건너뛰기
-    if (reviews) {
+    // 리뷰 평점별 개수
+    const ratingCountsArray = [0, 0, 0, 0, 0];
+    if (reviewsCount > 0) {
       for (const review of reviews) {
         // 각 평점별로 인덱스에 맞게 값 넣어주기
         ratingCountsArray[review.rating - 1]++;
@@ -215,6 +181,9 @@ class ProductService {
         sumScore += review.rating;
       }
     }
+    // 리뷰 평균 점수 계산: 리뷰가 있을 경우에만 계산하며, 없을 경우 0으로 설정
+    const reviewsRating = reviewsCount > 0 ? sumScore / reviewsCount : 0;
+
     // 배열로 정렬된 값을 리스폰스 형태에 맞게 가공
     const ratingCounts: { [key: string]: number } = {};
     for (let i = 0; i < 5; i++) {
@@ -222,14 +191,12 @@ class ProductService {
     }
     ratingCounts['sumScore'] = sumScore;
 
-    // 리뷰 평균 점수 구하기
-    let reviewsRating = 0;
-    if (reviews && reviews.length > 0) {
-      reviewsRating = sumScore / reviews.length;
-    }
-
+    // 2. 재고 관련 수치 계산
+    // isSoldOut 계산: 모든 재고(stocks)의 총 수량이 0이면 품절
+    const totalQuantity = stocks.reduce((sum: number, stock: any) => sum + stock.quantity, 0);
+    const isSoldOut = totalQuantity === 0;
     // stocks 필드 en을 name으로 변경
-    const transformedStocks = stocks.map((stock) => ({
+    const transformedStocks = stocks.map((stock: any) => ({
       id: stock.id,
       quantity: stock.quantity,
       size: {
@@ -238,17 +205,18 @@ class ProductService {
       },
     }));
 
-    // isSoldOut 계산
-    const totalQuantity = stocks.reduce((sum, stock) => sum + stock.quantity, 0);
-    const isSoldOut = totalQuantity === 0; // 수량이 0이면 true 아니면 false
+    // 3. 판매량 계산: 해당 상품의 모든 주문 항목(orderItems)의 수량을 합산
+    const sales = orderItems
+      ? orderItems.reduce((sum: number, item: any) => sum + item.quantity, 0)
+      : 0;
 
     return {
-      ...restOfProduct,
-      storeName: store.name,
-      stocks: transformedStocks,
+      reviewsCount,
       reviewsRating,
-      reviews: ratingCounts,
+      ratingCounts,
       isSoldOut,
+      transformedStocks,
+      sales,
     };
   };
 }
