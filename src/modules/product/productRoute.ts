@@ -15,11 +15,19 @@ productRouter
     authMiddleware,
     uploadSingleImage,
     productValidator.validateCreateProduct,
-    productController.postProduct,
+    productController.createProduct,
   );
 
 productRouter
   .route('/:productId/reviews')
   .post(authMiddleware, reviewValidator.validateCreateReview, reviewController.createReview);
 
+productRouter
+  .route('/:productId')
+  .patch(
+    authMiddleware,
+    uploadSingleImage,
+    productValidator.validateUpdateProduct,
+    productController.updateProduct,
+  );
 export default productRouter;

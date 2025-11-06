@@ -1,6 +1,11 @@
 import { prisma } from '@shared/prisma';
 import { Prisma } from '@prisma/client';
-import { StockDto, CreateProductRepoDto, GetProductListDto } from '@modules/product/dto/productDTO';
+import {
+  StockDto,
+  CreateProductRepoDto,
+  GetProductListDto,
+  UpdateProductRepoDto,
+} from '@modules/product/dto/productDTO';
 
 class ProductRepository {
   create = async (storeId: string, productData: CreateProductRepoDto) => {
@@ -23,7 +28,7 @@ class ProductRepository {
         data: stockData,
       });
 
-      return await tx.product.findUnique({
+      return await tx.product.findUniqueOrThrow({
         where: { id: product.id },
         include: {
           category: {
@@ -327,6 +332,63 @@ class ProductRepository {
         discountStartTime: true,
         discountEndTime: true,
       },
+    });
+  };
+
+  findById = async (productId: string) => {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+    });
+  };
+
+  update = async (productId: string, productData: UpdateProductRepoDto) => {
+    const { stocks, ...restProductData } = productData;
+
+    return await prisma.$transaction(async (tx) => {
+      await tx.product.update({
+        where: { id: productId },
+        data: restProductData,
+      });
+
+      await tx.stock.deleteMany({
+        where: { productId },
+      });
+
+      const stockData = stocks.map((stock: StockDto) => ({
+        ...stock,
+        productId: productId,
+      }));
+
+      await tx.stock.createMany({
+        data: stockData,
+      });
+
+      return await tx.product.findUniqueOrThrow({
+        where: { id: productId },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          stocks: {
+            select: {
+              id: true,
+              productId: true,
+              quantity: true,
+              size: {
+                select: {
+                  id: true,
+                  en: true,
+                },
+              },
+            },
+          },
+          inquiries: true,
+          reviews: true,
+        },
+      });
     });
   };
 }

@@ -3,7 +3,7 @@ import storeService from '@modules/store/storeService';
 import { CreateStoreDto, UpdateStoreDto, GetMyProductListDto } from '@modules/store/dto/storeDTO';
 
 class StoreController {
-  postStore = async (req: Request, res: Response) => {
+  createStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
     const createStoreDto: CreateStoreDto = { ...req.validatedBody };
@@ -15,7 +15,7 @@ class StoreController {
     res.status(201).json(store);
   };
 
-  patchStore = async (req: Request, res: Response) => {
+  updateStore = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
     const { storeId } = req.validatedParams;
