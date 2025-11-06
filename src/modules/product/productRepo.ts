@@ -300,6 +300,35 @@ class ProductRepository {
       where,
     });
   };
+
+  /**
+   * OrderService에서 사용하는 메소드입니다.
+   * 작성자: 박재성 (Order API 담당)
+   * - getStoreIdByProductId: 상품의 스토어 ID 조회
+   * - getProductPriceInfo: 상품 가격 및 할인 정보 조회
+   */
+
+  // 상품의 스토어 ID 조회
+  getStoreIdByProductId = async (productId: string) => {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { storeId: true },
+    });
+    return product?.storeId || null;
+  };
+
+  // 상품 가격 및 할인 정보 조회
+  getProductPriceInfo = async (productId: string) => {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        price: true,
+        discountRate: true,
+        discountStartTime: true,
+        discountEndTime: true,
+      },
+    });
+  };
 }
 
 export default new ProductRepository();

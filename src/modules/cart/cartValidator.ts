@@ -11,8 +11,8 @@ class CartValidator {
         sizes: req.body.sizes,
       };
 
-      // 2. 스키마에 맞춰 유효성 검사
-      await updateCartSchema.parseAsync(parsedBody);
+      // 2. 스키마에 맞춰 유효성 검사 후 validatedBody에 저장
+      req.validatedBody = await updateCartSchema.parseAsync(parsedBody);
       next();
     } catch (err) {
       forwardZodError(err, '장바구니 수정', next);
@@ -26,8 +26,8 @@ class CartValidator {
         cartItemId: req.params.cartItemId,
       };
 
-      // 2. 스키마에 맞춰 유효성 검사
-      await cartItemIdSchema.parseAsync(parsedParams);
+      // 2. 스키마에 맞춰 유효성 검사 후 validatedParams에 저장
+      req.validatedParams = await cartItemIdSchema.parseAsync(parsedParams);
       next();
     } catch (err) {
       forwardZodError(err, '장바구니 아이템 삭제', next);
