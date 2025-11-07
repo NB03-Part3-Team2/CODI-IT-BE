@@ -86,6 +86,21 @@ class UserRepository {
     });
     return favoriteStores;
   };
+
+  /**
+   * OrderService에서 사용하는 메소드입니다.
+   * 작성자: 박재성 (Order API 담당)
+   * - getUserPoints: 사용자 포인트 조회
+   */
+
+  // 사용자 포인트 조회
+  getUserPoints = async (userId: string) => {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { points: true },
+    });
+    return user?.points || 0;
+  };
 }
 
 export default new UserRepository();
