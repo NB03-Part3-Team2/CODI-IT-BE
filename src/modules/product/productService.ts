@@ -23,7 +23,7 @@ class ProductService {
 
     const { categoryName, price, discountRate, ...restOfDto } = createProductDto;
 
-    const category = await productRepository.findCategoryByName(categoryName);
+    const category = await productRepository.getCategoryByName(categoryName);
     if (!category) {
       throw ApiError.notFound('존재하지 않는 카테고리 입니다.');
     }
@@ -45,20 +45,8 @@ class ProductService {
     // product 생성 레포지토리 메소드 호출
     const product = await productRepository.create(store.id, productData);
 
-    // 반환값 수치 계산
-    const { reviews, stocks, ...restOfProduct } = product;
-    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
-      this._processProductStats(product);
-
-    // 리스폰스 형식에 맞게 가공
-    return {
-      ...restOfProduct,
-      storeName: store.name,
-      stocks: transformedStocks,
-      reviewsRating,
-      reviews: ratingCounts,
-      isSoldOut,
-    };
+    // 리스폰스 형태에 맞게 가공
+    return this._formatProductResponse(product, store.name);
   };
 
   getProductList = async (getProductListDto: GetProductListDto) => {
@@ -105,7 +93,7 @@ class ProductService {
     updateProductDto: UpdateProductDto,
   ): Promise<ProductResponseDto> => {
     // 상품을 찾을수 없는 경우 에러
-    const product = await productRepository.findById(productId);
+    const product = await productRepository.getById(productId);
     if (!product) {
       throw ApiError.notFound('상품을 찾을 수 없습니다.');
     }
@@ -125,7 +113,7 @@ class ProductService {
 
     // 수정하고자 하는 카테고리가 DB에 없는 이름일 경우 에러
     if (categoryName) {
-      const category = await productRepository.findCategoryByName(categoryName);
+      const category = await productRepository.getCategoryByName(categoryName);
       if (!category) {
         throw ApiError.notFound('존재하지 않는 카테고리 입니다.');
       }
@@ -153,20 +141,47 @@ class ProductService {
       await deleteImageFromS3(product.image);
     }
 
-    // 반환값 수치 계산
-    const { reviews, stocks, ...restOfProduct } = updatedProduct;
-    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
-      this._processProductStats(updatedProduct);
+    // 리스폰스 형태에 맞게 가공
+    return this._formatProductResponse(updatedProduct, store.name);
+  };
 
-    // 리스폰스 형식에 맞게 가공
-    return {
-      ...restOfProduct,
-      storeName: store.name,
-      stocks: transformedStocks,
-      reviewsRating,
-      reviews: ratingCounts,
-      isSoldOut,
-    };
+  getProduct = async (productId: string): Promise<ProductResponseDto> => {
+    // product 조회 레포지토리 메소드 호출
+    const product = await productRepository.getByIdWithRelations(productId);
+
+    // id로 받은 상품이 없을 경우 에러
+    if (!product) {
+      throw ApiError.notFound('상품을 찾을 수 없습니다.');
+    }
+
+    // 리스폰스 형태에 맞게 가공
+    return this._formatProductResponse(product, product.store.name);
+  };
+
+  deleteProduct = async (userId: string, productId: string) => {
+    // 삭제할 상품이 있는지 + 상품이 포함된 스토어의 권한 확인을 위해 먼저 조회
+    const product = await productRepository.getById(productId);
+    if (!product) {
+      throw ApiError.notFound('상품을 찾을 수 없습니다.');
+    }
+
+    // 삭제 권한이 있는지 조회를 위해 스토어 조회
+    const store = await storeRepository.getStoreIdByUserId(userId);
+    if (!store) {
+      throw ApiError.notFound('스토어를 찾을수 없습니다.');
+    }
+    // 상품이 유저의 스토어와 id가 같은지 권한 체크
+    if (product.storeId !== store.id) {
+      throw ApiError.forbidden('상품을 삭제할 권한이 없습니다.');
+    }
+
+    // product 삭제 레포지토리 메소드 호출
+    await productRepository.delete(productId);
+
+    // 기존에 S3에 업로드된 이미지 삭제
+    if (product.image) {
+      await deleteImageFromS3(product.image);
+    }
   };
 
   // Repository에서 받은 값을 활용해서 필요한 값 계산하는 함수
@@ -223,6 +238,23 @@ class ProductService {
       isSoldOut,
       transformedStocks,
       sales,
+    };
+  };
+
+  private _formatProductResponse = (product: any, storeName: string): ProductResponseDto => {
+    // 반환값 수치 계산
+    const { reviews, stocks, store, ...restOfProduct } = product;
+    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
+      this._processProductStats(product);
+
+    // 리스폰스 형식에 맞게 가공
+    return {
+      ...restOfProduct,
+      storeName: storeName,
+      stocks: transformedStocks,
+      reviewsRating,
+      reviews: ratingCounts,
+      isSoldOut,
     };
   };
 }

@@ -57,7 +57,7 @@ class ProductRepository {
     });
   };
 
-  findCategoryByName = async (name: string) => {
+  getCategoryByName = async (name: string) => {
     return await prisma.category.findUnique({
       where: {
         name,
@@ -306,9 +306,69 @@ class ProductRepository {
     });
   };
 
-  findById = async (productId: string) => {
+  /**
+   * OrderService에서 사용하는 메소드입니다.
+   * 작성자: 박재성 (Order API 담당)
+   * - getStoreIdByProductId: 상품의 스토어 ID 조회
+   * - getProductPriceInfo: 상품 가격 및 할인 정보 조회
+   */
+
+  // 상품의 스토어 ID 조회
+  getStoreIdByProductId = async (productId: string) => {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { storeId: true },
+    });
+    return product?.storeId || null;
+  };
+
+  // 상품 가격 및 할인 정보 조회
+  getProductPriceInfo = async (productId: string) => {
     return await prisma.product.findUnique({
       where: { id: productId },
+      select: {
+        price: true,
+        discountRate: true,
+        discountStartTime: true,
+        discountEndTime: true,
+      },
+    });
+  };
+
+  getById = async (productId: string) => {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+    });
+  };
+
+  getByIdWithRelations = async (productId: string) => {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        stocks: {
+          select: {
+            id: true,
+            productId: true,
+            quantity: true,
+            size: {
+              select: {
+                id: true,
+                en: true,
+              },
+            },
+          },
+        },
+        inquiries: true,
+        reviews: true,
+        store: true,
+        orderItems: true,
+      },
     });
   };
 
@@ -360,6 +420,12 @@ class ProductRepository {
           reviews: true,
         },
       });
+    });
+  };
+
+  delete = async (productId: string) => {
+    await prisma.product.delete({
+      where: { id: productId },
     });
   };
 }

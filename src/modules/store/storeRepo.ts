@@ -148,7 +148,7 @@ class StoreRepository {
         quantity: true,
       },
       where: {
-        order: {
+        product: {
           storeId: storeId,
         },
       },

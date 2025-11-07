@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import cartService from '@modules/cart/cartService';
+import { UpdateCartDto } from '@modules/cart/dto/cartDTO';
 
 class CartController {
   /**
@@ -18,7 +19,7 @@ class CartController {
    * @throws {ApiError} 500 - 서버 내부 오류
    */
   postCart = async (req: Request, res: Response) => {
-    // 인증 미들웨어에서 사용자 ID 가져오기
+    // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
 
     // 장바구니 생성 또는 조회
@@ -44,7 +45,7 @@ class CartController {
    * @throws {ApiError} 500 - 서버 내부 오류
    */
   getCart = async (req: Request, res: Response) => {
-    // 인증 미들웨어에서 사용자 ID 가져오기
+    // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
 
     // 장바구니 조회
@@ -72,11 +73,12 @@ class CartController {
    * @throws {ApiError} 500 - 서버 내부 오류
    */
   updateCart = async (req: Request, res: Response) => {
-    // 인증 미들웨어에서 사용자 ID 가져오기
+    // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
+    const updateCartDto: UpdateCartDto = { ...req.validatedBody };
 
-    // 장바구니 수정 (유효성 검사는 미들웨어에서 완료됨)
-    const updatedItems = await cartService.updateCart(userId, req.body);
+    // 장바구니 수정
+    const updatedItems = await cartService.updateCart(userId, updateCartDto);
 
     // response 반환
     res.status(200).json(updatedItems);
@@ -99,16 +101,14 @@ class CartController {
    * @throws {ApiError} 500 - 서버 내부 오류
    */
   deleteCartItem = async (req: Request, res: Response) => {
-    // 인증 미들웨어에서 사용자 ID 가져오기
+    // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
-
-    // 경로 파라미터에서 cartItemId 가져오기 (유효성 검사는 미들웨어에서 완료됨)
-    const { cartItemId } = req.params;
+    const { cartItemId } = req.validatedParams;
 
     // 장바구니 아이템 삭제
     await cartService.deleteCartItem(userId, cartItemId);
 
-    // 204 No Content 응답
+    // response 반환
     res.status(204).send();
   };
 }
