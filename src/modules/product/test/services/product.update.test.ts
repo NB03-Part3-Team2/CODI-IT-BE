@@ -57,7 +57,7 @@ describe('updateProduct 메소드 테스트', () => {
     };
 
     // 2. 레포지토리 및 유틸 함수 모킹
-    const findByIdMock = jest.spyOn(productRepository, 'findById').mockResolvedValue(mockProduct);
+    const getByIdMock = jest.spyOn(productRepository, 'getById').mockResolvedValue(mockProduct);
     const getStoreIdMock = jest
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockStore);
@@ -72,7 +72,7 @@ describe('updateProduct 메소드 테스트', () => {
     const result = await productService.updateProduct(mockUser.id, mockProduct.id, updateDto);
 
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
-    expect(findByIdMock).toHaveBeenCalledWith(mockProduct.id);
+    expect(getByIdMock).toHaveBeenCalledWith(mockProduct.id);
     expect(getStoreIdMock).toHaveBeenCalledWith(mockUser.id);
     expect(updateMock).toHaveBeenCalled();
     expect(deleteImageMock).toHaveBeenCalledWith(mockProduct.image);

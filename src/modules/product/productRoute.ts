@@ -24,10 +24,12 @@ productRouter
 
 productRouter
   .route('/:productId')
+  .get(productValidator.validateGetProduct, productController.getProduct)
   .patch(
     authMiddleware,
     uploadSingleImage,
     productValidator.validateUpdateProduct,
     productController.updateProduct,
-  );
+  )
+  .delete(authMiddleware, productValidator.validateDeleteProduct, productController.deleteProduct);
 export default productRouter;

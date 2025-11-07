@@ -70,7 +70,7 @@ describe('createProduct 메소드 테스트', () => {
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockStore);
     const findCategoryMock = jest
-      .spyOn(productRepository, 'findCategoryByName')
+      .spyOn(productRepository, 'getCategoryByName')
       .mockResolvedValue(mockCategory);
     const createMock = jest.spyOn(productRepository, 'create').mockResolvedValue(mockProduct);
 
