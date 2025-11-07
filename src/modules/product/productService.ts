@@ -45,20 +45,8 @@ class ProductService {
     // product 생성 레포지토리 메소드 호출
     const product = await productRepository.create(store.id, productData);
 
-    // 반환값 수치 계산
-    const { reviews, stocks, ...restOfProduct } = product;
-    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
-      this._processProductStats(product);
-
-    // 리스폰스 형식에 맞게 가공
-    return {
-      ...restOfProduct,
-      storeName: store.name,
-      stocks: transformedStocks,
-      reviewsRating,
-      reviews: ratingCounts,
-      isSoldOut,
-    };
+    // 리스폰스 형태에 맞게 가공
+    return this._formatProductResponse(product, store.name);
   };
 
   getProductList = async (getProductListDto: GetProductListDto) => {
@@ -153,20 +141,8 @@ class ProductService {
       await deleteImageFromS3(product.image);
     }
 
-    // 반환값 수치 계산
-    const { reviews, stocks, ...restOfProduct } = updatedProduct;
-    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
-      this._processProductStats(updatedProduct);
-
-    // 리스폰스 형식에 맞게 가공
-    return {
-      ...restOfProduct,
-      storeName: store.name,
-      stocks: transformedStocks,
-      reviewsRating,
-      reviews: ratingCounts,
-      isSoldOut,
-    };
+    // 리스폰스 형태에 맞게 가공
+    return this._formatProductResponse(updatedProduct, store.name);
   };
 
   getProduct = async (productId: string): Promise<ProductResponseDto> => {
@@ -178,20 +154,8 @@ class ProductService {
       throw ApiError.notFound('상품을 찾을 수 없습니다.');
     }
 
-    // 반환값 수치 계산
-    const { reviews, stocks, store, ...restOfProduct } = product;
-    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
-      this._processProductStats(product);
-
-    // 리스폰스 형식에 맞게 가공
-    return {
-      ...restOfProduct,
-      storeName: store.name,
-      stocks: transformedStocks,
-      reviewsRating,
-      reviews: ratingCounts,
-      isSoldOut,
-    };
+    // 리스폰스 형태에 맞게 가공
+    return this._formatProductResponse(product, product.store.name);
   };
 
   deleteProduct = async (userId: string, productId: string) => {
@@ -274,6 +238,23 @@ class ProductService {
       isSoldOut,
       transformedStocks,
       sales,
+    };
+  };
+
+  private _formatProductResponse = (product: any, storeName: string): ProductResponseDto => {
+    // 반환값 수치 계산
+    const { reviews, stocks, store, ...restOfProduct } = product;
+    const { reviewsRating, ratingCounts, isSoldOut, transformedStocks } =
+      this._processProductStats(product);
+
+    // 리스폰스 형식에 맞게 가공
+    return {
+      ...restOfProduct,
+      storeName: storeName,
+      stocks: transformedStocks,
+      reviewsRating,
+      reviews: ratingCounts,
+      isSoldOut,
     };
   };
 }
