@@ -14,23 +14,7 @@ class OrderService {
       throw ApiError.badRequest('주문 아이템이 없습니다.');
     }
 
-    // 2. 모든 상품이 같은 스토어에 속하는지 확인
-    const storeIds = new Set<string>();
-    for (const item of orderItems) {
-      const storeId = await productRepository.getStoreIdByProductId(item.productId);
-      if (!storeId) {
-        throw ApiError.notFound(`상품 ID ${item.productId}를 찾을 수 없습니다.`);
-      }
-      storeIds.add(storeId);
-    }
-
-    if (storeIds.size > 1) {
-      throw ApiError.badRequest('주문은 같은 스토어의 상품들만 포함할 수 있습니다.');
-    }
-
-    const storeId = Array.from(storeIds)[0];
-
-    // 3. 재고 확인 및 가격 계산
+    // 2. 재고 확인 및 가격 계산
     let subtotal = 0;
     let totalQuantity = 0;
     const orderItemsWithPrice = [];
@@ -80,13 +64,12 @@ class OrderService {
       }
     }
 
-    // 5. 최종 결제 금액 계산
+    // 3. 최종 결제 금액 계산
     const paymentPrice = subtotal - usePoint;
 
-    // 6. 주문 데이터 준비
+    // 4. 주문 데이터 준비
     const orderData = {
       userId,
-      storeId,
       name,
       address,
       phoneNumber: phone,
@@ -95,7 +78,7 @@ class OrderService {
       usePoint,
     };
 
-    // 7. 주문 생성 (트랜잭션 처리)
+    // 5. 주문 생성 (트랜잭션 처리)
     const createdOrder = await orderRepository.createOrder(
       orderData,
       orderItemsWithPrice,
@@ -106,11 +89,10 @@ class OrderService {
       throw ApiError.internal('주문 생성에 실패했습니다.');
     }
 
-    // 8. 응답 DTO로 변환
+    // 6. 응답 DTO로 변환
     return {
       id: createdOrder.id,
       userId: createdOrder.userId,
-      storeId: createdOrder.storeId,
       name: createdOrder.name,
       address: createdOrder.address,
       phoneNumber: createdOrder.phoneNumber,

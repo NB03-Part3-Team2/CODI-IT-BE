@@ -6,7 +6,6 @@ import { CreateOrderData, CreateOrderItemData } from '@modules/order/dto/orderDT
 const selectOrderWithDetailsDB = {
   id: true,
   userId: true,
-  storeId: true,
   name: true,
   address: true,
   phoneNumber: true,

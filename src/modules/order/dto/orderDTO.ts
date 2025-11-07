@@ -28,7 +28,6 @@ export type OrderItemRequestDto = z.infer<typeof orderItemRequestSchema>;
 export interface CreateOrderResponseDto {
   id: string;
   userId: string;
-  storeId: string;
   name: string;
   address: string;
   phoneNumber: string;
@@ -81,7 +80,6 @@ export interface PaymentResponseDto {
 // Repository 레이어에서 사용하는 주문 생성 데이터 타입
 export interface CreateOrderData {
   userId: string;
-  storeId: string;
   name: string;
   address: string;
   phoneNumber: string;

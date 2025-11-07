@@ -43,10 +43,6 @@ describe('createOrder 메소드 테스트', () => {
     const mockCreatedOrder = createMockOrder(testDate);
 
     // 2. 레포지토리 함수 모킹
-    const getStoreIdMock = jest
-      .spyOn(productRepository, 'getStoreIdByProductId')
-      .mockResolvedValue(TEST_STORE_ID);
-
     const getProductPriceInfoMock = jest
       .spyOn(productRepository, 'getProductPriceInfo')
       .mockResolvedValue(mockProductPriceInfo);
@@ -61,7 +57,6 @@ describe('createOrder 메소드 테스트', () => {
     const result = await orderService.createOrder(userId, orderData);
 
     // 4. 모킹된 메소드가 올바른 인자와 함께 호출되었는지 확인
-    expect(getStoreIdMock).toHaveBeenCalledWith(TEST_PRODUCT_ID);
     expect(getProductPriceInfoMock).toHaveBeenCalledWith(TEST_PRODUCT_ID);
     expect(getUserPointsMock).not.toHaveBeenCalled(); // usePoint가 0이므로 호출되지 않음
     expect(createOrderMock).toHaveBeenCalled();
@@ -69,7 +64,6 @@ describe('createOrder 메소드 테스트', () => {
     // 5. 서비스 메소드가 올바른 결과를 반환하는지 확인
     expect(result.id).toBe(mockCreatedOrder.id);
     expect(result.userId).toBe(userId);
-    expect(result.storeId).toBe(TEST_STORE_ID);
     expect(result.subtotal).toBe(20000); // 10000 * 2
     expect(result.totalQuantity).toBe(2);
   });
@@ -113,7 +107,6 @@ describe('createOrder 메소드 테스트', () => {
     });
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(TEST_STORE_ID);
     jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(mockProductPriceInfo);
     jest.spyOn(orderRepository, 'createOrder').mockResolvedValue(mockCreatedOrder);
 
@@ -151,7 +144,6 @@ describe('createOrder 메소드 테스트', () => {
     });
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(TEST_STORE_ID);
     jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(mockProductPriceInfo);
     jest.spyOn(userRepository, 'getUserPoints').mockResolvedValue(5000); // 보유 포인트 5000
     jest.spyOn(orderRepository, 'createOrder').mockResolvedValue(mockCreatedOrder);
@@ -202,7 +194,7 @@ describe('createOrder 메소드 테스트', () => {
     };
 
     // 2. 레포지토리 함수 모킹 (상품을 찾을 수 없음)
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(null);
+    jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(null);
 
     // 3. 서비스 함수 실행 및 에러 확인
     await expect(orderService.createOrder(userId, orderData)).rejects.toThrow(ApiError);
@@ -211,7 +203,7 @@ describe('createOrder 메소드 테스트', () => {
     );
   });
 
-  test('실패 - 다른 스토어의 상품들로 주문 생성', async () => {
+  test('성공 - 여러 스토어의 상품들로 주문 생성', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
     const userId = TEST_USER_ID;
 
@@ -234,19 +226,91 @@ describe('createOrder 메소드 테스트', () => {
       usePoint: 0,
     };
 
-    // 2. 레포지토리 함수 모킹 (다른 스토어의 상품들)
-    const getStoreIdMock = jest.spyOn(productRepository, 'getStoreIdByProductId');
-    getStoreIdMock.mockResolvedValueOnce('store-1').mockResolvedValueOnce('store-2');
+    // 2. 레포지토리 함수 모킹
+    jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue({
+      price: 10000,
+      discountRate: 0,
+      discountStartTime: null,
+      discountEndTime: null,
+    });
 
-    // 3. 서비스 함수 실행 및 에러 확인
-    try {
-      await orderService.createOrder(userId, orderData);
-      // 에러가 발생하지 않으면 테스트 실패
-      expect(true).toBe(false);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ApiError);
-      expect((error as ApiError).message).toBe('주문은 같은 스토어의 상품들만 포함할 수 있습니다.');
-    }
+    jest.spyOn(orderRepository, 'createOrder').mockResolvedValue({
+      id: 'order-id',
+      userId,
+      name: '홍길동',
+      address: '서울시 강남구 테헤란로 123',
+      phoneNumber: '010-1234-5678',
+      subtotal: 20000,
+      totalQuantity: 2,
+      usePoint: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      items: [
+        {
+          id: 'order-item-1',
+          orderId: 'order-id',
+          productId: 'product-1',
+          sizeId: 1,
+          price: 10000,
+          quantity: 1,
+          isReviewed: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          product: {
+            id: 'product-1',
+            name: '상품 1',
+            image: null,
+          },
+          size: {
+            id: 1,
+            en: 'S',
+            ko: 'S',
+          },
+        },
+        {
+          id: 'order-item-2',
+          orderId: 'order-id',
+          productId: 'product-2',
+          sizeId: 2,
+          price: 10000,
+          quantity: 1,
+          isReviewed: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          product: {
+            id: 'product-2',
+            name: '상품 2',
+            image: null,
+          },
+          size: {
+            id: 2,
+            en: 'M',
+            ko: 'M',
+          },
+        },
+      ],
+      payments: [
+        {
+          id: 'payment-id',
+          orderId: 'order-id',
+          price: 20000,
+          status: 'COMPLETED',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+    });
+
+    // 3. 서비스 함수 실행
+    const result = await orderService.createOrder(userId, orderData);
+
+    // 4. 결과 검증
+    expect(result).toBeDefined();
+    expect(result.id).toBe('order-id');
+    expect(result.userId).toBe(userId);
+    expect(result.subtotal).toBe(20000);
+    expect(result.totalQuantity).toBe(2);
+    expect(result.orderItems).toHaveLength(2);
   });
 
   test('실패 - 보유 포인트보다 많은 포인트 사용', async () => {
@@ -270,7 +334,6 @@ describe('createOrder 메소드 테스트', () => {
     const mockProductPriceInfo = createMockProductPriceInfo();
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(TEST_STORE_ID);
     jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(mockProductPriceInfo);
     jest.spyOn(userRepository, 'getUserPoints').mockResolvedValue(5000); // 보유 포인트 5000
 
@@ -302,7 +365,6 @@ describe('createOrder 메소드 테스트', () => {
     const mockProductPriceInfo = createMockProductPriceInfo();
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(TEST_STORE_ID);
     jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(mockProductPriceInfo);
     jest.spyOn(userRepository, 'getUserPoints').mockResolvedValue(30000); // 보유 포인트는 충분함
 
@@ -334,7 +396,6 @@ describe('createOrder 메소드 테스트', () => {
     const mockProductPriceInfo = createMockProductPriceInfo();
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(TEST_STORE_ID);
     jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(mockProductPriceInfo);
 
     // createOrder가 트랜잭션 내에서 재고 부족 에러를 throw
@@ -372,7 +433,6 @@ describe('createOrder 메소드 테스트', () => {
     const mockProductPriceInfo = createMockProductPriceInfo();
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(productRepository, 'getStoreIdByProductId').mockResolvedValue(TEST_STORE_ID);
     jest.spyOn(productRepository, 'getProductPriceInfo').mockResolvedValue(mockProductPriceInfo);
 
     // createOrder가 트랜잭션 내에서 재고를 찾을 수 없음 에러를 throw

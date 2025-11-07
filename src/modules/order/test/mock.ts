@@ -137,7 +137,6 @@ export const createMockPayment = (testDate: Date, override?: Partial<MockPayment
 export interface MockOrder {
   id: string;
   userId: string;
-  storeId: string;
   name: string;
   address: string;
   phoneNumber: string;
@@ -153,7 +152,6 @@ export interface MockOrder {
 export const createMockOrder = (testDate: Date, override?: Partial<MockOrder>): MockOrder => ({
   id: TEST_ORDER_ID,
   userId: TEST_USER_ID,
-  storeId: TEST_STORE_ID,
   name: '홍길동',
   address: '서울시 강남구 테헤란로 123',
   phoneNumber: '010-1234-5678',
