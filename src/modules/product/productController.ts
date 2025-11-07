@@ -39,6 +39,27 @@ class ProductController {
 
     res.status(200).json(product);
   };
+
+  getProduct = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const { id: productId } = req.validatedParams;
+
+    // 2. 상품 조회
+    const product = await productService.getProduct(productId);
+
+    res.status(200).json(product);
+  };
+
+  deleteProduct = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const userId = req.user.id;
+    const { id: productId } = req.validatedParams;
+
+    // 2. 상품 삭제
+    await productService.deleteProduct(userId, productId);
+
+    res.status(204).send();
+  };
 }
 
 export default new ProductController();

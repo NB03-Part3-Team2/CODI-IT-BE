@@ -57,7 +57,7 @@ class ProductRepository {
     });
   };
 
-  findCategoryByName = async (name: string) => {
+  getCategoryByName = async (name: string) => {
     return await prisma.category.findUnique({
       where: {
         name,
@@ -306,9 +306,40 @@ class ProductRepository {
     });
   };
 
-  findById = async (productId: string) => {
+  getById = async (productId: string) => {
     return await prisma.product.findUnique({
       where: { id: productId },
+    });
+  };
+
+  getByIdWithRelations = async (productId: string) => {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        stocks: {
+          select: {
+            id: true,
+            productId: true,
+            quantity: true,
+            size: {
+              select: {
+                id: true,
+                en: true,
+              },
+            },
+          },
+        },
+        inquiries: true,
+        reviews: true,
+        store: true,
+        orderItems: true,
+      },
     });
   };
 
@@ -360,6 +391,12 @@ class ProductRepository {
           reviews: true,
         },
       });
+    });
+  };
+
+  delete = async (productId: string) => {
+    await prisma.product.delete({
+      where: { id: productId },
     });
   };
 }
