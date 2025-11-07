@@ -11,6 +11,16 @@ export type CreateReviewDto = z.infer<typeof createReviewSchema> & {
   userId: string;
 };
 
+export const updateReviewSchema = createReviewSchema
+  .omit({ productId: true, orderItemId: true })
+  .extend({
+    reviewId: z.cuid('유효한 리뷰 ID 형식이어야 합니다.'),
+  });
+
+export type UpdateReviewDto = z.infer<typeof updateReviewSchema> & {
+  userId: string;
+};
+
 export type ResReviewDto = {
   id: string;
   userId: string;

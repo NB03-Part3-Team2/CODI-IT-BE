@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { createReviewSchema } from '@modules/review/dto/reviewDTO';
+import { createReviewSchema, updateReviewSchema } from '@modules/review/dto/reviewDTO';
 
 class ReviewValidator {
   validateCreateReview: RequestHandler = async (req, res, next) => {
@@ -15,6 +15,20 @@ class ReviewValidator {
       next();
     } catch (err) {
       forwardZodError(err, '리뷰 생성', next);
+    }
+  };
+
+  validateUpdateReview: RequestHandler = async (req, res, next) => {
+    try {
+      const parsedBody = {
+        rating: req.body.rating,
+        content: req.body.content,
+        reviewId: req.params.reviewId,
+      };
+      req.validatedBody = await updateReviewSchema.parseAsync(parsedBody);
+      next();
+    } catch (err) {
+      forwardZodError(err, '리뷰 수정', next);
     }
   };
 }

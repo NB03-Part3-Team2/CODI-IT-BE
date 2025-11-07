@@ -1,7 +1,7 @@
 import reviewRepository from '@modules/review/reviewRepo';
 import userRepository from '@modules/user/userRepo';
 import productRepo from '@modules/product/productRepo';
-import { CreateReviewDto, ResReviewDto } from '@modules/review/dto/reviewDTO';
+import { CreateReviewDto, ResReviewDto, UpdateReviewDto } from '@modules/review/dto/reviewDTO';
 import { ApiError } from '@errors/ApiError';
 
 class ReviewService {
@@ -23,6 +23,27 @@ class ReviewService {
     //   throw ApiError.badRequest('주문 내역을 찾지 못했습니다.');
     // }
     const review = await reviewRepository.createReview(createReviewDto);
+    return review;
+  };
+
+  updateReview = async (updateReviewDto: UpdateReviewDto): Promise<ResReviewDto> => {
+    const [existingUser, existingReview] = await Promise.all([
+      userRepository.getUserById(updateReviewDto.userId),
+      reviewRepository.getReviewById(updateReviewDto.reviewId),
+    ]);
+
+    if (!existingUser) {
+      throw ApiError.badRequest('사용자를 찾지 못했습니다.');
+    }
+    if (!existingReview) {
+      throw ApiError.badRequest('리뷰를 찾지 못했습니다.');
+    }
+
+    if (existingReview.userId !== updateReviewDto.userId) {
+      throw ApiError.unauthorized('본인의 리뷰만 수정할 수 있습니다.');
+    }
+
+    const review = await reviewRepository.updateReview(updateReviewDto);
     return review;
   };
 }
