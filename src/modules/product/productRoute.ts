@@ -3,6 +3,8 @@ import productController from '@modules/product/productController';
 import productValidator from '@modules/product/productValidator';
 import reviewController from '@modules/review/reviewController';
 import reviewValidator from '@modules/review/reviewValidator';
+import inquiryController from '@modules/inquiry/inquiryController';
+import inquiryValidator from '@modules/inquiry/inquiryValidator';
 import { authMiddleware } from '@middlewares/authMiddleware';
 import { uploadSingleImage } from '@middlewares/s3Middleware';
 
@@ -21,6 +23,11 @@ productRouter
 productRouter
   .route('/:productId/reviews')
   .post(authMiddleware, reviewValidator.validateCreateReview, reviewController.createReview);
+
+productRouter
+  .route('/:productId/inquiries')
+  .get(inquiryValidator.validateGetInquiryList, inquiryController.getInquiryList)
+  .post(authMiddleware, inquiryValidator.validateCreateInquiry, inquiryController.createInquiry);
 
 productRouter
   .route('/:productId')
