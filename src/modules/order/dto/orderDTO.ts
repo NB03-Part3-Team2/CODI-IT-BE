@@ -25,6 +25,11 @@ export const getOrdersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
 });
 
+// 주문 취소 파라미터 스키마
+export const deleteOrderParamsSchema = z.object({
+  orderId: idChecker,
+});
+
 // 주문 생성 요청 DTO
 export type CreateOrderDto = z.infer<typeof createOrderSchema>;
 
@@ -33,6 +38,9 @@ export type OrderItemRequestDto = z.infer<typeof orderItemRequestSchema>;
 
 // 주문 목록 조회 쿼리 DTO
 export type GetOrdersQueryDto = z.infer<typeof getOrdersQuerySchema>;
+
+// 주문 취소 파라미터 DTO
+export type DeleteOrderParamsDto = z.infer<typeof deleteOrderParamsSchema>;
 
 // 사이즈 정보 DTO
 export interface SizeDto {
