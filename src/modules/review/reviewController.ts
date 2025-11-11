@@ -7,6 +7,7 @@ class ReviewController {
     const userId = req.user.id;
     const createReviewDto: CreateReviewDto = {
       ...req.validatedBody,
+      orderItemId: req.validatedParams.orderItemId,
       userId,
     };
     const review = await reviewService.createReview(createReviewDto);
@@ -17,6 +18,7 @@ class ReviewController {
     const userId = req.user.id;
     const updateReviewDto: UpdateReviewDto = {
       ...req.validatedBody,
+      reviewId: req.validatedParams.reviewId,
       userId,
     };
     const review = await reviewService.updateReview(updateReviewDto);
