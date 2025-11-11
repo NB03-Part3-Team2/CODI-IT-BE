@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import orderService from '@modules/order/orderService';
-import { CreateOrderDto } from '@modules/order/dto/orderDTO';
+import { CreateOrderDto, GetOrdersQueryDto } from '@modules/order/dto/orderDTO';
 
 class OrderController {
   /**
@@ -30,6 +30,31 @@ class OrderController {
 
     // response 반환
     res.status(201).json(order);
+  };
+
+  /**
+   * 로그인한 사용자의 주문 목록을 조회합니다.
+   *
+   * 페이지네이션을 지원하며, 주문 상태로 필터링할 수 있습니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns 주문 목록 및 페이지네이션 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 401 - 인증되지 않은 사용자
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+  getOrders = async (req: Request, res: Response) => {
+    // 전달할 파라미터 및 Dto 정의
+    const userId = req.user.id;
+    const query: GetOrdersQueryDto = { ...req.validatedQuery };
+
+    // 주문 목록 조회
+    const orders = await orderService.getOrders(userId, query);
+
+    // response 반환
+    res.status(200).json(orders);
   };
 }
 

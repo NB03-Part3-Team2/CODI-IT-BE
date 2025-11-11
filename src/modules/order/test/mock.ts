@@ -164,3 +164,164 @@ export const createMockOrder = (testDate: Date, override?: Partial<MockOrder>): 
   payments: [createMockPayment(testDate)],
   ...override,
 });
+
+/**
+ * Store Mock 데이터 (주문 목록용)
+ */
+export interface MockStore {
+  id: string;
+  userId: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  content: string;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const createMockStore = (testDate: Date, override?: Partial<MockStore>): MockStore => ({
+  id: TEST_STORE_ID,
+  userId: TEST_USER_ID,
+  name: '테스트 스토어',
+  address: '서울시 강남구',
+  phoneNumber: '02-1234-5678',
+  content: '테스트 스토어 설명',
+  image: 'https://example.com/store.jpg',
+  createdAt: testDate,
+  updatedAt: testDate,
+  ...override,
+});
+
+/**
+ * Stock Mock 데이터 (주문 목록용)
+ */
+export interface MockStockInOrder {
+  id: string;
+  productId: string;
+  sizeId: number;
+  quantity: number;
+  size: {
+    id: number;
+    en: string;
+    ko: string;
+  };
+}
+
+export const createMockStockInOrder = (override?: Partial<MockStockInOrder>): MockStockInOrder => ({
+  id: 'stock-1',
+  productId: TEST_PRODUCT_ID,
+  sizeId: 1,
+  quantity: 100,
+  size: {
+    id: 1,
+    en: 'M',
+    ko: '중',
+  },
+  ...override,
+});
+
+/**
+ * Product Mock 데이터 (주문 목록용 - 상세 버전)
+ */
+export interface MockProductInOrderList {
+  id: string;
+  storeId: string;
+  name: string;
+  price: number;
+  image: string | null;
+  discountRate: number;
+  discountStartTime: Date | null;
+  discountEndTime: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  store: MockStore;
+  stocks: MockStockInOrder[];
+}
+
+export const createMockProductInOrderList = (
+  testDate: Date,
+  override?: Partial<MockProductInOrderList>,
+): MockProductInOrderList => ({
+  id: TEST_PRODUCT_ID,
+  storeId: TEST_STORE_ID,
+  name: '테스트 상품',
+  price: 10000,
+  image: 'https://example.com/product.jpg',
+  discountRate: 0,
+  discountStartTime: null,
+  discountEndTime: null,
+  createdAt: testDate,
+  updatedAt: testDate,
+  store: createMockStore(testDate),
+  stocks: [createMockStockInOrder()],
+  ...override,
+});
+
+/**
+ * OrderItem Mock 데이터 (주문 목록용)
+ */
+export interface MockOrderItemInList {
+  id: string;
+  price: number;
+  quantity: number;
+  productId: string;
+  isReviewed: boolean;
+  product: MockProductInOrderList;
+  size: {
+    id: number;
+    en: string;
+    ko: string;
+  };
+}
+
+export const createMockOrderItemInList = (
+  testDate: Date,
+  override?: Partial<MockOrderItemInList>,
+): MockOrderItemInList => ({
+  id: 'order-item-1',
+  price: 10000,
+  quantity: 2,
+  productId: TEST_PRODUCT_ID,
+  isReviewed: false,
+  product: createMockProductInOrderList(testDate),
+  size: {
+    id: 1,
+    en: 'M',
+    ko: '중',
+  },
+  ...override,
+});
+
+/**
+ * Order Mock 데이터 (주문 목록용)
+ */
+export interface MockOrderInList {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  address: string;
+  subtotal: number;
+  totalQuantity: number;
+  usePoint: number;
+  createdAt: Date;
+  items: MockOrderItemInList[];
+  payments: MockPayment[];
+}
+
+export const createMockOrderInList = (
+  testDate: Date,
+  override?: Partial<MockOrderInList>,
+): MockOrderInList => ({
+  id: TEST_ORDER_ID,
+  name: '홍길동',
+  phoneNumber: '010-1234-5678',
+  address: '서울시 강남구 테헤란로 123',
+  subtotal: 20000,
+  totalQuantity: 2,
+  usePoint: 0,
+  createdAt: testDate,
+  items: [createMockOrderItemInList(testDate)],
+  payments: [createMockPayment(testDate)],
+  ...override,
+});
