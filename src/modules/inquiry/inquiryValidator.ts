@@ -1,6 +1,9 @@
 import type { RequestHandler } from 'express';
 import { forwardZodError } from '@utils/zod';
-import { createInquirySchema } from '@modules/inquiry/dto/inquiryDTO';
+import {
+  createInquirySchema,
+  getMyInquiryListSchema,
+} from '@modules/inquiry/dto/inquiryDTO';
 import { productIdSchema } from '@modules/product/dto/productDTO';
 
 class InquiryValidator {
@@ -40,6 +43,24 @@ class InquiryValidator {
       next();
     } catch (err) {
       forwardZodError(err, '상품 문의 목록 조회', next);
+    }
+  };
+
+  validateGetMyInquiryList: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const parsedQuery = {
+        page: req.query.page,
+        pageSize: req.query.pageSize,
+        status: req.query.status,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      req.validatedQuery = await getMyInquiryListSchema.parseAsync(parsedQuery);
+
+      next();
+    } catch (err) {
+      forwardZodError(err, '내 문의 목록 조회', next);
     }
   };
 }

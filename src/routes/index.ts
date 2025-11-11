@@ -7,6 +7,7 @@ import authRouter from '@modules/auth/authRoute';
 import cartRouter from '@modules/cart/cartRoute';
 import orderRouter from '@modules/order/orderRoute';
 import reviewRouter from '@modules/review/reviewRoute';
+import inquiryRouter from '@modules/inquiry/inquiryRoute';
 
 /*
 	modules에서 route임포트
@@ -26,5 +27,6 @@ router.use('/s3', s3Router);
 router.use('/cart', cartRouter);
 router.use('/orders', orderRouter);
 router.use('/reviews', reviewRouter);
+router.use('/inquiries', inquiryRouter);
 
 export default router;
