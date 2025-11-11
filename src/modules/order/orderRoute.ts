@@ -6,8 +6,10 @@ import { authMiddleware } from '@middlewares/authMiddleware';
 const orderRouter = express.Router();
 
 // POST /api/orders - 주문 생성 (인증 필요)
+// GET /api/orders - 주문 목록 조회 (인증 필요)
 orderRouter
   .route('/')
-  .post(authMiddleware, orderValidator.validateCreateOrder, orderController.createOrder);
+  .post(authMiddleware, orderValidator.validateCreateOrder, orderController.createOrder)
+  .get(authMiddleware, orderValidator.validateGetOrders, orderController.getOrders);
 
 export default orderRouter;

@@ -1,6 +1,11 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '@shared/prisma';
 import { ApiError } from '@errors/ApiError';
-import { CreateOrderData, CreateOrderItemData } from '@modules/order/dto/orderDTO';
+import {
+  CreateOrderData,
+  CreateOrderItemData,
+  GetOrdersQueryDto,
+} from '@modules/order/dto/orderDTO';
 
 // 주문 상세 조회를 위한 select 옵션
 const selectOrderWithDetailsDB = {
@@ -67,7 +72,7 @@ class OrderRepository {
    */
 
   // 재고 조회 및 잠금 (트랜잭션 내에서 사용)
-  getStockForUpdate = async (productId: string, sizeId: number, tx: any) => {
+  getStockForUpdate = async (productId: string, sizeId: number, tx: Prisma.TransactionClient) => {
     return await tx.stock.findUnique({
       where: {
         productId_sizeId: {
@@ -83,7 +88,12 @@ class OrderRepository {
   };
 
   // 재고 차감 (트랜잭션 내에서 사용)
-  decrementStock = async (productId: string, sizeId: number, quantity: number, tx: any) => {
+  decrementStock = async (
+    productId: string,
+    sizeId: number,
+    quantity: number,
+    tx: Prisma.TransactionClient,
+  ) => {
     return await tx.stock.update({
       where: {
         productId_sizeId: {
@@ -100,7 +110,7 @@ class OrderRepository {
   };
 
   // 사용자 포인트 차감 (트랜잭션 내에서 사용)
-  decrementUserPoints = async (userId: string, points: number, tx: any) => {
+  decrementUserPoints = async (userId: string, points: number, tx: Prisma.TransactionClient) => {
     return await tx.user.update({
       where: { id: userId },
       data: {
@@ -184,6 +194,125 @@ class OrderRepository {
         timeout: 10000, // 10초 타임아웃
       },
     );
+  };
+
+  // 주문 목록 조회 (페이지네이션 포함)
+  getOrders = async (userId: string, query: GetOrdersQueryDto) => {
+    const { status, limit, page } = query;
+
+    // where 조건 구성
+    const where: Prisma.OrderWhereInput = {
+      userId,
+      ...(status && {
+        payments: {
+          some: {
+            status,
+          },
+        },
+      }),
+    };
+
+    // 전체 개수 조회
+    const total = await prisma.order.count({ where });
+
+    // 주문 목록 조회
+    const orders = await prisma.order.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        phoneNumber: true,
+        address: true,
+        subtotal: true,
+        totalQuantity: true,
+        usePoint: true,
+        createdAt: true,
+        items: {
+          select: {
+            id: true,
+            price: true,
+            quantity: true,
+            productId: true,
+            isReviewed: true,
+            product: {
+              select: {
+                id: true,
+                storeId: true,
+                name: true,
+                price: true,
+                image: true,
+                discountRate: true,
+                discountStartTime: true,
+                discountEndTime: true,
+                createdAt: true,
+                updatedAt: true,
+                store: {
+                  select: {
+                    id: true,
+                    userId: true,
+                    name: true,
+                    address: true,
+                    phoneNumber: true,
+                    content: true,
+                    image: true,
+                    createdAt: true,
+                    updatedAt: true,
+                  },
+                },
+                stocks: {
+                  select: {
+                    id: true,
+                    productId: true,
+                    sizeId: true,
+                    quantity: true,
+                    size: {
+                      select: {
+                        id: true,
+                        en: true,
+                        ko: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            size: {
+              select: {
+                id: true,
+                en: true,
+                ko: true,
+              },
+            },
+          },
+        },
+        payments: {
+          select: {
+            id: true,
+            price: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            orderId: true,
+          },
+          take: 1,
+          orderBy: {
+            createdAt: 'desc' as const,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc' as const,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      orders,
+      total,
+      page,
+      limit,
+    };
   };
 }
 

@@ -1,7 +1,12 @@
 import orderRepository from '@modules/order/orderRepo';
 import productRepository from '@modules/product/productRepo';
 import userRepository from '@modules/user/userRepo';
-import { CreateOrderDto, CreateOrderResponseDto } from '@modules/order/dto/orderDTO';
+import {
+  CreateOrderDto,
+  CreateOrderResponseDto,
+  GetOrdersQueryDto,
+  GetOrdersResponseDto,
+} from '@modules/order/dto/orderDTO';
 import { ApiError } from '@errors/ApiError';
 
 class OrderService {
@@ -131,6 +136,95 @@ class OrderService {
         status: createdOrder.payments[0].status,
         createdAt: createdOrder.payments[0].createdAt,
         updatedAt: createdOrder.payments[0].updatedAt,
+      },
+    };
+  };
+
+  // 주문 목록 조회
+  getOrders = async (userId: string, query: GetOrdersQueryDto): Promise<GetOrdersResponseDto> => {
+    // Repository에서 주문 목록 조회
+    const { orders, total, page, limit } = await orderRepository.getOrders(userId, query);
+
+    // 응답 DTO로 변환
+    const data = orders.map((order) => ({
+      id: order.id,
+      name: order.name,
+      phoneNumber: order.phoneNumber,
+      address: order.address,
+      subtotal: order.subtotal,
+      totalQuantity: order.totalQuantity,
+      usePoint: order.usePoint,
+      createdAt: order.createdAt,
+      orderItems: order.items.map((item) => ({
+        id: item.id,
+        price: item.price,
+        quantity: item.quantity,
+        productId: item.productId,
+        product: {
+          id: item.product.id,
+          storeId: item.product.storeId,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.image,
+          discountRate: item.product.discountRate,
+          discountStartTime: item.product.discountStartTime,
+          discountEndTime: item.product.discountEndTime,
+          createdAt: item.product.createdAt,
+          updatedAt: item.product.updatedAt,
+          store: {
+            id: item.product.store.id,
+            userId: item.product.store.userId,
+            name: item.product.store.name,
+            address: item.product.store.address,
+            phoneNumber: item.product.store.phoneNumber,
+            content: item.product.store.content,
+            image: item.product.store.image,
+            createdAt: item.product.store.createdAt,
+            updatedAt: item.product.store.updatedAt,
+          },
+          stocks: item.product.stocks.map((stock) => ({
+            id: stock.id,
+            productId: stock.productId,
+            sizeId: stock.sizeId,
+            quantity: stock.quantity,
+            size: {
+              id: stock.size.id,
+              size: {
+                en: stock.size.en,
+                ko: stock.size.ko,
+              },
+            },
+          })),
+        },
+        size: {
+          id: item.size.id,
+          size: {
+            en: item.size.en,
+            ko: item.size.ko,
+          },
+        },
+        isReviewed: item.isReviewed,
+      })),
+      payments: {
+        id: order.payments[0].id,
+        price: order.payments[0].price,
+        status: order.payments[0].status,
+        createdAt: order.payments[0].createdAt,
+        updatedAt: order.payments[0].updatedAt,
+        orderId: order.payments[0].orderId,
+      },
+    }));
+
+    // 메타 데이터 계산
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
       },
     };
   };

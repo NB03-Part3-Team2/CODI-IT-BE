@@ -18,13 +18,42 @@ export const createOrderSchema = z.object({
   usePoint: z.number().int().nonnegative('사용 포인트는 0 이상이어야 합니다.').default(0),
 });
 
+// 주문 목록 조회 쿼리 스키마
+export const getOrdersQuerySchema = z.object({
+  status: z.string().optional(),
+  limit: z.coerce.number().int().positive().default(3),
+  page: z.coerce.number().int().positive().default(1),
+});
+
 // 주문 생성 요청 DTO
 export type CreateOrderDto = z.infer<typeof createOrderSchema>;
 
 // 주문 아이템 요청 DTO
 export type OrderItemRequestDto = z.infer<typeof orderItemRequestSchema>;
 
-// 주문 생성 응답 DTO
+// 주문 목록 조회 쿼리 DTO
+export type GetOrdersQueryDto = z.infer<typeof getOrdersQuerySchema>;
+
+// 사이즈 정보 DTO
+export interface SizeDto {
+  id: number;
+  size: {
+    en: string;
+    ko: string;
+  };
+}
+
+// 결제 정보 DTO
+export interface PaymentDto {
+  id: string;
+  orderId: string;
+  price: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 주문 생성 응답 - Order DTO
 export interface CreateOrderResponseDto {
   id: string;
   userId: string;
@@ -37,9 +66,10 @@ export interface CreateOrderResponseDto {
   createdAt: Date;
   updatedAt: Date;
   orderItems: OrderItemResponseDto[];
-  payments: PaymentResponseDto;
+  payments: PaymentDto;
 }
 
+// 주문 생성 응답 - OrderItem DTO
 export interface OrderItemResponseDto {
   id: string;
   orderId: string;
@@ -51,30 +81,14 @@ export interface OrderItemResponseDto {
   createdAt: Date;
   updatedAt: Date;
   product: ProductInOrderDto;
-  size: SizeInOrderDto;
+  size: SizeDto;
 }
 
+// 주문 생성 응답 - Product DTO
 export interface ProductInOrderDto {
   id: string;
   name: string;
   image: string | null;
-}
-
-export interface SizeInOrderDto {
-  id: number;
-  size: {
-    en: string;
-    ko: string;
-  };
-}
-
-export interface PaymentResponseDto {
-  id: string;
-  orderId: string;
-  price: number;
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // Repository 레이어에서 사용하는 주문 생성 데이터 타입
@@ -94,4 +108,81 @@ export interface CreateOrderItemData {
   sizeId: number;
   price: number;
   quantity: number;
+}
+
+// 주문 목록 조회 응답 - Order DTO
+export interface OrderInListDto {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  address: string;
+  subtotal: number;
+  totalQuantity: number;
+  usePoint: number;
+  createdAt: Date;
+  orderItems: OrderItemInListDto[];
+  payments: PaymentDto;
+}
+
+// 주문 목록 조회 응답 - OrderItem DTO
+export interface OrderItemInListDto {
+  id: string;
+  price: number;
+  quantity: number;
+  productId: string;
+  product: ProductInOrderListDto;
+  size: SizeDto;
+  isReviewed: boolean;
+}
+
+// 주문 목록 조회 응답 - Product DTO
+export interface ProductInOrderListDto {
+  id: string;
+  storeId: string;
+  name: string;
+  price: number;
+  image: string | null;
+  discountRate: number;
+  discountStartTime: Date | null;
+  discountEndTime: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  store: StoreInOrderListDto;
+  stocks: StockInOrderListDto[];
+}
+
+// 주문 목록 조회 응답 - Store DTO
+export interface StoreInOrderListDto {
+  id: string;
+  userId: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  content: string;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 주문 목록 조회 응답 - Stock DTO
+export interface StockInOrderListDto {
+  id: string;
+  productId: string;
+  sizeId: number;
+  quantity: number;
+  size: SizeDto;
+}
+
+// 주문 목록 조회 응답 - Pagination Meta DTO
+export interface PaginationMetaDto {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// 주문 목록 조회 응답 DTO
+export interface GetOrdersResponseDto {
+  data: OrderInListDto[];
+  meta: PaginationMetaDto;
 }
