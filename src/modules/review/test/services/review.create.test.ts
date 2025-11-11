@@ -4,7 +4,7 @@ import reviewService from '@modules/review/reviewService';
 import reviewRepository from '@modules/review/reviewRepo';
 import userRepository from '@modules/user/userRepo';
 import productRepo from '@modules/product/productRepo';
-import { MOCK_CONSTANTS, MOCK_DATA } from '@modules/review/test/services/mock';
+import { MOCK_DATA } from '@modules/review/test/services/mock';
 
 describe('reviewCreate 단위 테스트', () => {
   // 각 테스트 후에 모든 모의(mock)를 복원
@@ -18,13 +18,11 @@ describe('reviewCreate 단위 테스트', () => {
 
   describe('createReview 메소드 테스트', () => {
     test('createReview 성공 테스트', async () => {
-      // 공통 mock 데이터 사용
       const createReviewDto = MOCK_DATA.createReviewDto;
       const mockCreatedReview = MOCK_DATA.createdReview;
       const expectedResult = MOCK_DATA.resReview;
       const existingUser = MOCK_DATA.existingUser;
 
-      // Repository 메소드들을 mock
       jest.spyOn(userRepository, 'getUserById').mockResolvedValue(existingUser);
       jest.spyOn(productRepo, 'checkProductExists').mockResolvedValue(true);
       jest.spyOn(reviewRepository, 'createReview').mockResolvedValue(mockCreatedReview);

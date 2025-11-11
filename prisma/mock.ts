@@ -191,7 +191,6 @@ export const CART_ITEMS = [
 export const ORDERS = [
   {
     userIndex: 0,
-    storeIndex: 0,
     name: '김구매',
     address: '서울시 강남구 테헤란로 123',
     phoneNumber: '010-1234-5678',
@@ -201,7 +200,6 @@ export const ORDERS = [
   },
   {
     userIndex: 1,
-    storeIndex: 1,
     name: '이구매',
     address: '서울시 서초구 서초대로 456',
     phoneNumber: '010-2345-6789',

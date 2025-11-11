@@ -8,10 +8,13 @@ export const MOCK_CONSTANTS = {
   ORDER_ITEM_ID: 'orderItem123',
   RATING: 5,
   CONTENT: '정말 좋은 상품이에요! 추천합니다.',
+  UPDATED_RATING: 4,
+  UPDATED_CONTENT: '생각보다 괜찮은 상품이에요. 추천합니다. 업데이트된 리뷰입니다.',
   MOCK_DATE: new Date('2024-01-01'),
   USER_NAME: '테스트유저',
   USER_EMAIL: 'test@example.com',
   GRADE_ID: 'grade123',
+  OTHER_USER_ID: 'otherUser123',
 } as const;
 
 // 기본 객체들
@@ -41,9 +44,11 @@ const baseReview = {
   id: MOCK_CONSTANTS.REVIEW_ID,
   userId: MOCK_CONSTANTS.USER_ID,
   productId: MOCK_CONSTANTS.PRODUCT_ID,
+  orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
   rating: MOCK_CONSTANTS.RATING,
   content: MOCK_CONSTANTS.CONTENT,
   createdAt: MOCK_CONSTANTS.MOCK_DATE,
+  updatedAt: MOCK_CONSTANTS.MOCK_DATE,
 } as const;
 
 // 미리 정의된 mock 데이터들
@@ -58,7 +63,14 @@ export const MOCK_DATA = {
   } as CreateReviewDto,
 
   // 생성된 리뷰
-  createdReview: baseReview,
+  createdReview: {
+    id: MOCK_CONSTANTS.REVIEW_ID,
+    userId: MOCK_CONSTANTS.USER_ID,
+    productId: MOCK_CONSTANTS.PRODUCT_ID,
+    rating: MOCK_CONSTANTS.RATING,
+    content: MOCK_CONSTANTS.CONTENT,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+  },
 
   // 응답용 리뷰
   resReview: {
@@ -72,4 +84,37 @@ export const MOCK_DATA = {
 
   // 사용자 데이터
   existingUser: baseUser,
+
+  // 업데이트용 DTO
+  updateReviewDto: {
+    userId: MOCK_CONSTANTS.USER_ID,
+    reviewId: MOCK_CONSTANTS.REVIEW_ID,
+    rating: MOCK_CONSTANTS.UPDATED_RATING,
+    content: MOCK_CONSTANTS.UPDATED_CONTENT,
+  },
+
+  // 업데이트된 리뷰
+  updatedReview: {
+    id: MOCK_CONSTANTS.REVIEW_ID,
+    userId: MOCK_CONSTANTS.USER_ID,
+    productId: MOCK_CONSTANTS.PRODUCT_ID,
+    rating: MOCK_CONSTANTS.UPDATED_RATING,
+    content: MOCK_CONSTANTS.UPDATED_CONTENT,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+  },
+
+  // 다른 사용자 소유의 리뷰 (권한 테스트용)
+  otherUserReview: {
+    id: MOCK_CONSTANTS.REVIEW_ID,
+    userId: MOCK_CONSTANTS.OTHER_USER_ID,
+    productId: MOCK_CONSTANTS.PRODUCT_ID,
+    orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+    rating: MOCK_CONSTANTS.RATING,
+    content: MOCK_CONSTANTS.CONTENT,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+  },
+
+  // getReviewById용 (전체 필드 포함)
+  fullReview: baseReview,
 };
