@@ -294,7 +294,7 @@ describe('createOrder 메소드 테스트', () => {
           id: 'payment-id',
           orderId: 'order-id',
           price: 20000,
-          status: 'COMPLETED',
+          status: 'CompletedPayment',
           createdAt: new Date(),
           updatedAt: new Date(),
         },

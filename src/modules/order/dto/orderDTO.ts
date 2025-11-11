@@ -110,6 +110,13 @@ export interface CreateOrderItemData {
   quantity: number;
 }
 
+// Repository 레이어에서 사용하는 주문 취소 아이템 데이터 타입
+export interface CancelOrderItemData {
+  productId: string;
+  sizeId: number;
+  quantity: number;
+}
+
 // 주문 목록 조회 응답 - Order DTO
 export interface OrderInListDto {
   id: string;
