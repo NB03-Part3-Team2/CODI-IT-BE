@@ -21,9 +21,9 @@ const emailWithMX = z.string().refine(
 export const createUserSchema = z.object({
   name: z
     .string()
-    .min(2, '이름은 최소 2자 이상이어야 합니다')
-    .max(10, '이름은 최대 10자 이하여야 합니다')
-    .regex(/^[a-zA-Z0-9가-힣]+$/, '이름에 특수문자는 사용할 수 없습니다.'),
+    .min(2, '닉네임은 최소 2자 이상이어야 합니다')
+    .max(10, '닉네임은 최대 10자 이하여야 합니다')
+    .regex(/^[a-zA-Z0-9가-힣]+$/, '닉네임에 특수문자는 사용할 수 없습니다.'),
   email: emailWithMX,
   password: z
     .string()
@@ -64,9 +64,9 @@ export type ResUserDto = Omit<CreatedUserDto, 'password' | 'gradeId' | 'totalAmo
 export const updateUserSchema = z.object({
   name: z
     .string()
-    .min(2, '이름은 최소 2자 이상이어야 합니다')
-    .max(10, '이름은 최대 10자 이하여야 합니다')
-    .regex(/^[a-zA-Z0-9가-힣]+$/, '이름에 특수문자는 사용할 수 없습니다.'),
+    .min(2, '닉네임은 최소 2자 이상이어야 합니다')
+    .max(10, '닉네임은 최대 10자 이하여야 합니다')
+    .regex(/^[a-zA-Z0-9가-힣]+$/, '닉네임에 특수문자는 사용할 수 없습니다.'),
   newPassword: z
     .string()
     .min(8, '비밀번호는 최소 8자 이상이어야 합니다')

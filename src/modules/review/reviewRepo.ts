@@ -1,5 +1,14 @@
 import { prisma } from '@shared/prisma';
-import { CreateReviewDto } from '@modules/review/dto/reviewDTO';
+import { CreateReviewDto, UpdateReviewDto } from '@modules/review/dto/reviewDTO';
+
+const selectOptionDB = {
+  id: true,
+  userId: true,
+  productId: true,
+  rating: true,
+  content: true,
+  createdAt: true,
+};
 
 class ReviewRepository {
   createReview = async (createReviewDto: CreateReviewDto) => {
@@ -11,14 +20,26 @@ class ReviewRepository {
         content: createReviewDto.content,
         rating: createReviewDto.rating,
       },
-      select: {
-        id: true,
-        userId: true,
-        productId: true,
-        rating: true,
-        content: true,
-        createdAt: true,
+      select: selectOptionDB,
+    });
+    return review;
+  };
+
+  getReviewById = async (reviewId: string) => {
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+    return review;
+  };
+
+  updateReview = async (updateReviewDto: UpdateReviewDto) => {
+    const review = await prisma.review.update({
+      where: { id: updateReviewDto.reviewId },
+      data: {
+        rating: updateReviewDto.rating,
+        content: updateReviewDto.content,
       },
+      select: selectOptionDB,
     });
     return review;
   };

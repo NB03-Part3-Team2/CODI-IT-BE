@@ -190,7 +190,6 @@ const seed = async () => {
   await prisma.order.createMany({
     data: ORDERS.map((order) => ({
       userId: users[order.userIndex].id,
-      storeId: stores[order.storeIndex].id,
       name: order.name,
       address: order.address,
       phoneNumber: order.phoneNumber,
