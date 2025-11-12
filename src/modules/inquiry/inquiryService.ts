@@ -8,6 +8,7 @@ import {
 } from '@modules/inquiry/utils/inquiryUtils';
 import {
   CreateInquiryDTO,
+  GetInquiryResponseDTO,
   GetMyInquiryItemDTO,
   GetMyInquiryListDTO,
   GetMyInquiryListRepoDTO,
@@ -97,6 +98,20 @@ class InquiryService {
     }));
 
     return { list: formattedList, totalCount };
+  };
+
+  getInquiry = async (inquiryId: string): Promise<GetInquiryResponseDTO> => {
+    // 문의 상세 조회
+    const inquiry = await inquiryRepository.getById(inquiryId);
+    if (!inquiry) {
+      throw ApiError.notFound('문의가 존재하지 않습니다.');
+    }
+
+    // 리스폰스 형태에 맞게 가공
+    return {
+      ...inquiry,
+      status: fromPrismaInquiryStatus(inquiry.status),
+    };
   };
 }
 

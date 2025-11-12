@@ -73,6 +73,39 @@ class InquiryRepository {
     });
   };
 
+  getById = async (inquiryId: string) => {
+    return await prisma.inquiry.findUnique({
+      where: {
+        id: inquiryId,
+      },
+      select: {
+        id: true,
+        userId: true,
+        productId: true,
+        title: true,
+        content: true,
+        isSecret: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+        reply: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  };
+
   // 페이지네이션으로 일부 정보만 받아온 문의 리스트 (구매자)
   getInquiriesByUserId = async (
     userId: string,
