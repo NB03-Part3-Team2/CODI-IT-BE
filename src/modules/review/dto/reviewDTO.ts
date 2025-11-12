@@ -26,6 +26,18 @@ export type UpdateReviewDto = z.infer<typeof updateReviewSchema> & {
   reviewId: string;
 };
 
+export const getReviewListQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().default(5),
+});
+
+export const productIdSchema = z.object({
+  productId: z.cuid('유효한 상품 ID 형식이어야 합니다.'),
+});
+
+export type GetReviewListQueryDto = z.infer<typeof getReviewListQuerySchema> &
+  z.infer<typeof productIdSchema>;
+
 export type ResReviewDto = {
   id: string;
   userId: string;

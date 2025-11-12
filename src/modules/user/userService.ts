@@ -53,7 +53,7 @@ class UserService {
     }
     const isValid = await isPasswordValid(updateUserDto.currentPassword, user.password);
     if (!isValid) {
-      throw ApiError.unauthorized('현재 비밀번호가 올바르지 않습니다.');
+      throw ApiError.badRequest('현재 비밀번호가 올바르지 않습니다.');
     }
     const existingName = await userRepository.getUserByName(updateUserDto.name);
     if (existingName && existingName.id !== updateUserDto.userId) {

@@ -1,5 +1,9 @@
 import { prisma } from '@shared/prisma';
-import { CreateReviewDto, UpdateReviewDto } from '@modules/review/dto/reviewDTO';
+import {
+  CreateReviewDto,
+  UpdateReviewDto,
+  GetReviewListQueryDto,
+} from '@modules/review/dto/reviewDTO';
 
 const selectOptionDB = {
   id: true,
@@ -42,6 +46,18 @@ class ReviewRepository {
       select: selectOptionDB,
     });
     return review;
+  };
+
+  getReviewList = async (getReviewListQueryDto: GetReviewListQueryDto) => {
+    const offset = (getReviewListQueryDto.page - 1) * getReviewListQueryDto.limit;
+    const reviewList = await prisma.review.findMany({
+      where: { productId: getReviewListQueryDto.productId },
+      skip: offset,
+      take: getReviewListQueryDto.limit,
+      orderBy: { createdAt: 'desc' },
+      select: selectOptionDB,
+    });
+    return reviewList;
   };
 }
 

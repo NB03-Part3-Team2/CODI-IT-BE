@@ -117,4 +117,18 @@ export const MOCK_DATA = {
 
   // getReviewById용 (전체 필드 포함)
   fullReview: baseReview,
+
+  // orderItem 데이터 (getOrderItemById용)
+  existingOrderItem: {
+    order: {
+      userId: MOCK_CONSTANTS.USER_ID,
+    },
+  },
+
+  // 다른 사용자의 orderItem (권한 테스트용)
+  otherUserOrderItem: {
+    order: {
+      userId: MOCK_CONSTANTS.OTHER_USER_ID,
+    },
+  },
 };

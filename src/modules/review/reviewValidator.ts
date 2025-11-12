@@ -5,6 +5,8 @@ import {
   updateReviewSchema,
   orderItemIdSchema,
   reviewIdSchema,
+  productIdSchema,
+  getReviewListQuerySchema,
 } from '@modules/review/dto/reviewDTO';
 
 class ReviewValidator {
@@ -38,6 +40,20 @@ class ReviewValidator {
       next();
     } catch (err) {
       forwardZodError(err, '리뷰 수정', next);
+    }
+  };
+
+  validateGetReviewList: RequestHandler = async (req, res, next) => {
+    try {
+      const parsedQuery = {
+        page: req.query.page,
+        limit: req.query.limit,
+      };
+      req.validatedParams = await productIdSchema.parseAsync({ productId: req.params.productId });
+      req.validatedQuery = await getReviewListQuerySchema.parseAsync(parsedQuery);
+      next();
+    } catch (err) {
+      forwardZodError(err, '리뷰 조회', next);
     }
   };
 }

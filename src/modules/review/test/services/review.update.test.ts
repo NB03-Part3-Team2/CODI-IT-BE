@@ -66,7 +66,7 @@ describe('reviewUpdate 단위 테스트', () => {
       jest.spyOn(reviewRepository, 'getReviewById').mockResolvedValue(otherUserReview);
 
       await expect(reviewService.updateReview(updateReviewDto)).rejects.toMatchObject({
-        code: 401,
+        code: 403,
         message: '본인의 리뷰만 수정할 수 있습니다.',
       });
     });

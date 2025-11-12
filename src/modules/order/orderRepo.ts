@@ -314,6 +314,21 @@ class OrderRepository {
       limit,
     };
   };
+
+  // 주문 상품 존재여부와 유저 id 확인용 메소드 - 조영욱
+  getOrderItemById = async (orderItemId: string) => {
+    const orderItem = await prisma.orderItem.findUnique({
+      where: { id: orderItemId },
+      select: {
+        order: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    return orderItem;
+  };
 }
 
 export default new OrderRepository();

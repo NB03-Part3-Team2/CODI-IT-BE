@@ -1,27 +1,34 @@
 import reviewRepository from '@modules/review/reviewRepo';
 import userRepository from '@modules/user/userRepo';
 import productRepo from '@modules/product/productRepo';
-import { CreateReviewDto, ResReviewDto, UpdateReviewDto } from '@modules/review/dto/reviewDTO';
+import orderRepo from '@modules/order/orderRepo';
+import {
+  CreateReviewDto,
+  ResReviewDto,
+  UpdateReviewDto,
+  GetReviewListQueryDto,
+} from '@modules/review/dto/reviewDTO';
 import { ApiError } from '@errors/ApiError';
 
 class ReviewService {
   createReview = async (createReviewDto: CreateReviewDto): Promise<ResReviewDto> => {
-    const [existingUser, existingProduct] = await Promise.all([
+    const [existingUser, existingProduct, existingOrderItem] = await Promise.all([
       userRepository.getUserById(createReviewDto.userId),
       productRepo.checkProductExists(createReviewDto.productId),
-      // 추후 오더아이템 검증 추가 예정, 주문 본인인지 확인도 추가 예정
-      // orderRepo.getOrderItem(createReviewDto.orderItemId),
+      orderRepo.getOrderItemById(createReviewDto.orderItemId),
     ]);
 
-    if (!existingUser) {
-      throw ApiError.badRequest('사용자를 찾지 못했습니다.');
-    }
-    if (!existingProduct) {
-      throw ApiError.badRequest('상품을 찾지 못했습니다.');
-    }
-    // if (!orderItem) {
-    //   throw ApiError.badRequest('주문 내역을 찾지 못했습니다.');
-    // }
+    [
+      [existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.')],
+      [existingProduct, ApiError.badRequest('상품을 찾지 못했습니다.')],
+      [existingOrderItem, ApiError.badRequest('주문 내역을 찾지 못했습니다.')],
+      [
+        existingOrderItem?.order?.userId === createReviewDto.userId,
+        ApiError.forbidden('본인의 주문 내역에 대해서만 리뷰를 작성할 수 있습니다.'),
+      ],
+    ].forEach(([condition, error]) => {
+      if (!condition) throw error;
+    });
     const review = await reviewRepository.createReview(createReviewDto);
     return review;
   };
@@ -32,19 +39,29 @@ class ReviewService {
       reviewRepository.getReviewById(updateReviewDto.reviewId),
     ]);
 
-    if (!existingUser) {
-      throw ApiError.badRequest('사용자를 찾지 못했습니다.');
-    }
-    if (!existingReview) {
-      throw ApiError.badRequest('리뷰를 찾지 못했습니다.');
-    }
-
-    if (existingReview.userId !== updateReviewDto.userId) {
-      throw ApiError.unauthorized('본인의 리뷰만 수정할 수 있습니다.');
-    }
+    [
+      [existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.')],
+      [existingReview, ApiError.badRequest('리뷰를 찾지 못했습니다.')],
+      [
+        existingReview?.userId === updateReviewDto.userId,
+        ApiError.forbidden('본인의 리뷰만 수정할 수 있습니다.'),
+      ],
+    ].forEach(([condition, error]) => {
+      if (!condition) throw error;
+    });
 
     const review = await reviewRepository.updateReview(updateReviewDto);
     return review;
+  };
+
+  getReviewList = async (getReviewListQueryDto: GetReviewListQueryDto): Promise<ResReviewDto[]> => {
+    const existingProduct = await productRepo.checkProductExists(getReviewListQueryDto.productId);
+
+    if (!existingProduct) {
+      throw ApiError.badRequest('상품을 찾지 못했습니다.');
+    }
+    const reviewList = await reviewRepository.getReviewList(getReviewListQueryDto);
+    return reviewList;
   };
 }
 
