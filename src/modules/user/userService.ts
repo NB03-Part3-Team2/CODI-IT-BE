@@ -12,12 +12,11 @@ import { ResFavoriteStoreDto } from '@modules/user/dto/favoriteStoreDTO';
 
 class UserService {
   sensitiveUserDataFilter = (user: CreatedUserDto): ResUserDto => {
-    const { totalAmount, gradeId, grade, password, image, ...rest } = user;
-    const { createdAt, updatedAt, ...gradeInfo } = grade;
+    const { totalAmount, password, ...rest } = user;
+    const { createdAt, updatedAt, ...gradeInfo } = rest.grade;
     const filteredUser = {
       ...rest,
       grade: gradeInfo,
-      image,
     };
     return filteredUser;
   };
