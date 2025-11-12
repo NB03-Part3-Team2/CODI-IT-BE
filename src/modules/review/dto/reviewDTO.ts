@@ -38,6 +38,11 @@ export const productIdSchema = z.object({
 export type GetReviewListQueryDto = z.infer<typeof getReviewListQuerySchema> &
   z.infer<typeof productIdSchema>;
 
+export type DeleteReviewDto = {
+  reviewId: string;
+  userId: string;
+};
+
 export type ResReviewDto = {
   id: string;
   userId: string;

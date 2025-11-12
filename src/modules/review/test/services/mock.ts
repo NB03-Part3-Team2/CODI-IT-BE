@@ -149,4 +149,10 @@ export const MOCK_DATA = {
 
   // 빈 리뷰 리스트
   emptyReviewList: [],
+
+  // 삭제용 DTO
+  deleteReviewDto: {
+    userId: MOCK_CONSTANTS.USER_ID,
+    reviewId: MOCK_CONSTANTS.REVIEW_ID,
+  },
 };

@@ -59,6 +59,12 @@ class ReviewRepository {
     });
     return reviewList;
   };
+
+  deleteReview = async (reviewId: string) => {
+    await prisma.review.delete({
+      where: { id: reviewId },
+    });
+  };
 }
 
 export default new ReviewRepository();

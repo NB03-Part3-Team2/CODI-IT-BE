@@ -4,6 +4,7 @@ import {
   CreateReviewDto,
   UpdateReviewDto,
   GetReviewListQueryDto,
+  DeleteReviewDto,
 } from '@modules/review/dto/reviewDTO';
 
 class ReviewController {
@@ -61,6 +62,19 @@ class ReviewController {
     res.status(200).json(review);
   };
 
+  /**
+   * @description
+   * 특정 상품의 리뷰 목록을 조회합니다
+   *
+   * productId 경로 파라미터와 page, limit 쿼리 파라미터를 받아 해당 상품의 리뷰 목록을 페이징하여 조회합니다.
+   * @param {Object} req
+   * @param {Object} res
+   * @return {Object[]} 리뷰 목록 (HTTP 200)
+   *
+   * @throws {ApiError} 400 - 잘못된 요청 데이터
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+
   getReviewList = async (req: Request, res: Response) => {
     const getReviewListQueryDto: GetReviewListQueryDto = {
       ...req.validatedQuery,
@@ -68,6 +82,30 @@ class ReviewController {
     };
     const reviews = await reviewService.getReviewList(getReviewListQueryDto);
     res.status(200).json(reviews);
+  };
+
+  /**
+   * @description
+   * 기존 리뷰를 삭제합니다
+   *
+   * reviewId를 받아 기존 리뷰를 삭제합니다.
+   * userId를 통해 본인 리뷰인지 검증합니다.
+   *
+   * @param {Object} req
+   * @param {Object} res
+   * @return {void} (HTTP 204)
+   *
+   * @throws {ApiError} 400 - 잘못된 요청 데이터
+   * @throws {ApiError} 403 - 본인의 리뷰가 아닌 경우
+   * @throws {ApiError} 500 - 서버 내부 오류
+   *  */
+  deleteReview = async (req: Request, res: Response) => {
+    const deleteReviewDto: DeleteReviewDto = {
+      reviewId: req.validatedParams.reviewId,
+      userId: req.user.id,
+    };
+    await reviewService.deleteReview(deleteReviewDto);
+    res.sendStatus(204);
   };
 }
 

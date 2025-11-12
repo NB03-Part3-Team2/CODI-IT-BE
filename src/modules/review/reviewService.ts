@@ -7,6 +7,7 @@ import {
   ResReviewDto,
   UpdateReviewDto,
   GetReviewListQueryDto,
+  DeleteReviewDto,
 } from '@modules/review/dto/reviewDTO';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
@@ -54,6 +55,20 @@ class ReviewService {
 
     const reviewList = await reviewRepository.getReviewList(getReviewListQueryDto);
     return reviewList;
+  };
+
+  deleteReview = async (deleteReviewDto: DeleteReviewDto): Promise<void> => {
+    const [existingUser, existingReview] = await Promise.all([
+      userRepository.getUserById(deleteReviewDto.userId),
+      reviewRepository.getReviewById(deleteReviewDto.reviewId),
+    ]);
+    assert(existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.'));
+    assert(existingReview, ApiError.badRequest('리뷰를 찾지 못했습니다.'));
+    assert(
+      existingReview?.userId === deleteReviewDto.userId,
+      ApiError.forbidden('본인의 리뷰만 삭제할 수 있습니다.'),
+    );
+    await reviewRepository.deleteReview(deleteReviewDto.reviewId);
   };
 }
 

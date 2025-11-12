@@ -55,6 +55,15 @@ class ReviewValidator {
       forwardZodError(err, '리뷰 조회', next);
     }
   };
+
+  validateDeleteReview: RequestHandler = async (req, res, next) => {
+    try {
+      req.validatedParams = await reviewIdSchema.parseAsync({ reviewId: req.params.reviewId });
+      next();
+    } catch (err) {
+      forwardZodError(err, '리뷰 삭제', next);
+    }
+  };
 }
 
 export default new ReviewValidator();

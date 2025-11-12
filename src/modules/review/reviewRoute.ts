@@ -5,11 +5,9 @@ import { authMiddleware } from '@middlewares/authMiddleware';
 
 const reviewRouter = express.Router();
 
-reviewRouter.patch(
-  '/:reviewId',
-  authMiddleware,
-  reviewValidator.validateUpdateReview,
-  reviewController.updateReview,
-);
+reviewRouter
+  .route('/:reviewId')
+  .patch(authMiddleware, reviewValidator.validateUpdateReview, reviewController.updateReview)
+  .delete(authMiddleware, reviewValidator.validateDeleteReview, reviewController.deleteReview);
 
 export default reviewRouter;
