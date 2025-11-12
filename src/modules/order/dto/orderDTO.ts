@@ -80,7 +80,6 @@ export interface CreateOrderResponseDto {
 // 주문 생성 응답 - OrderItem DTO
 export interface OrderItemResponseDto {
   id: string;
-  orderId: string;
   productId: string;
   sizeId: number;
   price: number;

@@ -212,13 +212,14 @@ export const ORDERS = [
 // 주문 아이템 데이터 (주문과 상품 인덱스 기반)
 export const ORDER_ITEMS = [
   { orderIndex: 0, productIndex: 0, sizeIndex: 3, price: 20000, quantity: 2, isReviewed: false },
+  { orderIndex: 0, productIndex: 1, sizeIndex: 3, price: 20000, quantity: 2, isReviewed: false },
   { orderIndex: 1, productIndex: 2, sizeIndex: 0, price: 28000, quantity: 1, isReviewed: true },
 ];
 
 // 결제 데이터 (주문 인덱스 기반)
 export const PAYMENTS = [
-  { orderIndex: 0, price: 38000, status: 'COMPLETED' },
-  { orderIndex: 1, price: 35000, status: 'COMPLETED' },
+  { orderIndex: 0, price: 38000, status: 'CompletedPayment' },
+  { orderIndex: 1, price: 35000, status: 'CompletedPayment' },
 ];
 
 // 리뷰 데이터 (사용자, 상품, 주문 아이템 인덱스 기반)
