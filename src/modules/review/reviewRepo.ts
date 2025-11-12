@@ -12,6 +12,13 @@ const selectOptionDB = {
   rating: true,
   content: true,
   createdAt: true,
+  updatedAt: true,
+  orderItemId: true,
+  user: {
+    select: {
+      name: true,
+    },
+  },
 };
 
 class ReviewRepository {
@@ -50,14 +57,20 @@ class ReviewRepository {
 
   getReviewList = async (getReviewListQueryDto: GetReviewListQueryDto) => {
     const offset = (getReviewListQueryDto.page - 1) * getReviewListQueryDto.limit;
-    const reviewList = await prisma.review.findMany({
-      where: { productId: getReviewListQueryDto.productId },
-      skip: offset,
-      take: getReviewListQueryDto.limit,
-      orderBy: { createdAt: 'desc' },
-      select: selectOptionDB,
+    const data = await prisma.$transaction(async (tx) => {
+      const count = await tx.review.count({
+        where: { productId: getReviewListQueryDto.productId },
+      });
+      const reviewList = await tx.review.findMany({
+        where: { productId: getReviewListQueryDto.productId },
+        skip: offset,
+        take: getReviewListQueryDto.limit,
+        orderBy: { createdAt: 'desc' },
+        select: selectOptionDB,
+      });
+      return { count, reviewList };
     });
-    return reviewList;
+    return data;
   };
 
   deleteReview = async (reviewId: string) => {
