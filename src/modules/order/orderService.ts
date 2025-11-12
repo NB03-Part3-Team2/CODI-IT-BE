@@ -8,6 +8,7 @@ import {
   GetOrdersResponseDto,
 } from '@modules/order/dto/orderDTO';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 
 class OrderService {
   // 주문 생성
@@ -15,9 +16,7 @@ class OrderService {
     const { name, phone, address, orderItems, usePoint } = data;
 
     // 1. 주문 아이템이 비어있는지 확인
-    if (orderItems.length === 0) {
-      throw ApiError.badRequest('주문 아이템이 없습니다.');
-    }
+    assert(orderItems.length > 0, ApiError.badRequest('주문 아이템이 없습니다.'));
 
     // 2. 재고 확인 및 가격 계산
     let subtotal = 0;
@@ -27,9 +26,7 @@ class OrderService {
     for (const item of orderItems) {
       // 재고 확인은 트랜잭션 내에서 처리하지만, 가격 정보는 미리 조회
       const priceInfo = await productRepository.getProductPriceInfo(item.productId);
-      if (!priceInfo) {
-        throw ApiError.notFound(`상품 ID ${item.productId}를 찾을 수 없습니다.`);
-      }
+      assert(priceInfo, ApiError.notFound(`상품 ID ${item.productId}를 찾을 수 없습니다.`));
 
       // 할인 적용 가격 계산
       let finalPrice = priceInfo.price;
@@ -59,14 +56,16 @@ class OrderService {
     // 4. 포인트 사용 검증
     if (usePoint > 0) {
       const userPoints = await userRepository.getUserPoints(userId);
-      if (userPoints < usePoint) {
-        throw ApiError.badRequest(
+      assert(
+        userPoints >= usePoint,
+        ApiError.badRequest(
           `사용 가능한 포인트가 부족합니다. (보유: ${userPoints}, 요청: ${usePoint})`,
-        );
-      }
-      if (usePoint > subtotal) {
-        throw ApiError.badRequest('사용 포인트는 주문 금액을 초과할 수 없습니다.');
-      }
+        ),
+      );
+      assert(
+        usePoint <= subtotal,
+        ApiError.badRequest('사용 포인트는 주문 금액을 초과할 수 없습니다.'),
+      );
     }
 
     // 3. 최종 결제 금액 계산
@@ -90,9 +89,7 @@ class OrderService {
       paymentPrice,
     );
 
-    if (!createdOrder) {
-      throw ApiError.internal('주문 생성에 실패했습니다.');
-    }
+    assert(createdOrder, ApiError.internal('주문 생성에 실패했습니다.'));
 
     // 6. 응답 DTO로 변환
     return {
@@ -146,25 +143,23 @@ class OrderService {
     const order = await orderRepository.getOrderById(orderId);
 
     // 2. 주문 존재 확인
-    if (!order) {
-      throw ApiError.notFound('주문을 찾을 수 없습니다.');
-    }
+    assert(order, ApiError.notFound('주문을 찾을 수 없습니다.'));
 
     // 3. 사용자 권한 확인 (본인 주문인지)
-    if (order.userId !== userId) {
-      throw ApiError.forbidden('사용자를 찾을 수 없습니다.');
-    }
+    assert(order.userId === userId, ApiError.forbidden('사용자를 찾을 수 없습니다.'));
 
     // 4. 결제 정보 확인
-    if (!order.payments || order.payments.length === 0) {
-      throw ApiError.internal('결제 정보를 찾을 수 없습니다.');
-    }
+    assert(
+      order.payments && order.payments.length > 0,
+      ApiError.internal('결제 정보를 찾을 수 없습니다.'),
+    );
 
     // 5. 주문 상태 확인 (CompletedPayment인지)
     const paymentStatus = order.payments[0].status;
-    if (paymentStatus !== 'CompletedPayment') {
-      throw ApiError.badRequest('결제 완료된 주문만 취소할 수 있습니다.');
-    }
+    assert(
+      paymentStatus === 'CompletedPayment',
+      ApiError.badRequest('결제 완료된 주문만 취소할 수 있습니다.'),
+    );
 
     // 6. 주문 취소 (트랜잭션 처리)
     await orderRepository.deleteOrder(orderId, userId, order.items, order.usePoint);
