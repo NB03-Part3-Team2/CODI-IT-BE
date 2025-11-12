@@ -6,6 +6,10 @@ import { authMiddleware } from '@middlewares/authMiddleware';
 const inquiryRouter = express.Router();
 
 inquiryRouter
+  .route('/:inquiryId')
+  .get(inquiryValidator.validateGetInquiry, inquiryController.getInquiry);
+
+inquiryRouter
   .route('/')
   .get(
     authMiddleware,

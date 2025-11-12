@@ -104,3 +104,25 @@ export const mockInquiryList = [
     },
   },
 ];
+
+export const mockInquiryWithReply = {
+  id: 'inquiry-id-with-reply-003',
+  userId: mockUserBuyer.id,
+  productId: mockProduct.id,
+  title: '답변 있는 문의',
+  content: '답변이 달린 문의 내용',
+  status: InquiryStatus.COMPLETED_ANSWER,
+  isSecret: false,
+  createdAt: new Date('2023-01-01T10:00:00Z'),
+  updatedAt: new Date('2023-01-01T11:00:00Z'),
+  reply: {
+    id: 'reply-id-002',
+    content: '문의에 대한 답변입니다.',
+    createdAt: new Date('2023-01-01T10:30:00Z'),
+    updatedAt: new Date('2023-01-01T11:00:00Z'),
+    user: {
+      id: mockUserSeller.id,
+      name: mockUserSeller.name,
+    },
+  },
+};

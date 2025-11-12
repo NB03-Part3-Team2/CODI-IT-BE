@@ -2,12 +2,14 @@ import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import storeRepository from '@modules/store/storeRepo';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 import {
   fromPrismaInquiryStatus,
   toPrismaInquiryStatus,
 } from '@modules/inquiry/utils/inquiryUtils';
 import {
   CreateInquiryDTO,
+  GetInquiryResponseDTO,
   GetMyInquiryItemDTO,
   GetMyInquiryListDTO,
   GetMyInquiryListRepoDTO,
@@ -21,9 +23,7 @@ class InquiryService {
   createInquiry = async (userId: string, productId: string, createInquiryDto: CreateInquiryDTO) => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
     const product = await productRepository.getById(productId);
-    if (!product) {
-      throw ApiError.notFound('상품을 찾을 수 없습니다.');
-    }
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // inquiry 등록 레포지토리 호출
     const inquiry = await inquiryRepository.create(userId, productId, createInquiryDto);
@@ -35,9 +35,7 @@ class InquiryService {
   getInquiryList = async (productId: string) => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
     const product = await productRepository.getById(productId);
-    if (!product) {
-      throw ApiError.notFound('상품을 찾을 수 없습니다.');
-    }
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 문의 리스트 조회
     const inquiries = await inquiryRepository.getInquiryListByProductId(productId);
@@ -65,9 +63,7 @@ class InquiryService {
 
     // 구매자인지 판매자인지 알기 위해 유저 정보 조회
     const user = await userRepository.getUserById(userId);
-    if (!user) {
-      throw ApiError.notFound('유저를 찾을 수 없습니다.');
-    }
+    assert(user, ApiError.notFound('유저를 찾을 수 없습니다.'));
 
     // 페이지네이션 된 문의 리스트 및 문의 개수 조회
     let list;
@@ -81,9 +77,7 @@ class InquiryService {
     } else {
       // 판매자인 경우 스토어의 id와 일치하는 product들의 문의 조회
       const store = await storeRepository.getStoreIdByUserId(userId);
-      if (!store) {
-        throw ApiError.notFound('스토어를 찾을 수 없습니다.');
-      }
+      assert(store, ApiError.notFound('스토어를 찾을 수 없습니다.'));
       [list, totalCount] = await Promise.all([
         inquiryRepository.getInquiriesByStoreId(store.id, getMyInquiryListRepoDTO),
         inquiryRepository.getTotalCountByStoreId(store.id, getMyInquiryListRepoDTO.status),
@@ -97,6 +91,18 @@ class InquiryService {
     }));
 
     return { list: formattedList, totalCount };
+  };
+
+  getInquiry = async (inquiryId: string): Promise<GetInquiryResponseDTO> => {
+    // 문의 상세 조회
+    const inquiry = await inquiryRepository.getById(inquiryId);
+    assert(inquiry, ApiError.notFound('문의가 존재하지 않습니다.'));
+
+    // 리스폰스 형태에 맞게 가공
+    return {
+      ...inquiry,
+      status: fromPrismaInquiryStatus(inquiry.status),
+    };
   };
 }
 
