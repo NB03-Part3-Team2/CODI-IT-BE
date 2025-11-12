@@ -1,15 +1,61 @@
-import { InquiryStatus } from '@prisma/client';
+import { InquiryStatus, UserType } from '@prisma/client';
 
-export const mockUser = {
-  id: 'user-id-123',
-  name: '테스트 사용자',
-  email: 'test@example.com',
+export const mockGrade = {
+  id: 'grade-id-1',
+  name: 'Green',
+  rate: 5,
+  minAmount: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+export const mockUserBuyer = {
+  id: 'user-id-buyer-123',
+  name: '구매자',
+  email: 'buyer@example.com',
+  type: UserType.BUYER,
+  gradeId: 'grade-id-1',
+  password: 'password',
+  points: 1000,
+  image: null,
+  totalAmount: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  grade: mockGrade,
+};
+
+export const mockUserSeller = {
+  id: 'user-id-seller-456',
+  name: '판매자',
+  email: 'seller@example.com',
+  type: UserType.SELLER,
+  gradeId: 'grade-id-1',
+  password: 'password',
+  points: 0,
+  image: null,
+  totalAmount: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  grade: mockGrade,
+};
+
+export const mockStore = {
+  id: 'store-id-789',
+  userId: mockUserSeller.id,
+  name: '테스트 스토어',
+  address: '테스트 주소',
+  detailAddress: '상세 주소',
+  phoneNumber: '010-1234-5678',
+  content: '스토어 소개',
+  image: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
 
 export const mockProduct = {
   id: 'product-id-456',
   name: '테스트 상품',
-  storeId: 'store-id-789',
+  storeId: mockStore.id,
   categoryId: 'category-id-101',
   content: '상품 내용',
   price: 10000,
@@ -25,7 +71,7 @@ export const mockProduct = {
 export const mockInquiryList = [
   {
     id: 'inquiry-id-001',
-    userId: 'user-id-123',
+    userId: mockUserBuyer.id,
     productId: mockProduct.id,
     title: '테스트 문의 1',
     content: '문의 내용 1',

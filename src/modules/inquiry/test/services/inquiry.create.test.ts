@@ -3,14 +3,14 @@ import inquiryService from '@modules/inquiry/inquiryService';
 import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import { InquiryStatus } from '@prisma/client';
-import { mockUser, mockProduct } from '@modules/inquiry/test/mock';
+import { mockUserBuyer, mockProduct } from '@modules/inquiry/test/mock';
 
 describe('createInquiry 메소드 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  test('성공: 문의가 성공적으로 생성됩니다.', async () => {
+  test('성공', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
     const mockCreateInquiryDto = {
       title: 'Test Inquiry Title',
@@ -20,7 +20,7 @@ describe('createInquiry 메소드 테스트', () => {
 
     const expectedResult = {
       id: 'inquiry-id-001',
-      userId: mockUser.id,
+      userId: mockUserBuyer.id,
       productId: mockProduct.id,
       title: mockCreateInquiryDto.title,
       content: mockCreateInquiryDto.content,
@@ -40,7 +40,7 @@ describe('createInquiry 메소드 테스트', () => {
 
     // 3. 서비스 함수 호출
     const result = await inquiryService.createInquiry(
-      mockUser.id,
+      mockUserBuyer.id,
       mockProduct.id,
       mockCreateInquiryDto,
     );
@@ -48,7 +48,7 @@ describe('createInquiry 메소드 테스트', () => {
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
     expect(getProductByIdMock).toHaveBeenCalledWith(mockProduct.id);
     expect(createInquiryMock).toHaveBeenCalledWith(
-      mockUser.id,
+      mockUserBuyer.id,
       mockProduct.id,
       mockCreateInquiryDto,
     );
