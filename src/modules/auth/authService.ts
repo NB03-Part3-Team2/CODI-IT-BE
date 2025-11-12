@@ -2,16 +2,18 @@ import usersService from '@modules/user/userService';
 import tokenUtils from '@modules/auth/utils/tokenUtils';
 import { isPasswordValid } from '@modules/auth/utils/passwordUtils';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 import type { LoginDto, LoginResponseDto } from '@modules/auth/dto/loginDTO';
 
 class AuthService {
   login = async (loginDto: LoginDto): Promise<LoginResponseDto> => {
     const message = '사용자 또는 비밀번호가 올바르지 않습니다.';
     const user = await usersService.getUserByEmail(loginDto.email);
-    if (!user) throw ApiError.notFound(message);
+    assert(user, ApiError.notFound(message));
 
     const isValid = await isPasswordValid(loginDto.password, user.password);
-    if (!isValid) throw ApiError.unauthorized(message);
+    assert(isValid, ApiError.unauthorized(message));
+
     const accessToken = tokenUtils.generateAccessToken({ id: user.id });
     const refreshToken = tokenUtils.generateRefreshToken({ id: user.id });
 

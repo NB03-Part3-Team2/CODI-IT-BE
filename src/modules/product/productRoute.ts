@@ -22,6 +22,7 @@ productRouter
 
 productRouter
   .route('/:productId/reviews')
+  .get(reviewValidator.validateGetReviewList, reviewController.getReviewList)
   .post(authMiddleware, reviewValidator.validateCreateReview, reviewController.createReview);
 
 productRouter
