@@ -105,7 +105,6 @@ class OrderService {
       updatedAt: createdOrder.updatedAt,
       orderItems: createdOrder.items.map((item) => ({
         id: item.id,
-        orderId: item.orderId,
         productId: item.productId,
         sizeId: item.sizeId,
         price: item.price,
