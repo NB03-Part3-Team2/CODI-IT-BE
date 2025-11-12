@@ -5,6 +5,7 @@ import {
   CreateOrderData,
   CreateOrderItemData,
   GetOrdersQueryDto,
+  CancelOrderItemData,
 } from '@modules/order/dto/orderDTO';
 
 // 주문 상세 조회를 위한 select 옵션
@@ -121,6 +122,40 @@ class OrderRepository {
     });
   };
 
+  // 재고 복원 (트랜잭션 내에서 사용)
+  incrementStock = async (
+    productId: string,
+    sizeId: number,
+    quantity: number,
+    tx: Prisma.TransactionClient,
+  ) => {
+    return await tx.stock.update({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      data: {
+        quantity: {
+          increment: quantity,
+        },
+      },
+    });
+  };
+
+  // 사용자 포인트 환불 (트랜잭션 내에서 사용)
+  incrementUserPoints = async (userId: string, points: number, tx: Prisma.TransactionClient) => {
+    return await tx.user.update({
+      where: { id: userId },
+      data: {
+        points: {
+          increment: points,
+        },
+      },
+    });
+  };
+
   // 주문 생성 (트랜잭션 처리)
   createOrder = async (
     orderData: CreateOrderData,
@@ -168,7 +203,7 @@ class OrderRepository {
           data: {
             orderId: order.id,
             price: paymentPrice,
-            status: 'COMPLETED',
+            status: 'CompletedPayment',
           },
         });
 
@@ -189,6 +224,68 @@ class OrderRepository {
         });
 
         return createdOrder;
+      },
+      {
+        timeout: 10000, // 10초 타임아웃
+      },
+    );
+  };
+
+  // 주문 상세 조회
+  getOrderById = async (orderId: string) => {
+    return await prisma.order.findUnique({
+      where: { id: orderId },
+      select: {
+        id: true,
+        userId: true,
+        usePoint: true,
+        items: {
+          select: {
+            productId: true,
+            sizeId: true,
+            quantity: true,
+          },
+        },
+        payments: {
+          select: {
+            id: true,
+            status: true,
+          },
+          take: 1,
+          orderBy: {
+            createdAt: 'desc' as const,
+          },
+        },
+      },
+    });
+  };
+
+  // 주문 취소 (트랜잭션 처리)
+  deleteOrder = async (
+    orderId: string,
+    userId: string,
+    orderItems: CancelOrderItemData[],
+    usePoint: number,
+  ) => {
+    return await prisma.$transaction(
+      async (tx) => {
+        // 1. 재고 복원
+        for (const item of orderItems) {
+          await this.incrementStock(item.productId, item.sizeId, item.quantity, tx);
+        }
+
+        // 2. 포인트 환불 (usePoint가 0보다 큰 경우)
+        if (usePoint > 0) {
+          await this.incrementUserPoints(userId, usePoint, tx);
+        }
+
+        // 3. Payment 상태를 'Cancelled'로 변경
+        await tx.payment.updateMany({
+          where: { orderId },
+          data: {
+            status: 'Cancelled',
+          },
+        });
       },
       {
         timeout: 10000, // 10초 타임아웃
