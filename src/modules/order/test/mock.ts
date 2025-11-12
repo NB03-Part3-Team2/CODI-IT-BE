@@ -125,7 +125,7 @@ export const createMockPayment = (testDate: Date, override?: Partial<MockPayment
   id: 'payment-1',
   orderId: TEST_ORDER_ID,
   price: 20000,
-  status: 'COMPLETED',
+  status: 'CompletedPayment',
   createdAt: testDate,
   updatedAt: testDate,
   ...override,
@@ -323,5 +323,45 @@ export const createMockOrderInList = (
   createdAt: testDate,
   items: [createMockOrderItemInList(testDate)],
   payments: [createMockPayment(testDate)],
+  ...override,
+});
+
+/**
+ * Order Mock 데이터 (취소용 - getOrderById 반환 형태)
+ */
+export interface MockOrderForCancel {
+  id: string;
+  userId: string;
+  usePoint: number;
+  items: {
+    productId: string;
+    sizeId: number;
+    quantity: number;
+  }[];
+  payments: {
+    id: string;
+    status: string;
+  }[];
+}
+
+export const createMockOrderForCancel = (
+  override?: Partial<MockOrderForCancel>,
+): MockOrderForCancel => ({
+  id: TEST_ORDER_ID,
+  userId: TEST_USER_ID,
+  usePoint: 0,
+  items: [
+    {
+      productId: TEST_PRODUCT_ID,
+      sizeId: 1,
+      quantity: 2,
+    },
+  ],
+  payments: [
+    {
+      id: 'payment-1',
+      status: 'CompletedPayment',
+    },
+  ],
   ...override,
 });

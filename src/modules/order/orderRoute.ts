@@ -12,4 +12,9 @@ orderRouter
   .post(authMiddleware, orderValidator.validateCreateOrder, orderController.createOrder)
   .get(authMiddleware, orderValidator.validateGetOrders, orderController.getOrders);
 
+// DELETE /api/orders/:orderId - 주문 취소 (인증 필요)
+orderRouter
+  .route('/:orderId')
+  .delete(authMiddleware, orderValidator.validateDeleteOrder, orderController.deleteOrder);
+
 export default orderRouter;
