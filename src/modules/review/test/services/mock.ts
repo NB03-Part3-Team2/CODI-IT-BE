@@ -150,4 +150,3 @@ export const MOCK_DATA = {
   // 빈 리뷰 리스트
   emptyReviewList: [],
 };
-
