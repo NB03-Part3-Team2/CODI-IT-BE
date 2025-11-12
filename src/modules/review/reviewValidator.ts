@@ -3,7 +3,6 @@ import { forwardZodError } from '@utils/zod';
 import {
   createReviewSchema,
   updateReviewSchema,
-  orderItemIdSchema,
   reviewIdSchema,
   productIdSchema,
   getReviewListQuerySchema,
@@ -13,14 +12,14 @@ class ReviewValidator {
   validateCreateReview: RequestHandler = async (req, res, next) => {
     try {
       const parsedBody = {
-        productId: req.params.productId,
         rating: req.body.rating,
         content: req.body.content,
+        orderItemId: req.body.orderItemId,
       };
 
       req.validatedBody = await createReviewSchema.parseAsync(parsedBody);
-      req.validatedParams = await orderItemIdSchema.parseAsync({
-        orderItemId: req.params.orderItemId,
+      req.validatedParams = await productIdSchema.parseAsync({
+        productId: req.params.productId,
       });
       next();
     } catch (err) {

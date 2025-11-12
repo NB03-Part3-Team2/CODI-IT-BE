@@ -26,7 +26,7 @@ class ReviewController {
     const userId = req.user.id;
     const createReviewDto: CreateReviewDto = {
       ...req.validatedBody,
-      orderItemId: req.validatedParams.orderItemId,
+      productId: req.validatedParams.productId,
       userId,
     };
     const review = await reviewService.createReview(createReviewDto);

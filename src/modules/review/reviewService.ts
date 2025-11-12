@@ -9,6 +9,7 @@ import {
   GetReviewListQueryDto,
 } from '@modules/review/dto/reviewDTO';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 
 class ReviewService {
   createReview = async (createReviewDto: CreateReviewDto): Promise<ResReviewDto> => {
@@ -18,17 +19,14 @@ class ReviewService {
       orderRepo.getOrderItemById(createReviewDto.orderItemId),
     ]);
 
-    [
-      [existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.')],
-      [existingProduct, ApiError.badRequest('상품을 찾지 못했습니다.')],
-      [existingOrderItem, ApiError.badRequest('주문 내역을 찾지 못했습니다.')],
-      [
-        existingOrderItem?.order?.userId === createReviewDto.userId,
-        ApiError.forbidden('본인의 주문 내역에 대해서만 리뷰를 작성할 수 있습니다.'),
-      ],
-    ].forEach(([condition, error]) => {
-      if (!condition) throw error;
-    });
+    assert(existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.'));
+    assert(existingProduct, ApiError.badRequest('상품을 찾지 못했습니다.'));
+    assert(existingOrderItem, ApiError.badRequest('주문 내역을 찾지 못했습니다.'));
+    assert(
+      existingOrderItem?.order?.userId === createReviewDto.userId,
+      ApiError.forbidden('본인의 주문 내역에 대해서만 리뷰를 작성할 수 있습니다.'),
+    );
+
     const review = await reviewRepository.createReview(createReviewDto);
     return review;
   };
@@ -39,16 +37,12 @@ class ReviewService {
       reviewRepository.getReviewById(updateReviewDto.reviewId),
     ]);
 
-    [
-      [existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.')],
-      [existingReview, ApiError.badRequest('리뷰를 찾지 못했습니다.')],
-      [
-        existingReview?.userId === updateReviewDto.userId,
-        ApiError.forbidden('본인의 리뷰만 수정할 수 있습니다.'),
-      ],
-    ].forEach(([condition, error]) => {
-      if (!condition) throw error;
-    });
+    assert(existingUser, ApiError.badRequest('사용자를 찾지 못했습니다.'));
+    assert(existingReview, ApiError.badRequest('리뷰를 찾지 못했습니다.'));
+    assert(
+      existingReview?.userId === updateReviewDto.userId,
+      ApiError.forbidden('본인의 리뷰만 수정할 수 있습니다.'),
+    );
 
     const review = await reviewRepository.updateReview(updateReviewDto);
     return review;
@@ -56,10 +50,8 @@ class ReviewService {
 
   getReviewList = async (getReviewListQueryDto: GetReviewListQueryDto): Promise<ResReviewDto[]> => {
     const existingProduct = await productRepo.checkProductExists(getReviewListQueryDto.productId);
+    assert(existingProduct, ApiError.badRequest('상품을 찾지 못했습니다.'));
 
-    if (!existingProduct) {
-      throw ApiError.badRequest('상품을 찾지 못했습니다.');
-    }
     const reviewList = await reviewRepository.getReviewList(getReviewListQueryDto);
     return reviewList;
   };

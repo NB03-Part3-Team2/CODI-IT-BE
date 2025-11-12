@@ -20,19 +20,18 @@ describe('reviewCreate 단위 테스트', () => {
   describe('createReview 메소드 테스트', () => {
     test('createReview 성공 테스트', async () => {
       const createReviewDto = MOCK_DATA.createReviewDto;
-      const mockCreatedReview = MOCK_DATA.createdReview;
-      const expectedResult = MOCK_DATA.resReview;
+      const createdReview = MOCK_DATA.createdReview;
       const existingUser = MOCK_DATA.existingUser;
       const existingOrderItem = MOCK_DATA.existingOrderItem;
 
       jest.spyOn(userRepository, 'getUserById').mockResolvedValue(existingUser);
       jest.spyOn(productRepo, 'checkProductExists').mockResolvedValue(true);
       jest.spyOn(orderRepo, 'getOrderItemById').mockResolvedValue(existingOrderItem);
-      jest.spyOn(reviewRepository, 'createReview').mockResolvedValue(mockCreatedReview);
+      jest.spyOn(reviewRepository, 'createReview').mockResolvedValue(createdReview);
 
       const result = await reviewService.createReview(createReviewDto);
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toEqual(createdReview);
     });
 
     test('createReview 실패 테스트 - 사용자를 찾지 못함', async () => {
