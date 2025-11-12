@@ -2,6 +2,34 @@ import { prisma } from '@shared/prisma';
 import { CreateInquiryDTO, GetMyInquiryListRepoDTO } from '@modules/inquiry/dto/inquiryDTO';
 import { InquiryStatus } from '@prisma/client';
 
+const myInquiryListQuerySelect = {
+  id: true,
+  title: true,
+  isSecret: true,
+  status: true,
+  createdAt: true,
+  content: true,
+  product: {
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      store: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  },
+  user: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+};
+
 class InquiryRepository {
   create = async (userId: string, productId: string, createInquiryDto: CreateInquiryDTO) => {
     return await prisma.inquiry.create({
@@ -55,38 +83,8 @@ class InquiryRepository {
         userId,
         ...(status && { status }),
       },
-      select: {
-        id: true,
-        title: true,
-        isSecret: true,
-        status: true,
-        createdAt: true,
-        content: true,
-        product: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            store: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      orderBy: {
-        createdAt: 'desc',
-      },
+      select: myInquiryListQuerySelect,
+      ...this._paginateQuery(page, pageSize),
     });
   };
 
@@ -112,38 +110,8 @@ class InquiryRepository {
         },
         ...(status && { status }),
       },
-      select: {
-        id: true,
-        title: true,
-        isSecret: true,
-        status: true,
-        createdAt: true,
-        content: true,
-        product: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            store: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      orderBy: {
-        createdAt: 'desc',
-      },
+      select: myInquiryListQuerySelect,
+      ...this._paginateQuery(page, pageSize),
     });
   };
 
@@ -158,6 +126,16 @@ class InquiryRepository {
       },
     });
   };
+  // 공통 페이징 함수
+  private _paginateQuery = (
+    page: number,
+    pageSize: number,
+    orderBy: any = { createdAt: 'desc' },
+  ) => ({
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    orderBy,
+  });
 }
 
 export default new InquiryRepository();
