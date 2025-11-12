@@ -14,6 +14,10 @@ export const getMyInquiryListSchema = z.object({
   status: z.enum(INQUIRY_STATUS).optional(),
 });
 
+export const inquiryIdSchema = z.object({
+  id: z.cuid('문의 ID가 올바르지 않습니다.'),
+});
+
 export type CreateInquiryDTO = z.infer<typeof createInquirySchema>;
 export type GetMyInquiryListDTO = z.infer<typeof getMyInquiryListSchema>;
 
@@ -48,4 +52,26 @@ export interface GetMyInquiryItemDTO {
 export interface GetMyInquiryListResponseDTO {
   list: GetMyInquiryItemDTO[];
   totalCount: number;
+}
+
+export interface GetInquiryResponseDTO {
+  id: string;
+  userId: string;
+  productId: string;
+  title: string;
+  content: string;
+  isSecret: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  status: InquiryStringStatus;
+  reply: {
+    id: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+    user: {
+      id: string;
+      name: string;
+    };
+  } | null;
 }

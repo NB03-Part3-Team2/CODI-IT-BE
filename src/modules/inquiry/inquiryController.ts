@@ -72,6 +72,27 @@ class InquiryController {
 
     res.status(200).json(inquiries);
   };
+
+  /**
+   * @description
+   * 특정 문의의 상세 정보를 조회합니다.
+   *
+   * @param {Object} req - 요청 객체
+   * @param {Object} res - 응답 객체
+   *
+   * @returns {Object} 문의 상세 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 404 - 문의를 찾을 수 없음
+   */
+  getInquiry = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const { id: inquiryId } = req.validatedParams;
+
+    // 2. 문의 상세 조회
+    const inquiry = await inquiryService.getInquiry(inquiryId);
+
+    res.status(200).json(inquiry);
+  };
 }
 
 export default new InquiryController();

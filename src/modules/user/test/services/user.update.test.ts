@@ -88,7 +88,7 @@ describe('userUpdate 단위 테스트', () => {
       jest.spyOn(passwordUtils, 'isPasswordValid').mockResolvedValue(false);
 
       await expect(userService.updateUser(updateUserDto)).rejects.toMatchObject({
-        code: 401,
+        code: 400,
         message: '현재 비밀번호가 올바르지 않습니다.',
       });
     });

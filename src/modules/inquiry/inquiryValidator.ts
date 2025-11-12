@@ -3,6 +3,7 @@ import { forwardZodError } from '@utils/zod';
 import {
   createInquirySchema,
   getMyInquiryListSchema,
+  inquiryIdSchema,
 } from '@modules/inquiry/dto/inquiryDTO';
 import { productIdSchema } from '@modules/product/dto/productDTO';
 
@@ -57,6 +58,22 @@ class InquiryValidator {
 
       // 2. 스키마에 맞춰 유효성 검사
       req.validatedQuery = await getMyInquiryListSchema.parseAsync(parsedQuery);
+
+      next();
+    } catch (err) {
+      forwardZodError(err, '내 문의 목록 조회', next);
+    }
+  };
+
+  validateGetInquiry: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const parsedParams = {
+        id: req.params.inquiryId,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      req.validatedParams = await inquiryIdSchema.parseAsync(parsedParams);
 
       next();
     } catch (err) {
