@@ -56,6 +56,35 @@ class OrderController {
     // response 반환
     res.status(200).json(orders);
   };
+
+  /**
+   * 주문을 취소합니다.
+   *
+   * 주문 상태가 "CompletedPayment"인 경우에만 취소할 수 있습니다.
+   * 주문 취소 시 재고가 복원되고 사용한 포인트가 환불됩니다.
+   *
+   * @param req - 요청 객체
+   * @param res - 응답 객체
+   *
+   * @returns null (HTTP 200)
+   *
+   * @throws {ApiError} 400 - 잘못된 요청 (주문 상태가 결제 대기 중이 아님)
+   * @throws {ApiError} 401 - 인증되지 않은 사용자
+   * @throws {ApiError} 403 - 사용자를 찾을 수 없습니다 (본인 주문이 아님)
+   * @throws {ApiError} 404 - 주문을 찾을 수 없습니다
+   * @throws {ApiError} 500 - 서버 내부 오류
+   */
+  deleteOrder = async (req: Request, res: Response) => {
+    // 전달할 파라미터 정의
+    const userId = req.user.id;
+    const { orderId } = req.validatedParams;
+
+    // 주문 취소
+    await orderService.deleteOrder(userId, orderId);
+
+    // response 반환
+    res.status(200).json(null);
+  };
 }
 
 export default new OrderController();

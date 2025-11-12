@@ -140,6 +140,38 @@ class OrderService {
     };
   };
 
+  // 주문 취소
+  deleteOrder = async (userId: string, orderId: string): Promise<null> => {
+    // 1. 주문 조회
+    const order = await orderRepository.getOrderById(orderId);
+
+    // 2. 주문 존재 확인
+    if (!order) {
+      throw ApiError.notFound('주문을 찾을 수 없습니다.');
+    }
+
+    // 3. 사용자 권한 확인 (본인 주문인지)
+    if (order.userId !== userId) {
+      throw ApiError.forbidden('사용자를 찾을 수 없습니다.');
+    }
+
+    // 4. 결제 정보 확인
+    if (!order.payments || order.payments.length === 0) {
+      throw ApiError.internal('결제 정보를 찾을 수 없습니다.');
+    }
+
+    // 5. 주문 상태 확인 (CompletedPayment인지)
+    const paymentStatus = order.payments[0].status;
+    if (paymentStatus !== 'CompletedPayment') {
+      throw ApiError.badRequest('결제 완료된 주문만 취소할 수 있습니다.');
+    }
+
+    // 6. 주문 취소 (트랜잭션 처리)
+    await orderRepository.deleteOrder(orderId, userId, order.items, order.usePoint);
+
+    return null;
+  };
+
   // 주문 목록 조회
   getOrders = async (userId: string, query: GetOrdersQueryDto): Promise<GetOrdersResponseDto> => {
     // Repository에서 주문 목록 조회
