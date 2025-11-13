@@ -184,6 +184,14 @@ class InquiryRepository {
       },
     });
   };
+
+  delete = async (inquiryId: string) => {
+    return await prisma.inquiry.delete({
+      where: {
+        id: inquiryId,
+      },
+    });
+  };
 }
 
 export default new InquiryRepository();

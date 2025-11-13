@@ -104,6 +104,22 @@ class InquiryValidator {
       forwardZodError(err, '문의 수정', next);
     }
   };
+
+  validateDeleteInquiry: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const parsedParams = {
+        id: req.params.inquiryId,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      req.validatedParams = await inquiryIdSchema.parseAsync(parsedParams);
+
+      next();
+    } catch (err) {
+      forwardZodError(err, '문의 삭제', next);
+    }
+  };
 }
 
 export default new InquiryValidator();
