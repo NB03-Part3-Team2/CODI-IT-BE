@@ -1,5 +1,9 @@
 import { prisma } from '@shared/prisma';
-import { CreateInquiryDTO, GetMyInquiryListRepoDTO } from '@modules/inquiry/dto/inquiryDTO';
+import {
+  CreateInquiryDTO,
+  GetMyInquiryListRepoDTO,
+  UpdateInquiryDTO,
+} from '@modules/inquiry/dto/inquiryDTO';
 import { InquiryStatus } from '@prisma/client';
 
 const myInquiryListQuerySelect = {
@@ -169,6 +173,17 @@ class InquiryRepository {
     take: pageSize,
     orderBy,
   });
+
+  update = async (inquiryId: string, updateInquiryDto: UpdateInquiryDTO) => {
+    return await prisma.inquiry.update({
+      where: {
+        id: inquiryId,
+      },
+      data: {
+        ...updateInquiryDto,
+      },
+    });
+  };
 }
 
 export default new InquiryRepository();
