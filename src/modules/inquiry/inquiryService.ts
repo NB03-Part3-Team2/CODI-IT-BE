@@ -22,7 +22,11 @@ import userRepository from '@modules/user/userRepo';
 import { InquiryStatus, UserType } from '@prisma/client';
 
 class InquiryService {
-  createInquiry = async (userId: string, productId: string, createInquiryDto: CreateInquiryDTO) => {
+  createInquiry = async (
+    userId: string,
+    productId: string,
+    createInquiryDto: CreateInquiryDTO,
+  ): Promise<InquiryResponseDTO> => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
     const product = await productRepository.getById(productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
@@ -31,7 +35,10 @@ class InquiryService {
     const inquiry = await inquiryRepository.create(userId, productId, createInquiryDto);
 
     // 생성된 inquriy 반환
-    return inquiry;
+    return {
+      ...inquiry,
+      status: fromPrismaInquiryStatus(inquiry.status),
+    };
   };
 
   getInquiryList = async (productId: string) => {
