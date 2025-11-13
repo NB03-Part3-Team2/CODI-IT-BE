@@ -8,6 +8,7 @@ import cartRouter from '@modules/cart/cartRoute';
 import orderRouter from '@modules/order/orderRoute';
 import reviewRouter from '@modules/review/reviewRoute';
 import inquiryRouter from '@modules/inquiry/inquiryRoute';
+import notificationRouter from '@modules/notification/notificationRoute';
 
 /*
 	modules에서 route임포트
@@ -28,5 +29,6 @@ router.use('/cart', cartRouter);
 router.use('/orders', orderRouter);
 router.use('/reviews', reviewRouter);
 router.use('/inquiries', inquiryRouter);
+router.use('/notifications', notificationRouter);
 
 export default router;
