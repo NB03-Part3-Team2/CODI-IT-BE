@@ -15,22 +15,45 @@ describe('userDelete 단위 테스트', () => {
   });
 
   describe('deleteUser 메소드 테스트', () => {
-    test('deleteUser 성공 테스트', async () => {
+    test('deleteUser 성공 테스트 - 이미지 있는 경우', async () => {
       // 공통 mock 데이터 사용
       const userId = MOCK_CONSTANTS.USER_ID;
       const mockExistingUser = MOCK_DATA.getUser;
+      const mockDeletedUser = MOCK_DATA.deletedUser;
 
       // Repository 메소드들을 mock
       const getUserByIdMock = jest
         .spyOn(userRepository, 'getUserById')
         .mockResolvedValue(mockExistingUser);
-      const deleteUserMock = jest.spyOn(userRepository, 'deleteUser').mockResolvedValue(undefined);
+      const deleteUserMock = jest
+        .spyOn(userRepository, 'deleteUser')
+        .mockResolvedValue(mockDeletedUser);
 
-      await userService.deleteUser(userId);
+      const result = await userService.deleteUser(userId);
 
       // Mock된 메소드들이 올바른 인자와 함께 호출되었는지 확인
       expect(getUserByIdMock).toHaveBeenCalledWith(userId);
       expect(deleteUserMock).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockDeletedUser);
+    });
+
+    test('deleteUser 성공 테스트 - 이미지 없는 경우', async () => {
+      const userId = MOCK_CONSTANTS.USER_ID;
+      const mockExistingUser = { ...MOCK_DATA.getUser, image: null };
+      const mockDeletedUser = MOCK_DATA.deletedUserWithoutImage;
+
+      const getUserByIdMock = jest
+        .spyOn(userRepository, 'getUserById')
+        .mockResolvedValue(mockExistingUser);
+      const deleteUserMock = jest
+        .spyOn(userRepository, 'deleteUser')
+        .mockResolvedValue(mockDeletedUser);
+
+      const result = await userService.deleteUser(userId);
+
+      expect(getUserByIdMock).toHaveBeenCalledWith(userId);
+      expect(deleteUserMock).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockDeletedUser);
     });
 
     test('deleteUser 실패 테스트 - 존재하지 않는 사용자', async () => {

@@ -39,6 +39,11 @@ export const MOCK_DATA = {
     rating: MOCK_CONSTANTS.RATING,
     content: MOCK_CONSTANTS.CONTENT,
     createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+    orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+    user: {
+      name: '테스트유저',
+    },
   },
 
   // 사용자 데이터
@@ -80,6 +85,11 @@ export const MOCK_DATA = {
     rating: MOCK_CONSTANTS.UPDATED_RATING,
     content: MOCK_CONSTANTS.UPDATED_CONTENT,
     createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+    orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+    user: {
+      name: '테스트유저',
+    },
   },
 
   // 다른 사용자 소유의 리뷰 (권한 테스트용)
@@ -127,7 +137,95 @@ export const MOCK_DATA = {
     limit: MOCK_CONSTANTS.LIMIT,
   },
 
-  // 리뷰 리스트 (getReviewList 응답)
+  // Repository에서 반환하는 데이터 (count + reviewList)
+  repositoryReviewListData: {
+    count: 10,
+    reviewList: [
+      {
+        id: MOCK_CONSTANTS.REVIEW_ID,
+        userId: MOCK_CONSTANTS.USER_ID,
+        productId: MOCK_CONSTANTS.PRODUCT_ID,
+        rating: MOCK_CONSTANTS.RATING,
+        content: MOCK_CONSTANTS.CONTENT,
+        createdAt: MOCK_CONSTANTS.MOCK_DATE,
+        updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+        orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+        user: {
+          name: '테스트유저',
+        },
+      },
+      {
+        id: MOCK_CONSTANTS.REVIEW_ID_2,
+        userId: MOCK_CONSTANTS.OTHER_USER_ID,
+        productId: MOCK_CONSTANTS.PRODUCT_ID,
+        rating: 4,
+        content: '좋아요!',
+        createdAt: MOCK_CONSTANTS.MOCK_DATE_2,
+        updatedAt: MOCK_CONSTANTS.MOCK_DATE_2,
+        orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+        user: {
+          name: '다른유저',
+        },
+      },
+    ],
+  },
+
+  // Repository에서 반환하는 빈 데이터
+  repositoryEmptyReviewListData: {
+    count: 0,
+    reviewList: [],
+  },
+
+  // Service에서 반환하는 응답 (items + meta)
+  expectedReviewListResponse: {
+    items: [
+      {
+        id: MOCK_CONSTANTS.REVIEW_ID,
+        userId: MOCK_CONSTANTS.USER_ID,
+        productId: MOCK_CONSTANTS.PRODUCT_ID,
+        rating: MOCK_CONSTANTS.RATING,
+        content: MOCK_CONSTANTS.CONTENT,
+        createdAt: MOCK_CONSTANTS.MOCK_DATE,
+        updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+        orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+        user: {
+          name: '테스트유저',
+        },
+      },
+      {
+        id: MOCK_CONSTANTS.REVIEW_ID_2,
+        userId: MOCK_CONSTANTS.OTHER_USER_ID,
+        productId: MOCK_CONSTANTS.PRODUCT_ID,
+        rating: 4,
+        content: '좋아요!',
+        createdAt: MOCK_CONSTANTS.MOCK_DATE_2,
+        updatedAt: MOCK_CONSTANTS.MOCK_DATE_2,
+        orderItemId: MOCK_CONSTANTS.ORDER_ITEM_ID,
+        user: {
+          name: '다른유저',
+        },
+      },
+    ],
+    meta: {
+      total: 10,
+      page: 1,
+      limit: 5,
+      hasNextPage: true,
+    },
+  },
+
+  // Service에서 반환하는 빈 응답
+  expectedEmptyReviewListResponse: {
+    items: [],
+    meta: {
+      total: 0,
+      page: 1,
+      limit: 5,
+      hasNextPage: false,
+    },
+  },
+
+  // 리뷰 리스트 (getReviewList 응답) - 이전 버전 (deprecated)
   reviewList: [
     {
       id: MOCK_CONSTANTS.REVIEW_ID,

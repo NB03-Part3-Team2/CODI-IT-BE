@@ -50,4 +50,21 @@ export type ResReviewDto = {
   rating: number;
   content: string;
   createdAt: Date;
+  updatedAt: Date;
+  orderItemId: string;
+  user: {
+    name: string;
+  };
 };
+
+export interface ReviewMetaData {
+  total: number;
+  page: number;
+  limit: number;
+  hasNextPage: boolean;
+}
+
+export interface ResReviewListDto {
+  items: ResReviewDto[];
+  meta: ReviewMetaData;
+}

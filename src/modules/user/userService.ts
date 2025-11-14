@@ -9,15 +9,15 @@ import {
   ResUserDto,
 } from '@modules/user/dto/userDTO';
 import { ResFavoriteStoreDto } from '@modules/user/dto/favoriteStoreDTO';
+import { deleteImageFromS3 } from '@utils/s3DeleteUtils';
 
 class UserService {
   sensitiveUserDataFilter = (user: CreatedUserDto): ResUserDto => {
-    const { totalAmount, gradeId, grade, password, image, ...rest } = user;
-    const { createdAt, updatedAt, ...gradeInfo } = grade;
+    const { totalAmount, password, ...rest } = user;
+    const { createdAt, updatedAt, ...gradeInfo } = rest.grade;
     const filteredUser = {
       ...rest,
       grade: gradeInfo,
-      image,
     };
     return filteredUser;
   };
@@ -62,14 +62,22 @@ class UserService {
     updateUserDto.newPassword = await hashPassword(updateUserDto.newPassword);
 
     const updatedUser = await userRepository.updateUser(updateUserDto);
+    if (user.image && updateUserDto.image && updateUserDto.image !== user.image) {
+      await deleteImageFromS3(user.image);
+    }
     return this.sensitiveUserDataFilter(updatedUser);
   };
 
-  deleteUser = async (userId: string): Promise<void> => {
+  deleteUser = async (userId: string) => {
     const user = await userRepository.getUserById(userId);
     assert(user, ApiError.notFound('존재하지 않는 사용자입니다.'));
 
-    await userRepository.deleteUser(userId);
+    const deletedUser = await userRepository.deleteUser(userId);
+    if (deletedUser.image) {
+      await deleteImageFromS3(deletedUser.image);
+    }
+
+    return deletedUser;
   };
 
   getFavoriteStoreList = async (userId: string): Promise<ResFavoriteStoreDto[]> => {
