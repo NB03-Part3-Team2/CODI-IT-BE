@@ -8,6 +8,8 @@ export const createInquirySchema = z.object({
   isSecret: z.boolean().default(false),
 });
 
+export const updateInquirySchema = createInquirySchema.partial();
+
 export const getMyInquiryListSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   pageSize: z.coerce.number().int().positive().default(10),
@@ -19,6 +21,7 @@ export const inquiryIdSchema = z.object({
 });
 
 export type CreateInquiryDTO = z.infer<typeof createInquirySchema>;
+export type UpdateInquiryDTO = z.infer<typeof updateInquirySchema>;
 export type GetMyInquiryListDTO = z.infer<typeof getMyInquiryListSchema>;
 
 export interface GetMyInquiryListRepoDTO extends Omit<GetMyInquiryListDTO, 'status'> {
@@ -54,7 +57,7 @@ export interface GetMyInquiryListResponseDTO {
   totalCount: number;
 }
 
-export interface GetInquiryResponseDTO {
+export interface InquiryResponseDTO {
   id: string;
   userId: string;
   productId: string;
@@ -64,6 +67,9 @@ export interface GetInquiryResponseDTO {
   createdAt: Date;
   updatedAt: Date;
   status: InquiryStringStatus;
+}
+
+export interface GetInquiryResponseDTO extends InquiryResponseDTO {
   reply: {
     id: string;
     content: string;
