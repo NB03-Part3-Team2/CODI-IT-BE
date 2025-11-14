@@ -82,11 +82,11 @@ export interface GetInquiryResponseDTO extends InquiryResponseDTO {
   } | null;
 }
 
-export const createInquiryReplySchema = z.object({
+export const InquiryReplySchema = z.object({
   content: z.string().min(1, '내용은 1자 이상이여야 합니다'),
 });
 
-export type CreateInquiryReplyDTO = z.infer<typeof createInquiryReplySchema>;
+export type CreateInquiryReplyDTO = z.infer<typeof InquiryReplySchema>;
 
 export interface InquiryReplyResponseDTO {
   id: string;
@@ -100,4 +100,3 @@ export interface InquiryReplyResponseDTO {
 export const replyIdSchema = z.object({
   id: z.cuid('답변 ID가 올바르지 않습니다.'),
 });
-

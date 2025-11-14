@@ -5,7 +5,7 @@ import {
   getMyInquiryListSchema,
   inquiryIdSchema,
   updateInquirySchema,
-  createInquiryReplySchema,
+  InquiryReplySchema,
   replyIdSchema,
 } from '@modules/inquiry/dto/inquiryDTO';
 import { productIdSchema } from '@modules/product/dto/productDTO';
@@ -135,7 +135,7 @@ class InquiryValidator {
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      req.validatedBody = await createInquiryReplySchema.parseAsync(parsedBody);
+      req.validatedBody = await InquiryReplySchema.parseAsync(parsedBody);
       req.validatedParams = await inquiryIdSchema.parseAsync(parsedParams);
 
       next();
@@ -156,7 +156,7 @@ class InquiryValidator {
       };
 
       // 2. 스키마에 맞춰 유효성 검사
-      req.validatedBody = await createInquiryReplySchema.parseAsync(parsedBody);
+      req.validatedBody = await InquiryReplySchema.parseAsync(parsedBody);
       req.validatedParams = await replyIdSchema.parseAsync(parsedParams);
 
       next();
