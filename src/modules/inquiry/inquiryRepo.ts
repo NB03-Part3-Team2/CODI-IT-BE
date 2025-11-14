@@ -192,6 +192,30 @@ class InquiryRepository {
       },
     });
   };
+
+  // 문의 답변 생성
+  createInquiryReply = async (inquiryId: string, userId: string, content: string) => {
+    return await prisma.$transaction(async (tx) => {
+      const inquiryReply = await tx.inquiryReply.create({
+        data: {
+          inquiryId,
+          userId,
+          content,
+        },
+      });
+
+      await tx.inquiry.update({
+        where: {
+          id: inquiryId,
+        },
+        data: {
+          status: InquiryStatus.COMPLETED_ANSWER,
+        },
+      });
+
+      return inquiryReply;
+    });
+  };
 }
 
 export default new InquiryRepository();

@@ -5,6 +5,7 @@ import {
   getMyInquiryListSchema,
   inquiryIdSchema,
   updateInquirySchema,
+  createInquiryReplySchema,
 } from '@modules/inquiry/dto/inquiryDTO';
 import { productIdSchema } from '@modules/product/dto/productDTO';
 
@@ -118,6 +119,27 @@ class InquiryValidator {
       next();
     } catch (err) {
       forwardZodError(err, '문의 삭제', next);
+    }
+  };
+
+  validateCreateInquiryReply: RequestHandler = async (req, res, next) => {
+    try {
+      // 1. 검사할 속성 정의
+      const parsedBody = {
+        content: req.body.content,
+      };
+
+      const parsedParams = {
+        id: req.params.inquiryId,
+      };
+
+      // 2. 스키마에 맞춰 유효성 검사
+      req.validatedBody = await createInquiryReplySchema.parseAsync(parsedBody);
+      req.validatedParams = await inquiryIdSchema.parseAsync(parsedParams);
+
+      next();
+    } catch (err) {
+      forwardZodError(err, '문의 답변 등록', next);
     }
   };
 }

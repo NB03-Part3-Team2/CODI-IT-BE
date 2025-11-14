@@ -11,6 +11,13 @@ inquiryRouter
   .patch(authMiddleware, inquiryValidator.validateUpdateInquiry, inquiryController.updateInquiry)
   .delete(authMiddleware, inquiryValidator.validateDeleteInquiry, inquiryController.deleteInquiry);
 
+inquiryRouter.post(
+  '/:inquiryId/replies',
+  authMiddleware,
+  inquiryValidator.validateCreateInquiryReply,
+  inquiryController.createInquiryReply,
+);
+
 inquiryRouter
   .route('/')
   .get(

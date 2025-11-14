@@ -1,6 +1,7 @@
 import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import storeRepository from '@modules/store/storeRepo';
+import userRepository from '@modules/user/userRepo';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
 import {
@@ -16,9 +17,8 @@ import {
   GetMyInquiryListResponseDTO,
   UpdateInquiryDTO,
   InquiryResponseDTO,
+  InquiryReplyResponseDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
-
-import userRepository from '@modules/user/userRepo';
 import { InquiryStatus, UserType } from '@prisma/client';
 
 class InquiryService {
@@ -164,6 +164,42 @@ class InquiryService {
       ...deletedInquiry,
       status: fromPrismaInquiryStatus(deletedInquiry.status),
     };
+  };
+
+  createInquiryReply = async (
+    userId: string,
+    inquiryId: string,
+    content: string,
+  ): Promise<InquiryReplyResponseDTO> => {
+    // 문의 조회
+    const inquiry = await inquiryRepository.getById(inquiryId);
+    assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
+
+    // 유저 조회 - 유저의 타입을 알아야 하므로
+    const user = await userRepository.getUserById(userId);
+    assert(user, ApiError.notFound('유저를 찾을 수 없습니다.'));
+
+    // 판매자만 답변 가능
+    assert(
+      user.type === UserType.SELLER,
+      ApiError.forbidden('판매자만 답변을 등록할 수 있습니다.'),
+    );
+
+    // 판매자가 해당 상품의 판매자인지 확인
+    const product = await productRepository.getByIdWithRelations(inquiry.productId);
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
+    assert(
+      product.store.userId === userId,
+      ApiError.forbidden('해당 상품의 판매자만 답변을 등록할 수 있습니다.'),
+    );
+
+    // 5. 이미 답변이 등록된 문의인지 확인
+    assert(!inquiry.reply, ApiError.conflict('이미 답변이 등록된 문의입니다.'));
+
+    // 6. 문의 답변 생성 및 문의 상태 변경 (트랜잭션)
+    const inquiryReply = await inquiryRepository.createInquiryReply(inquiryId, userId, content);
+
+    return inquiryReply;
   };
 }
 

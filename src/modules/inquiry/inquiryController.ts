@@ -144,6 +144,31 @@ class InquiryController {
 
     res.status(200).json(deletedInquiry);
   };
+
+  /**
+   * @description
+   * 특정 문의에 답변을 등록합니다.
+   *
+   * @param {Object} req - 요청 객체
+   * @param {Object} res - 응답 객체
+   *
+   * @returns {Object} 생성된 답변 정보 (HTTP 201)
+   *
+   * @throws {ApiError} 403 - 권한 없음
+   * @throws {ApiError} 404 - 존재하지 않는 문의
+   * @throws {ApiError} 409 - 이미 답변이 등록된 문의
+   */
+  createInquiryReply = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const userId = req.user.id;
+    const { id: inquiryId } = req.validatedParams;
+    const { content } = req.validatedBody;
+
+    // 2. 문의 답변 생성
+    const inquiryReply = await inquiryService.createInquiryReply(userId, inquiryId, content);
+
+    res.status(201).json(inquiryReply);
+  };
 }
 
 export default new InquiryController();

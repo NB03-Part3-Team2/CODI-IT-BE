@@ -81,3 +81,19 @@ export interface GetInquiryResponseDTO extends InquiryResponseDTO {
     };
   } | null;
 }
+
+export const createInquiryReplySchema = z.object({
+  content: z.string().min(1, '내용은 1자 이상이여야 합니다'),
+});
+
+export type CreateInquiryReplyDTO = z.infer<typeof createInquiryReplySchema>;
+
+export interface InquiryReplyResponseDTO {
+  id: string;
+  inquiryId: string;
+  userId: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
