@@ -35,7 +35,7 @@ class NotificationServer {
       this.disconnect(userId);
     });
 
-    console.log(`SSE에 유저가 연결됨. 현재 연결된 사용자 수: ${this.connections.size}`);
+    console.log(`SSE 연결됨. 현재 연결된 사용자 수: ${this.connections.size}`);
   }
 
   /**
@@ -46,7 +46,7 @@ class NotificationServer {
     if (connection) {
       clearInterval(connection.heartbeatInterval);
       this.connections.delete(userId);
-      console.log(`SSE에 유저가 연결 해제완료. 현재 연결된 사용자 수: ${this.connections.size}`);
+      console.log(`SSE 해제됨. 현재 연결된 사용자 수: ${this.connections.size}`);
     }
   }
 

@@ -429,7 +429,7 @@ class ProductRepository {
     });
   };
 
-  getOwnerIdByProductId = async (productId: string) => {
+  getSellerIdByProductId = async (productId: string) => {
     const product = await prisma.product.findUnique({
       where: { id: productId },
       select: {

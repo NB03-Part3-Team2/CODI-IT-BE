@@ -1,4 +1,7 @@
-import { CreateNotificationDto, ResnotifyOutOfStockDto } from '../../dto/notificationDTO';
+import {
+  CreateNotificationDto,
+  ResnotifyOutOfStockDto,
+} from '@modules/notification/dto/notificationDTO';
 import { GetMyInquiryItemDTO } from '@modules/inquiry/dto/inquiryDTO';
 
 // 공통 상수

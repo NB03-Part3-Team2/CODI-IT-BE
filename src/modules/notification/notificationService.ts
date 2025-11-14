@@ -41,18 +41,14 @@ class NotificationService {
   async notifyInquiryAnswered(inquiry: GetMyInquiryItemDTO) {
     await this.createNotification({
       userId: inquiry.user.id,
-      content: `문의 "${inquiry.title}"에 답변이 달렸습니다.`,
+      content: `등록한 문의 "${inquiry.title}"에 답변이 달렸습니다.`,
     });
   }
 
-  async notifyNewInquiry(sellerId: string | null, productName: string) {
-    // 판매자 ID가 없으면 알림을 보내지 않음
-    if (!sellerId) {
-      return;
-    }
+  async notifyNewInquiry(sellerId: string, productName: string) {
     await this.createNotification({
       userId: sellerId,
-      content: `${productName}에 새로운 문의가 등록되었습니다.`,
+      content: `등록된 상품:${productName}에 새로운 문의가 등록되었습니다.`,
     });
   }
 
