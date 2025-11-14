@@ -7,7 +7,9 @@ const inquiryRouter = express.Router();
 
 inquiryRouter
   .route('/:inquiryId')
-  .get(inquiryValidator.validateGetInquiry, inquiryController.getInquiry);
+  .get(inquiryValidator.validateGetInquiry, inquiryController.getInquiry)
+  .patch(authMiddleware, inquiryValidator.validateUpdateInquiry, inquiryController.updateInquiry)
+  .delete(authMiddleware, inquiryValidator.validateDeleteInquiry, inquiryController.deleteInquiry);
 
 inquiryRouter
   .route('/')

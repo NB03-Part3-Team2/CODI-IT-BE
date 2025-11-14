@@ -4,6 +4,7 @@ import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import { InquiryStatus } from '@prisma/client';
 import { mockUserBuyer, mockProduct } from '@modules/inquiry/test/mock';
+import { fromPrismaInquiryStatus } from '@modules/inquiry/utils/inquiryUtils';
 
 describe('createInquiry 메소드 테스트', () => {
   afterEach(() => {
@@ -18,7 +19,7 @@ describe('createInquiry 메소드 테스트', () => {
       isSecret: false,
     };
 
-    const expectedResult = {
+    const mockInquiryFromRepo = {
       id: 'inquiry-id-001',
       userId: mockUserBuyer.id,
       productId: mockProduct.id,
@@ -30,13 +31,18 @@ describe('createInquiry 메소드 테스트', () => {
       updatedAt: new Date(),
     };
 
+    const expectedResult = {
+      ...mockInquiryFromRepo,
+      status: fromPrismaInquiryStatus(mockInquiryFromRepo.status),
+    };
+
     // 2. 레포지토리 함수 모킹
     const getProductByIdMock = jest
       .spyOn(productRepository, 'getById')
       .mockResolvedValue(mockProduct);
     const createInquiryMock = jest
       .spyOn(inquiryRepository, 'create')
-      .mockResolvedValue(expectedResult);
+      .mockResolvedValue(mockInquiryFromRepo);
 
     // 3. 서비스 함수 호출
     const result = await inquiryService.createInquiry(

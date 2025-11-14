@@ -14,13 +14,19 @@ import {
   GetMyInquiryListDTO,
   GetMyInquiryListRepoDTO,
   GetMyInquiryListResponseDTO,
+  UpdateInquiryDTO,
+  InquiryResponseDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
 
 import userRepository from '@modules/user/userRepo';
-import { UserType } from '@prisma/client';
+import { InquiryStatus, UserType } from '@prisma/client';
 
 class InquiryService {
-  createInquiry = async (userId: string, productId: string, createInquiryDto: CreateInquiryDTO) => {
+  createInquiry = async (
+    userId: string,
+    productId: string,
+    createInquiryDto: CreateInquiryDTO,
+  ): Promise<InquiryResponseDTO> => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
     const product = await productRepository.getById(productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
@@ -29,7 +35,10 @@ class InquiryService {
     const inquiry = await inquiryRepository.create(userId, productId, createInquiryDto);
 
     // 생성된 inquriy 반환
-    return inquiry;
+    return {
+      ...inquiry,
+      status: fromPrismaInquiryStatus(inquiry.status),
+    };
   };
 
   getInquiryList = async (productId: string) => {
@@ -102,6 +111,58 @@ class InquiryService {
     return {
       ...inquiry,
       status: fromPrismaInquiryStatus(inquiry.status),
+    };
+  };
+
+  updateInquiry = async (
+    userId: string,
+    inquiryId: string,
+    updateInquiryDto: UpdateInquiryDTO,
+  ): Promise<InquiryResponseDTO> => {
+    // 수정할 문의가 있는지 먼저 조회
+    const inquiry = await inquiryRepository.getById(inquiryId);
+    assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
+
+    // 자신이 등록한 문의인지 확인
+    assert(
+      inquiry.userId === userId,
+      ApiError.forbidden('자신이 등록한 문의만 수정할 수 있습니다.'),
+    );
+
+    // 답변 상태가 아직 대기중인지 확인
+    assert(
+      inquiry.status === InquiryStatus.WAITING_ANSWER,
+      ApiError.forbidden('답변이 등록된 문의는 수정할 수 없습니다.'),
+    );
+
+    // 문의 수정
+    const updatedInquiry = await inquiryRepository.update(inquiryId, updateInquiryDto);
+
+    // 수정된 문의 반환
+    return {
+      ...updatedInquiry,
+      status: fromPrismaInquiryStatus(updatedInquiry.status),
+    };
+  };
+
+  deleteInquiry = async (userId: string, inquiryId: string): Promise<InquiryResponseDTO> => {
+    // 삭제할 문의가 있는지 먼저 조회
+    const inquiry = await inquiryRepository.getById(inquiryId);
+    assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
+
+    // 자신이 등록한 문의인지 확인
+    assert(
+      inquiry.userId === userId,
+      ApiError.forbidden('자신이 등록한 문의만 삭제할 수 있습니다.'),
+    );
+
+    // 문의 삭제
+    const deletedInquiry = await inquiryRepository.delete(inquiryId);
+
+    // 삭제된 문의 반환
+    return {
+      ...deletedInquiry,
+      status: fromPrismaInquiryStatus(deletedInquiry.status),
     };
   };
 }

@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import inquiryService from '@modules/inquiry/inquiryService';
-import { CreateInquiryDTO, GetMyInquiryListDTO } from '@modules/inquiry/dto/inquiryDTO';
+import {
+  CreateInquiryDTO,
+  GetMyInquiryListDTO,
+  UpdateInquiryDTO,
+} from '@modules/inquiry/dto/inquiryDTO';
 
 class InquiryController {
   /**
@@ -92,6 +96,53 @@ class InquiryController {
     const inquiry = await inquiryService.getInquiry(inquiryId);
 
     res.status(200).json(inquiry);
+  };
+
+  /**
+   * @description
+   * 특정 문의를 수정합니다.
+   *
+   * @param {Object} req - 요청 객체
+   * @param {Object} res - 응답 객체
+   *
+   * @returns {Object} 수정된 문의 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 403 - 권한 없음
+   * @throws {ApiError} 404 - 존재하지 않는 문의
+   */
+  updateInquiry = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const userId = req.user.id;
+    const { id: inquiryId } = req.validatedParams;
+    const updateInquiryDto: UpdateInquiryDTO = { ...req.validatedBody };
+
+    // 2. 문의 수정
+    const updatedInquiry = await inquiryService.updateInquiry(userId, inquiryId, updateInquiryDto);
+
+    res.status(200).json(updatedInquiry);
+  };
+
+  /**
+   * @description
+   * 특정 문의를 삭제합니다.
+   *
+   * @param {Object} req - 요청 객체
+   * @param {Object} res - 응답 객체
+   *
+   * @returns {Object} 삭제된 문의 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 403 - 권한 없음
+   * @throws {ApiError} 404 - 존재하지 않는 문의
+   */
+  deleteInquiry = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const userId = req.user.id;
+    const { id: inquiryId } = req.validatedParams;
+
+    // 2. 문의 삭제
+    const deletedInquiry = await inquiryService.deleteInquiry(userId, inquiryId);
+
+    res.status(200).json(deletedInquiry);
   };
 }
 
