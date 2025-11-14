@@ -1,6 +1,7 @@
 import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import storeRepository from '@modules/store/storeRepo';
+import notificationService from '@modules/notification/notificationService';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
 import {
@@ -34,6 +35,14 @@ class InquiryService {
     // inquiry 등록 레포지토리 호출
     const inquiry = await inquiryRepository.create(userId, productId, createInquiryDto);
 
+    /* 판매자에게 알림 전송
+    그러나 알림 전송도중 알림 실패 때문에 로직이 중지되는 상황을 막기위해 console.error로 에러로그만 남기고
+    문의 등록 실패는 막음 */
+    const sellerId = await productRepository.getSellerIdByProductId(productId);
+    if (!sellerId) {
+      console.error('판매자 ID가 없습니다. 알림을 보낼 수 없습니다.');
+    }
+    await notificationService.notifyNewInquiry(sellerId, product.name);
     // 생성된 inquriy 반환
     return {
       ...inquiry,

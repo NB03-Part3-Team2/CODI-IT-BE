@@ -7,7 +7,6 @@ import {
   ResnotifyOutOfStockDto,
 } from '@modules/notification/dto/notificationDTO';
 import { GetMyInquiryItemDTO } from '@modules/inquiry/dto/inquiryDTO';
-
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
 
@@ -46,7 +45,11 @@ class NotificationService {
     });
   }
 
-  async notifyNewInquiry(sellerId: string, productName: string) {
+  async notifyNewInquiry(sellerId: string | null, productName: string) {
+    // 판매자 ID가 없으면 알림을 보내지 않음
+    if (!sellerId) {
+      return;
+    }
     await this.createNotification({
       userId: sellerId,
       content: `${productName}에 새로운 문의가 등록되었습니다.`,

@@ -428,6 +428,20 @@ class ProductRepository {
       where: { id: productId },
     });
   };
+
+  getOwnerIdByProductId = async (productId: string) => {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        store: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    return product?.store.userId || null;
+  };
 }
 
 export default new ProductRepository();
