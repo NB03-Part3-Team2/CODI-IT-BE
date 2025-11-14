@@ -188,4 +188,34 @@ export const MOCK_DATA = {
 
   // 빈 찜한 상점 리스트
   emptyFavoriteStoreList: [],
+
+  // 삭제된 사용자 (이미지 있음)
+  deletedUser: {
+    id: MOCK_CONSTANTS.USER_ID,
+    gradeId: MOCK_CONSTANTS.GRADE_ID,
+    name: MOCK_CONSTANTS.USER_NAME,
+    email: MOCK_CONSTANTS.USER_EMAIL,
+    password: MOCK_CONSTANTS.HASHED_PASSWORD,
+    type: 'BUYER' as const,
+    points: 0,
+    totalAmount: 0,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+    image: MOCK_CONSTANTS.IMAGE,
+  },
+
+  // 삭제된 사용자 (이미지 없음)
+  deletedUserWithoutImage: {
+    id: MOCK_CONSTANTS.USER_ID,
+    gradeId: MOCK_CONSTANTS.GRADE_ID,
+    name: MOCK_CONSTANTS.USER_NAME,
+    email: MOCK_CONSTANTS.USER_EMAIL,
+    password: MOCK_CONSTANTS.HASHED_PASSWORD,
+    type: 'BUYER' as const,
+    points: 0,
+    totalAmount: 0,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+    image: null,
+  },
 };

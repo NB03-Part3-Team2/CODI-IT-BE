@@ -141,9 +141,12 @@ class ProductService {
     // 품절 알림 전송: 업데이트 결과 재고가 0인 사이즈만 알림
     const soldOutStocks = updatedProduct.stocks.filter((stock) => stock.quantity === 0);
     if (soldOutStocks.length > 0) {
-      const cartUserIds = await cartRepository.getUserIdsByProductId(productId);
-
       for (const stock of soldOutStocks) {
+        const cartUserIds = await cartRepository.getUserIdsBySoldOutProduct(
+          productId,
+          stock.size.id,
+        );
+
         await notificationService.notifyOutOfStock({
           sellerId: userId,
           storeName: store.name,

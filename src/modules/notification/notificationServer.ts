@@ -12,7 +12,7 @@ class NotificationServer {
   /**
    * SSE 연결 등록
    */
-  connect(userId: string, res: Response) {
+  connect = (userId: string, res: Response) => {
     // 이미 연결되어 있으면 기존 연결 종료
     if (this.connections.has(userId)) {
       this.disconnect(userId);
@@ -36,24 +36,24 @@ class NotificationServer {
     });
 
     console.log(`SSE 연결됨. 현재 연결된 사용자 수: ${this.connections.size}`);
-  }
+  };
 
   /**
    * SSE 연결 해제
    */
-  disconnect(userId: string) {
+  disconnect = (userId: string) => {
     const connection = this.connections.get(userId);
     if (connection) {
       clearInterval(connection.heartbeatInterval);
       this.connections.delete(userId);
       console.log(`SSE 해제됨. 현재 연결된 사용자 수: ${this.connections.size}`);
     }
-  }
+  };
 
   /**
    * 특정 사용자에게 알림 전송
    */
-  send(userId: string, event: string, data: ResNotificationDto) {
+  send = (userId: string, event: string, data: ResNotificationDto) => {
     const connection = this.connections.get(userId);
     if (connection) {
       try {
@@ -62,14 +62,14 @@ class NotificationServer {
         this.disconnect(userId);
       }
     }
-  }
+  };
 
   /**
    * 연결 여부 확인
    */
-  isConnected(userId: string): boolean {
+  isConnected = (userId: string): boolean => {
     return this.connections.has(userId);
-  }
+  };
 }
 
 export default new NotificationServer();
