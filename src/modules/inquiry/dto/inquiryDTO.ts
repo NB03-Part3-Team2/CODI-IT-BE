@@ -86,7 +86,7 @@ export const InquiryReplySchema = z.object({
   content: z.string().min(1, '내용은 1자 이상이여야 합니다'),
 });
 
-export type CreateInquiryReplyDTO = z.infer<typeof InquiryReplySchema>;
+export type InquiryReplyDTO = z.infer<typeof InquiryReplySchema>;
 
 export interface InquiryReplyResponseDTO {
   id: string;

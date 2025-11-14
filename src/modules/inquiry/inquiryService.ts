@@ -18,6 +18,7 @@ import {
   UpdateInquiryDTO,
   InquiryResponseDTO,
   InquiryReplyResponseDTO,
+  InquiryReplyDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
 import { InquiryStatus, UserType } from '@prisma/client';
 
@@ -169,7 +170,7 @@ class InquiryService {
   createInquiryReply = async (
     userId: string,
     inquiryId: string,
-    content: string,
+    inquiryReplyDto: InquiryReplyDTO,
   ): Promise<InquiryReplyResponseDTO> => {
     // 문의 조회
     const inquiry = await inquiryRepository.getById(inquiryId);
@@ -197,7 +198,11 @@ class InquiryService {
     assert(!inquiry.reply, ApiError.conflict('이미 답변이 등록된 문의입니다.'));
 
     // 6. 문의 답변 생성 및 문의 상태 변경 (트랜잭션)
-    const inquiryReply = await inquiryRepository.createInquiryReply(inquiryId, userId, content);
+    const inquiryReply = await inquiryRepository.createInquiryReply(
+      inquiryId,
+      userId,
+      inquiryReplyDto,
+    );
 
     return inquiryReply;
   };
@@ -205,7 +210,7 @@ class InquiryService {
   updateInquiryReply = async (
     userId: string,
     replyId: string,
-    content: string,
+    inquiryReplyDto: InquiryReplyDTO,
   ): Promise<InquiryReplyResponseDTO> => {
     // 답변 조회
     const inquiryReply = await inquiryRepository.getReplyById(replyId);
@@ -218,7 +223,10 @@ class InquiryService {
     );
 
     // 문의 답변 수정
-    const updatedInquiryReply = await inquiryRepository.updateInquiryReply(replyId, content);
+    const updatedInquiryReply = await inquiryRepository.updateInquiryReply(
+      replyId,
+      inquiryReplyDto,
+    );
 
     return updatedInquiryReply;
   };

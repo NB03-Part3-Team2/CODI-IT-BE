@@ -3,6 +3,7 @@ import inquiryService from '@modules/inquiry/inquiryService';
 import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import userRepository from '@modules/user/userRepo';
 import productRepository from '@modules/product/productRepo';
+import { InquiryReplyDTO } from '@modules/inquiry/dto/inquiryDTO';
 import {
   mockUserSeller,
   mockProduct,
@@ -19,7 +20,7 @@ describe('createInquiryReply 메소드 테스트', () => {
     // 1. 테스트에 사용할 mock 데이터 생성
     const userId = mockUserSeller.id;
     const inquiryId = mockInquiryList[0].id;
-    const content = '문의 답변 내용';
+    const inquiryReplyDto: InquiryReplyDTO = { content: '문의 답변 내용' };
 
     const mockInquiry = { ...mockInquiryList[0], reply: null };
     const mockProductWithStore = {
@@ -36,7 +37,7 @@ describe('createInquiryReply 메소드 테스트', () => {
       id: 'reply-id-001',
       inquiryId: mockInquiryList[0].id,
       userId: mockUserSeller.id,
-      content,
+      content: inquiryReplyDto.content,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -56,13 +57,13 @@ describe('createInquiryReply 메소드 테스트', () => {
       .mockResolvedValue(expectedResult);
 
     // 3. 서비스 함수 호출
-    const result = await inquiryService.createInquiryReply(userId, inquiryId, content);
+    const result = await inquiryService.createInquiryReply(userId, inquiryId, inquiryReplyDto);
 
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
     expect(getInquiryByIdMock).toHaveBeenCalledWith(inquiryId);
     expect(getUserByIdMock).toHaveBeenCalledWith(userId);
     expect(getProductByIdWithRelationsMock).toHaveBeenCalledWith(mockInquiry.productId);
-    expect(createInquiryReplyMock).toHaveBeenCalledWith(inquiryId, userId, content);
+    expect(createInquiryReplyMock).toHaveBeenCalledWith(inquiryId, userId, inquiryReplyDto);
 
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인
     expect(result).toEqual(expectedResult);

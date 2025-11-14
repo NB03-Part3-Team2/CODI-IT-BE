@@ -2,6 +2,7 @@ import { prisma } from '@shared/prisma';
 import {
   CreateInquiryDTO,
   GetMyInquiryListRepoDTO,
+  InquiryReplyDTO,
   UpdateInquiryDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
 import { InquiryStatus } from '@prisma/client';
@@ -194,13 +195,17 @@ class InquiryRepository {
   };
 
   // 문의 답변 생성
-  createInquiryReply = async (inquiryId: string, userId: string, content: string) => {
+  createInquiryReply = async (
+    inquiryId: string,
+    userId: string,
+    inquiryReplyDto: InquiryReplyDTO,
+  ) => {
     return await prisma.$transaction(async (tx) => {
       const inquiryReply = await tx.inquiryReply.create({
         data: {
           inquiryId,
           userId,
-          content,
+          content: inquiryReplyDto.content,
         },
       });
 
@@ -218,13 +223,13 @@ class InquiryRepository {
   };
 
   // 문의 답변 수정
-  updateInquiryReply = async (replyId: string, content: string) => {
+  updateInquiryReply = async (replyId: string, inquiryReplyDto: InquiryReplyDTO) => {
     return await prisma.inquiryReply.update({
       where: {
         id: replyId,
       },
       data: {
-        content,
+        content: inquiryReplyDto.content,
       },
     });
   };

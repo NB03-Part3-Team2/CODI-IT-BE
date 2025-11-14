@@ -4,6 +4,7 @@ import {
   CreateInquiryDTO,
   GetMyInquiryListDTO,
   UpdateInquiryDTO,
+  InquiryReplyDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
 
 class InquiryController {
@@ -162,10 +163,14 @@ class InquiryController {
     // 1. 파라미터 정의
     const userId = req.user.id;
     const { id: inquiryId } = req.validatedParams;
-    const { content } = req.validatedBody;
+    const inquiryReplyDto: InquiryReplyDTO = { ...req.validatedBody };
 
     // 2. 문의 답변 생성
-    const inquiryReply = await inquiryService.createInquiryReply(userId, inquiryId, content);
+    const inquiryReply = await inquiryService.createInquiryReply(
+      userId,
+      inquiryId,
+      inquiryReplyDto,
+    );
 
     res.status(201).json(inquiryReply);
   };
@@ -186,10 +191,14 @@ class InquiryController {
     // 1. 파라미터 정의
     const userId = req.user.id;
     const { id: replyId } = req.validatedParams;
-    const { content } = req.validatedBody;
+    const inquiryReplyDto: InquiryReplyDTO = { ...req.validatedBody };
 
     // 2. 문의 답변 수정
-    const updatedInquiryReply = await inquiryService.updateInquiryReply(userId, replyId, content);
+    const updatedInquiryReply = await inquiryService.updateInquiryReply(
+      userId,
+      replyId,
+      inquiryReplyDto,
+    );
 
     res.status(200).json(updatedInquiryReply);
   };
