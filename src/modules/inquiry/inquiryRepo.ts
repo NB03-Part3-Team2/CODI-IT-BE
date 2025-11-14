@@ -2,6 +2,7 @@ import { prisma } from '@shared/prisma';
 import {
   CreateInquiryDTO,
   GetMyInquiryListRepoDTO,
+  InquiryReplyDTO,
   UpdateInquiryDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
 import { InquiryStatus } from '@prisma/client';
@@ -189,6 +190,62 @@ class InquiryRepository {
     return await prisma.inquiry.delete({
       where: {
         id: inquiryId,
+      },
+    });
+  };
+
+  // 문의 답변 생성
+  createInquiryReply = async (
+    inquiryId: string,
+    userId: string,
+    inquiryReplyDto: InquiryReplyDTO,
+  ) => {
+    return await prisma.$transaction(async (tx) => {
+      const inquiryReply = await tx.inquiryReply.create({
+        data: {
+          inquiryId,
+          userId,
+          content: inquiryReplyDto.content,
+        },
+      });
+
+      await tx.inquiry.update({
+        where: {
+          id: inquiryId,
+        },
+        data: {
+          status: InquiryStatus.COMPLETED_ANSWER,
+        },
+      });
+
+      return inquiryReply;
+    });
+  };
+
+  // 문의 답변 수정
+  updateInquiryReply = async (replyId: string, inquiryReplyDto: InquiryReplyDTO) => {
+    return await prisma.inquiryReply.update({
+      where: {
+        id: replyId,
+      },
+      data: {
+        content: inquiryReplyDto.content,
+      },
+    });
+  };
+
+  // 답변 ID로 답변 조회
+  getReplyById = async (replyId: string) => {
+    return await prisma.inquiryReply.findUnique({
+      where: {
+        id: replyId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   };
