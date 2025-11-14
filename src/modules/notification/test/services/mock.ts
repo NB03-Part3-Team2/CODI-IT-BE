@@ -102,7 +102,7 @@ export const MOCK_DATA = {
   inquiryAnsweredNotification: {
     id: 'notif-inquiry',
     userId: MOCK_CONSTANTS.USER_ID,
-    content: `문의 "${MOCK_CONSTANTS.INQUIRY_TITLE}"에 답변이 달렸습니다.`,
+    content: `등록한 문의 "${MOCK_CONSTANTS.INQUIRY_TITLE}"에 답변이 달렸습니다.`,
     isChecked: false,
     createdAt: MOCK_CONSTANTS.MOCK_DATE,
     updatedAt: MOCK_CONSTANTS.MOCK_DATE,
@@ -112,7 +112,7 @@ export const MOCK_DATA = {
   newInquiryNotification: {
     id: 'notif-new-inquiry',
     userId: MOCK_CONSTANTS.SELLER_ID,
-    content: `${MOCK_CONSTANTS.PRODUCT_NAME}에 새로운 문의가 등록되었습니다.`,
+    content: `등록된 상품:${MOCK_CONSTANTS.PRODUCT_NAME}에 새로운 문의가 등록되었습니다.`,
     isChecked: false,
     createdAt: MOCK_CONSTANTS.MOCK_DATE,
     updatedAt: MOCK_CONSTANTS.MOCK_DATE,

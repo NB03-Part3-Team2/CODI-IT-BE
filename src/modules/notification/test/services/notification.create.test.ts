@@ -119,7 +119,7 @@ describe('NotificationService - Create', () => {
 
       expect(createNotificationMock).toHaveBeenCalledWith({
         userId: MOCK_CONSTANTS.USER_ID,
-        content: `문의 "${MOCK_CONSTANTS.INQUIRY_TITLE}"에 답변이 달렸습니다.`,
+        content: `등록한 문의 "${MOCK_CONSTANTS.INQUIRY_TITLE}"에 답변이 달렸습니다.`,
       });
     });
   });
@@ -139,7 +139,7 @@ describe('NotificationService - Create', () => {
 
       expect(createNotificationMock).toHaveBeenCalledWith({
         userId: sellerId,
-        content: `${productName}에 새로운 문의가 등록되었습니다.`,
+        content: `등록된 상품:${productName}에 새로운 문의가 등록되었습니다.`,
       });
     });
   });
