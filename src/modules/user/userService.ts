@@ -72,7 +72,10 @@ class UserService {
     const user = await userRepository.getUserById(userId);
     assert(user, ApiError.notFound('존재하지 않는 사용자입니다.'));
 
-    await userRepository.deleteUser(userId);
+    const deletedUser = await userRepository.deleteUser(userId);
+    if (deletedUser.image) {
+      await deleteImageFromS3(deletedUser.image);
+    }
   };
 
   getFavoriteStoreList = async (userId: string): Promise<ResFavoriteStoreDto[]> => {
