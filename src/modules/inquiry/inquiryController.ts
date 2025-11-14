@@ -169,6 +169,30 @@ class InquiryController {
 
     res.status(201).json(inquiryReply);
   };
+
+  /**
+   * @description
+   * 특정 문의에 등록된 답변을 수정합니다.
+   *
+   * @param {Object} req - 요청 객체
+   * @param {Object} res - 응답 객체
+   *
+   * @returns {Object} 수정된 답변 정보 (HTTP 200)
+   *
+   * @throws {ApiError} 403 - 권한 없음
+   * @throws {ApiError} 404 - 존재하지 않는 답변
+   */
+  updateInquiryReply = async (req: Request, res: Response) => {
+    // 1. 파라미터 정의
+    const userId = req.user.id;
+    const { id: replyId } = req.validatedParams;
+    const { content } = req.validatedBody;
+
+    // 2. 문의 답변 수정
+    const updatedInquiryReply = await inquiryService.updateInquiryReply(userId, replyId, content);
+
+    res.status(200).json(updatedInquiryReply);
+  };
 }
 
 export default new InquiryController();

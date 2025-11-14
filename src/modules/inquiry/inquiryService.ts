@@ -201,6 +201,27 @@ class InquiryService {
 
     return inquiryReply;
   };
+
+  updateInquiryReply = async (
+    userId: string,
+    replyId: string,
+    content: string,
+  ): Promise<InquiryReplyResponseDTO> => {
+    // 답변 조회
+    const inquiryReply = await inquiryRepository.getReplyById(replyId);
+    assert(inquiryReply, ApiError.notFound('답변을 찾을 수 없습니다.'));
+
+    // 답변 작성자 본인인지 확인
+    assert(
+      inquiryReply.userId === userId,
+      ApiError.forbidden('자신이 등록한 답변만 수정할 수 있습니다.'),
+    );
+
+    // 문의 답변 수정
+    const updatedInquiryReply = await inquiryRepository.updateInquiryReply(replyId, content);
+
+    return updatedInquiryReply;
+  };
 }
 
 export default new InquiryService();

@@ -216,6 +216,34 @@ class InquiryRepository {
       return inquiryReply;
     });
   };
+
+  // 문의 답변 수정
+  updateInquiryReply = async (replyId: string, content: string) => {
+    return await prisma.inquiryReply.update({
+      where: {
+        id: replyId,
+      },
+      data: {
+        content,
+      },
+    });
+  };
+
+  // 답변 ID로 답변 조회
+  getReplyById = async (replyId: string) => {
+    return await prisma.inquiryReply.findUnique({
+      where: {
+        id: replyId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  };
 }
 
 export default new InquiryRepository();

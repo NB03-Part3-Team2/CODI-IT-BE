@@ -97,3 +97,7 @@ export interface InquiryReplyResponseDTO {
   updatedAt: Date;
 }
 
+export const replyIdSchema = z.object({
+  id: z.cuid('답변 ID가 올바르지 않습니다.'),
+});
+
