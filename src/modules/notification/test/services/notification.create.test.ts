@@ -78,11 +78,11 @@ describe('NotificationService - Create', () => {
       });
       expect(createNotificationMock).toHaveBeenNthCalledWith(2, {
         userId: MOCK_CONSTANTS.BUYER_ID_1,
-        content: `장바구니에 담긴 "${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈가 품절되었습니다.`,
+        content: `장바구니에 담긴 ${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈가 품절되었습니다.`,
       });
       expect(createNotificationMock).toHaveBeenNthCalledWith(3, {
         userId: MOCK_CONSTANTS.BUYER_ID_2,
-        content: `장바구니에 담긴 "${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈가 품절되었습니다.`,
+        content: `장바구니에 담긴 ${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈가 품절되었습니다.`,
       });
     });
 

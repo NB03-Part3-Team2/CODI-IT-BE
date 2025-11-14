@@ -68,7 +68,7 @@ class UserService {
     return this.sensitiveUserDataFilter(updatedUser);
   };
 
-  deleteUser = async (userId: string): Promise<void> => {
+  deleteUser = async (userId: string) => {
     const user = await userRepository.getUserById(userId);
     assert(user, ApiError.notFound('존재하지 않는 사용자입니다.'));
 
@@ -76,6 +76,8 @@ class UserService {
     if (deletedUser.image) {
       await deleteImageFromS3(deletedUser.image);
     }
+
+    return deletedUser;
   };
 
   getFavoriteStoreList = async (userId: string): Promise<ResFavoriteStoreDto[]> => {
