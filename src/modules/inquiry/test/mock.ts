@@ -126,3 +126,13 @@ export const mockInquiryWithReply = {
     },
   },
 };
+
+//문의 답변 테스트용 목데이터
+export const mockInquiryReply = {
+  id: 'reply-id-001',
+  inquiryId: 'inquiry-id-001',
+  userId: mockUserSeller.id,
+  content: '문의 답변 내용',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
