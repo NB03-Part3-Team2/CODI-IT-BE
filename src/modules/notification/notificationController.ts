@@ -16,16 +16,19 @@ class NotificationController {
     const userId = req.user.id;
 
     // SSE 헤더 설정
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
-      'X-Accel-Buffering': 'no',
-    });
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.status(200);
 
     // SSE 연결 등록
     notificationServer.connect(userId, res);
-    res.write('retry: 10000\n\n');
+
+    // 클라이언트 연결 종료 시 정리
+    req.on('close', () => {
+      notificationServer.disconnect(userId);
+    });
   };
 
   /**
@@ -39,10 +42,10 @@ class NotificationController {
    *
    * @throws {ApiError} 500 - 서버 내부 오류
    */
-  getNotifications = async (req: Request, res: Response) => {
+  getNotificationList = async (req: Request, res: Response) => {
     const userId = req.user.id;
-    const notifications = await notificationService.getNotifications(userId);
-    res.json(notifications);
+    const notificationList = await notificationService.getNotificationList(userId);
+    res.json(notificationList);
   };
 
   /**

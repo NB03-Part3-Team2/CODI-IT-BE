@@ -35,7 +35,7 @@ class NotificationServer {
       this.disconnect(userId);
     });
 
-    console.log(`SSE 연결 유저 ${userId}. 지금 연결된 유저수 : ${this.connections.size}`);
+    console.log(`SSE에 유저가 연결됨. 현재 연결된 사용자 수: ${this.connections.size}`);
   }
 
   /**
@@ -46,7 +46,7 @@ class NotificationServer {
     if (connection) {
       clearInterval(connection.heartbeatInterval);
       this.connections.delete(userId);
-      console.log(`연결 해제 ${userId}. 지금 연결된 유저수 : ${this.connections.size}`);
+      console.log(`SSE에 유저가 연결 해제완료. 현재 연결된 사용자 수: ${this.connections.size}`);
     }
   }
 
@@ -57,26 +57,11 @@ class NotificationServer {
     const connection = this.connections.get(userId);
     if (connection) {
       try {
-        connection.res.write(`event: ${event}\n`);
-        connection.res.write(`data: ${JSON.stringify(data)}\n\n`);
-        console.log(`📤 SSE sent to ${userId}:`, { event, data });
+        connection.res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
       } catch (error) {
-        console.error(`Failed to send SSE to ${userId}:`, error);
         this.disconnect(userId);
       }
-    } else {
-      console.log(`⚠️ 유저 ${userId} 연결 안됨. SSE 전송 건너뜀.`);
     }
-  }
-
-  /**
-   * 전체 브로드캐스트
-   */
-  broadcast(event: string, data: ResNotificationDto) {
-    console.log(`📢 Broadcasting to ${this.connections.size} users:`, { event, data });
-    this.connections.forEach((connection, userId) => {
-      this.send(userId, event, data);
-    });
   }
 
   /**
@@ -84,13 +69,6 @@ class NotificationServer {
    */
   isConnected(userId: string): boolean {
     return this.connections.has(userId);
-  }
-
-  /**
-   * 연결 수 조회
-   */
-  getConnectionCount(): number {
-    return this.connections.size;
   }
 }
 

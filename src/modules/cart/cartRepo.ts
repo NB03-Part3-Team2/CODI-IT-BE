@@ -177,6 +177,22 @@ class CartRepository {
       where: { id: cartItemId },
     });
   };
+
+  // 특정 상품을 장바구니에 담은 모든 사용자 ID 조회 - 조영욱
+  getUserIdsByProductId = async (productId: string): Promise<string[]> => {
+    const cartItems = await prisma.cartItem.findMany({
+      where: { productId },
+      select: {
+        cart: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    const userIds = cartItems.map((item) => item.cart.userId);
+    return Array.from(new Set(userIds));
+  };
 }
 
 export default new CartRepository();

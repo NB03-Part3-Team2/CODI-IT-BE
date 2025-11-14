@@ -5,10 +5,7 @@ import {
 } from '@modules/notification/dto/notificationDTO';
 
 class NotificationRepository {
-  /**
-   * 알림 생성
-   */
-  async create(data: CreateNotificationDto): Promise<ResNotificationDto> {
+  async createNotification(data: CreateNotificationDto): Promise<ResNotificationDto> {
     return prisma.notification.create({
       data: {
         userId: data.userId,
@@ -18,9 +15,6 @@ class NotificationRepository {
     });
   }
 
-  /**
-   * 사용자별 알림 목록 조회
-   */
   async getNotificationList(userId: string): Promise<ResNotificationDto[]> {
     return prisma.notification.findMany({
       where: { userId },
@@ -28,9 +22,6 @@ class NotificationRepository {
     });
   }
 
-  /**
-   * 알림 읽음 처리
-   */
   async markAsRead(notificationId: string): Promise<ResNotificationDto> {
     return prisma.notification.update({
       where: { id: notificationId },
@@ -38,9 +29,6 @@ class NotificationRepository {
     });
   }
 
-  /**
-   * 알림 조회 (단건)
-   */
   async getNotificationById(notificationId: string): Promise<ResNotificationDto | null> {
     return prisma.notification.findUnique({
       where: { id: notificationId },

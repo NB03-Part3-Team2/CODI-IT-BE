@@ -9,6 +9,7 @@ import {
   ResUserDto,
 } from '@modules/user/dto/userDTO';
 import { ResFavoriteStoreDto } from '@modules/user/dto/favoriteStoreDTO';
+import { deleteImageFromS3 } from '@utils/s3DeleteUtils';
 
 class UserService {
   sensitiveUserDataFilter = (user: CreatedUserDto): ResUserDto => {
@@ -61,6 +62,9 @@ class UserService {
     updateUserDto.newPassword = await hashPassword(updateUserDto.newPassword);
 
     const updatedUser = await userRepository.updateUser(updateUserDto);
+    if (user.image && updateUserDto.image && updateUserDto.image !== user.image) {
+      await deleteImageFromS3(user.image);
+    }
     return this.sensitiveUserDataFilter(updatedUser);
   };
 
