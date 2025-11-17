@@ -294,7 +294,7 @@ class OrderRepository {
   };
 
   // 주문 목록 조회 (페이지네이션 포함)
-  getOrders = async (userId: string, query: GetOrdersQueryDto) => {
+  getOrderList = async (userId: string, query: GetOrdersQueryDto) => {
     const { status, limit, page } = query;
 
     // where 조건 구성

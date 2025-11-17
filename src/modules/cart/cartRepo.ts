@@ -92,7 +92,7 @@ class CartRepository {
   };
 
   // 장바구니 생성
-  create = async (userId: string) => {
+  createCart = async (userId: string) => {
     return await prisma.cart.create({
       data: { userId },
       select: selectOptionDB,
