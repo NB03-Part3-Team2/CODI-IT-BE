@@ -1,4 +1,4 @@
-import dashboardRepo from '@modules/dashboard/dashboardRepo';
+import orderRepository from '@modules/order/orderRepo';
 import {
   DashboardResponseDto,
   PeriodStats,
@@ -85,10 +85,10 @@ class DashboardService {
     previousEnd: Date,
   ): Promise<PeriodStats> {
     // 현재 기간 통계
-    const current = await dashboardRepo.getOrderStatsByPeriod(sellerId, currentStart, currentEnd);
+    const current = await orderRepository.getOrderStatsByPeriod(sellerId, currentStart, currentEnd);
 
     // 이전 기간 통계
-    const previous = await dashboardRepo.getOrderStatsByPeriod(
+    const previous = await orderRepository.getOrderStatsByPeriod(
       sellerId,
       previousStart,
       previousEnd,
@@ -120,7 +120,7 @@ class DashboardService {
    * @param sellerId - 판매자 ID
    */
   private async calculatePriceRanges(sellerId: string): Promise<PriceRangeItem[]> {
-    const orders = await dashboardRepo.getAllCompletedOrders(sellerId);
+    const orders = await orderRepository.getAllCompletedOrders(sellerId);
 
     // 가격 범위별 매출 집계
     const rangeMap = new Map<string, number>();
@@ -201,7 +201,7 @@ class DashboardService {
         dateRanges.year.previous.start,
         dateRanges.year.previous.end,
       ),
-      dashboardRepo.getTopSellingProducts(sellerId, 5),
+      orderRepository.getTopSellingProducts(sellerId, 5),
       this.calculatePriceRanges(sellerId),
     ]);
 
