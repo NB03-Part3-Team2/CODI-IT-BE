@@ -57,7 +57,7 @@ class NotificationService {
     return notificationRepository.getNotificationList(userId);
   };
 
-  markAsRead = async (notificationId: string, userId: string): Promise<ResNotificationDto> => {
+  markAsRead = async (notificationId: string, userId: string): Promise<void> => {
     const notification = await notificationRepository.getNotificationById(notificationId);
     assert(notification, ApiError.notFound('알림을 찾을 수 없습니다.'));
     const existingUser = await userRepository.getUserById(userId);
@@ -66,8 +66,7 @@ class NotificationService {
       notification.userId === userId,
       ApiError.forbidden('본인의 알림만 읽음 처리할 수 있습니다.'),
     );
-
-    return notificationRepository.markAsRead(notificationId);
+    await notificationRepository.markAsRead(notificationId);
   };
 }
 

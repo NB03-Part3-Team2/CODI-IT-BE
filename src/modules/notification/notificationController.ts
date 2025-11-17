@@ -66,8 +66,8 @@ class NotificationController {
     const userId = req.user.id;
     const { alarmId } = req.params;
 
-    const notification = await notificationService.markAsRead(alarmId, userId);
-    res.json(notification);
+    await notificationService.markAsRead(alarmId, userId);
+    res.sendStatus(204);
   };
 }
 

@@ -20,7 +20,6 @@ describe('markAsRead 단위 테스트', () => {
       const userId = MOCK_CONSTANTS.USER_ID;
       const mockUser = { id: userId, name: '테스트유저' };
       const mockUnreadNotification = MOCK_DATA.unreadNotification;
-      const mockReadNotification = MOCK_DATA.readNotification;
 
       jest
         .spyOn(notificationRepository, 'getNotificationById')
@@ -28,15 +27,13 @@ describe('markAsRead 단위 테스트', () => {
       jest.spyOn(userRepository, 'getUserById').mockResolvedValue(mockUser as any);
       const markAsReadMock = jest
         .spyOn(notificationRepository, 'markAsRead')
-        .mockResolvedValue(mockReadNotification);
+        .mockResolvedValue(MOCK_DATA.readNotification);
 
-      const result = await notificationService.markAsRead(notificationId, userId);
+      await notificationService.markAsRead(notificationId, userId);
 
       expect(notificationRepository.getNotificationById).toHaveBeenCalledWith(notificationId);
       expect(userRepository.getUserById).toHaveBeenCalledWith(userId);
       expect(markAsReadMock).toHaveBeenCalledWith(notificationId);
-      expect(result).toEqual(mockReadNotification);
-      expect(result.isChecked).toBe(true);
     });
 
     test('알림 읽음 처리 실패 - 존재하지 않는 알림', async () => {
