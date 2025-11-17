@@ -8,6 +8,7 @@ import {
   UpdateReviewDto,
   GetReviewListQueryDto,
   DeleteReviewDto,
+  ResReviewListDto,
 } from '@modules/review/dto/reviewDTO';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
@@ -49,12 +50,24 @@ class ReviewService {
     return review;
   };
 
-  getReviewList = async (getReviewListQueryDto: GetReviewListQueryDto): Promise<ResReviewDto[]> => {
+  getReviewList = async (
+    getReviewListQueryDto: GetReviewListQueryDto,
+  ): Promise<ResReviewListDto> => {
     const existingProduct = await productRepo.checkProductExists(getReviewListQueryDto.productId);
     assert(existingProduct, ApiError.badRequest('상품을 찾지 못했습니다.'));
 
-    const reviewList = await reviewRepository.getReviewList(getReviewListQueryDto);
-    return reviewList;
+    const data = await reviewRepository.getReviewList(getReviewListQueryDto);
+    const totalPages = Math.ceil(data.count / getReviewListQueryDto.limit);
+
+    return {
+      items: data.reviewList,
+      meta: {
+        total: data.count,
+        page: getReviewListQueryDto.page,
+        limit: getReviewListQueryDto.limit,
+        hasNextPage: getReviewListQueryDto.page < totalPages,
+      },
+    };
   };
 
   deleteReview = async (deleteReviewDto: DeleteReviewDto): Promise<void> => {

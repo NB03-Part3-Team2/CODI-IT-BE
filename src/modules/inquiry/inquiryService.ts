@@ -1,6 +1,8 @@
 import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import storeRepository from '@modules/store/storeRepo';
+import notificationService from '@modules/notification/notificationService';
+import userRepository from '@modules/user/userRepo';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
 import {
@@ -16,9 +18,9 @@ import {
   GetMyInquiryListResponseDTO,
   UpdateInquiryDTO,
   InquiryResponseDTO,
+  InquiryReplyResponseDTO,
+  InquiryReplyDTO,
 } from '@modules/inquiry/dto/inquiryDTO';
-
-import userRepository from '@modules/user/userRepo';
 import { InquiryStatus, UserType } from '@prisma/client';
 
 class InquiryService {
@@ -33,6 +35,16 @@ class InquiryService {
 
     // inquiry 등록 레포지토리 호출
     const inquiry = await inquiryRepository.create(userId, productId, createInquiryDto);
+
+    /* 판매자에게 알림 전송
+    그러나 알림 전송도중 알림 실패 때문에 로직이 중지되는 상황을 막기위해 console.error로 에러로그만 남기고
+    알림 실패해도 문의 등록은 성공하도록 함 */
+    const sellerId = await productRepository.getSellerIdByProductId(productId);
+    if (sellerId) {
+      await notificationService.notifyNewInquiry(sellerId, product.name);
+    } else {
+      console.error('판매자 ID가 없습니다. 알림을 보낼 수 없습니다.');
+    }
 
     // 생성된 inquriy 반환
     return {
@@ -164,6 +176,70 @@ class InquiryService {
       ...deletedInquiry,
       status: fromPrismaInquiryStatus(deletedInquiry.status),
     };
+  };
+
+  createInquiryReply = async (
+    userId: string,
+    inquiryId: string,
+    inquiryReplyDto: InquiryReplyDTO,
+  ): Promise<InquiryReplyResponseDTO> => {
+    // 문의 조회
+    const inquiry = await inquiryRepository.getById(inquiryId);
+    assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
+
+    // 유저 조회 - 유저의 타입을 알아야 하므로
+    const user = await userRepository.getUserById(userId);
+    assert(user, ApiError.notFound('유저를 찾을 수 없습니다.'));
+
+    // 판매자만 답변 가능
+    assert(
+      user.type === UserType.SELLER,
+      ApiError.forbidden('판매자만 답변을 등록할 수 있습니다.'),
+    );
+
+    // 판매자가 해당 상품의 판매자인지 확인
+    const product = await productRepository.getByIdWithRelations(inquiry.productId);
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
+    assert(
+      product.store.userId === userId,
+      ApiError.forbidden('해당 상품의 판매자만 답변을 등록할 수 있습니다.'),
+    );
+
+    // 5. 이미 답변이 등록된 문의인지 확인
+    assert(!inquiry.reply, ApiError.conflict('이미 답변이 등록된 문의입니다.'));
+
+    // 6. 문의 답변 생성 및 문의 상태 변경 (트랜잭션)
+    const inquiryReply = await inquiryRepository.createInquiryReply(
+      inquiryId,
+      userId,
+      inquiryReplyDto,
+    );
+
+    return inquiryReply;
+  };
+
+  updateInquiryReply = async (
+    userId: string,
+    replyId: string,
+    inquiryReplyDto: InquiryReplyDTO,
+  ): Promise<InquiryReplyResponseDTO> => {
+    // 답변 조회
+    const inquiryReply = await inquiryRepository.getReplyById(replyId);
+    assert(inquiryReply, ApiError.notFound('답변을 찾을 수 없습니다.'));
+
+    // 답변 작성자 본인인지 확인
+    assert(
+      inquiryReply.userId === userId,
+      ApiError.forbidden('자신이 등록한 답변만 수정할 수 있습니다.'),
+    );
+
+    // 문의 답변 수정
+    const updatedInquiryReply = await inquiryRepository.updateInquiryReply(
+      replyId,
+      inquiryReplyDto,
+    );
+
+    return updatedInquiryReply;
   };
 }
 

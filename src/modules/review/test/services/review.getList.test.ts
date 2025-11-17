@@ -17,30 +17,38 @@ describe('reviewGetList 단위 테스트', () => {
   describe('getReviewList 메소드 테스트', () => {
     test('getReviewList 성공 테스트 - 리뷰가 있는 경우', async () => {
       const getReviewListQueryDto = MOCK_DATA.getReviewListQueryDto;
-      const reviewList = MOCK_DATA.reviewList;
+      const repositoryData = MOCK_DATA.repositoryReviewListData;
+      const expectedResponse = MOCK_DATA.expectedReviewListResponse;
 
       jest.spyOn(productRepo, 'checkProductExists').mockResolvedValue(true);
-      jest.spyOn(reviewRepository, 'getReviewList').mockResolvedValue(reviewList);
+      jest.spyOn(reviewRepository, 'getReviewList').mockResolvedValue(repositoryData);
 
       const result = await reviewService.getReviewList(getReviewListQueryDto);
 
       expect(productRepo.checkProductExists).toHaveBeenCalledWith(getReviewListQueryDto.productId);
       expect(reviewRepository.getReviewList).toHaveBeenCalledWith(getReviewListQueryDto);
-      expect(result).toEqual(reviewList);
-      expect(result).toHaveLength(2);
+      expect(result).toEqual(expectedResponse);
+      expect(result.items).toHaveLength(2);
+      expect(result.meta.total).toBe(10);
+      expect(result.meta.page).toBe(1);
+      expect(result.meta.limit).toBe(5);
+      expect(result.meta.hasNextPage).toBe(true);
     });
 
     test('getReviewList 성공 테스트 - 리뷰가 없는 경우', async () => {
       const getReviewListQueryDto = MOCK_DATA.getReviewListQueryDto;
-      const emptyReviewList = MOCK_DATA.emptyReviewList;
+      const repositoryEmptyData = MOCK_DATA.repositoryEmptyReviewListData;
+      const expectedEmptyResponse = MOCK_DATA.expectedEmptyReviewListResponse;
 
       jest.spyOn(productRepo, 'checkProductExists').mockResolvedValue(true);
-      jest.spyOn(reviewRepository, 'getReviewList').mockResolvedValue(emptyReviewList);
+      jest.spyOn(reviewRepository, 'getReviewList').mockResolvedValue(repositoryEmptyData);
 
       const result = await reviewService.getReviewList(getReviewListQueryDto);
 
-      expect(result).toEqual(emptyReviewList);
-      expect(result).toHaveLength(0);
+      expect(result).toEqual(expectedEmptyResponse);
+      expect(result.items).toHaveLength(0);
+      expect(result.meta.total).toBe(0);
+      expect(result.meta.hasNextPage).toBe(false);
     });
 
     test('getReviewList 실패 테스트 - 상품을 찾지 못함', async () => {

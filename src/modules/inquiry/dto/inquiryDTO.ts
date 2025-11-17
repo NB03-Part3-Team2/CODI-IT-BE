@@ -81,3 +81,22 @@ export interface GetInquiryResponseDTO extends InquiryResponseDTO {
     };
   } | null;
 }
+
+export const InquiryReplySchema = z.object({
+  content: z.string().min(1, '내용은 1자 이상이여야 합니다'),
+});
+
+export type InquiryReplyDTO = z.infer<typeof InquiryReplySchema>;
+
+export interface InquiryReplyResponseDTO {
+  id: string;
+  inquiryId: string;
+  userId: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const replyIdSchema = z.object({
+  id: z.cuid('답변 ID가 올바르지 않습니다.'),
+});

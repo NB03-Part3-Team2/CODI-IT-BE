@@ -56,7 +56,7 @@ export type CreatedUserDto = {
 };
 
 // 응답용 사용자 DTO
-export type ResUserDto = Omit<CreatedUserDto, 'password' | 'gradeId' | 'totalAmount' | 'grade'> & {
+export type ResUserDto = Omit<CreatedUserDto, 'password' | 'totalAmount' | 'grade'> & {
   grade: Omit<CreatedUserDto['grade'], 'createdAt' | 'updatedAt'>;
 };
 
