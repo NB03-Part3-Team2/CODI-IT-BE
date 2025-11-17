@@ -107,7 +107,8 @@ describe('NotificationService - Create', () => {
 
   describe('notifyInquiryAnswered 메소드 테스트', () => {
     test('문의 답변 알림 전송 성공', async () => {
-      const inquiryDto = MOCK_DATA.inquiryAnsweredDto;
+      const buyerId = MOCK_CONSTANTS.USER_ID;
+      const inquiryTitle = MOCK_CONSTANTS.INQUIRY_TITLE;
       const mockNotification = MOCK_DATA.inquiryAnsweredNotification;
 
       const createNotificationMock = jest
@@ -115,11 +116,11 @@ describe('NotificationService - Create', () => {
         .mockResolvedValue(mockNotification);
       jest.spyOn(notificationServer, 'isConnected').mockReturnValue(false);
 
-      await notificationService.notifyInquiryAnswered(inquiryDto);
+      await notificationService.notifyInquiryAnswered(buyerId, inquiryTitle);
 
       expect(createNotificationMock).toHaveBeenCalledWith({
-        userId: MOCK_CONSTANTS.USER_ID,
-        content: `등록한 문의 "${MOCK_CONSTANTS.INQUIRY_TITLE}"에 답변이 달렸습니다.`,
+        userId: buyerId,
+        content: `등록한 문의 "${inquiryTitle}"에 답변이 달렸습니다.`,
       });
     });
   });

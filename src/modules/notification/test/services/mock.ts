@@ -2,19 +2,19 @@ import {
   CreateNotificationDto,
   ResnotifyOutOfStockDto,
 } from '@modules/notification/dto/notificationDTO';
-import { GetMyInquiryItemDTO } from '@modules/inquiry/dto/inquiryDTO';
 
 // 공통 상수
 export const MOCK_CONSTANTS = {
   NOTIFICATION_ID: 'notif123',
+  NOTIFICATION_ID_2: 'notif456',
   USER_ID: 'user123',
+  OTHER_USER_ID: 'user456',
   SELLER_ID: 'seller123',
   BUYER_ID_1: 'buyer1',
   BUYER_ID_2: 'buyer2',
   STORE_NAME: '코디잇 스토어',
   PRODUCT_NAME: '반팔티',
   SIZE_NAME: 'M',
-  INQUIRY_ID: 'inquiry123',
   INQUIRY_TITLE: '배송 문의',
   MOCK_DATE: new Date('2024-01-01'),
 } as const;
@@ -75,29 +75,6 @@ export const MOCK_DATA = {
     updatedAt: MOCK_CONSTANTS.MOCK_DATE,
   },
 
-  // 문의 답변 알림 DTO
-  inquiryAnsweredDto: {
-    id: MOCK_CONSTANTS.INQUIRY_ID,
-    title: MOCK_CONSTANTS.INQUIRY_TITLE,
-    content: '배송은 언제 되나요?',
-    isSecret: false,
-    status: 'CompletedAnswer',
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    user: {
-      id: MOCK_CONSTANTS.USER_ID,
-      name: '테스트유저',
-    },
-    product: {
-      id: 'product123',
-      name: MOCK_CONSTANTS.PRODUCT_NAME,
-      image: null,
-      store: {
-        id: 'store123',
-        name: MOCK_CONSTANTS.STORE_NAME,
-      },
-    },
-  } as GetMyInquiryItemDTO,
-
   // 문의 답변 알림
   inquiryAnsweredNotification: {
     id: 'notif-inquiry',
@@ -113,6 +90,59 @@ export const MOCK_DATA = {
     id: 'notif-new-inquiry',
     userId: MOCK_CONSTANTS.SELLER_ID,
     content: `등록된 상품:${MOCK_CONSTANTS.PRODUCT_NAME}에 새로운 문의가 등록되었습니다.`,
+    isChecked: false,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+  },
+
+  // 알림 목록 (여러 개)
+  notificationList: [
+    {
+      id: MOCK_CONSTANTS.NOTIFICATION_ID,
+      userId: MOCK_CONSTANTS.USER_ID,
+      content: '테스트 알림 1',
+      isChecked: false,
+      createdAt: MOCK_CONSTANTS.MOCK_DATE,
+      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+    },
+    {
+      id: MOCK_CONSTANTS.NOTIFICATION_ID_2,
+      userId: MOCK_CONSTANTS.USER_ID,
+      content: '테스트 알림 2',
+      isChecked: true,
+      createdAt: MOCK_CONSTANTS.MOCK_DATE,
+      updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+    },
+  ],
+
+  // 빈 알림 목록
+  emptyNotificationList: [],
+
+  // 읽음 처리할 알림
+  unreadNotification: {
+    id: MOCK_CONSTANTS.NOTIFICATION_ID,
+    userId: MOCK_CONSTANTS.USER_ID,
+    content: '읽지 않은 알림',
+    isChecked: false,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+  },
+
+  // 읽음 처리된 알림
+  readNotification: {
+    id: MOCK_CONSTANTS.NOTIFICATION_ID,
+    userId: MOCK_CONSTANTS.USER_ID,
+    content: '읽지 않은 알림',
+    isChecked: true,
+    createdAt: MOCK_CONSTANTS.MOCK_DATE,
+    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
+  },
+
+  // 다른 사용자의 알림
+  otherUserNotification: {
+    id: MOCK_CONSTANTS.NOTIFICATION_ID,
+    userId: MOCK_CONSTANTS.OTHER_USER_ID,
+    content: '다른 사용자의 알림',
     isChecked: false,
     createdAt: MOCK_CONSTANTS.MOCK_DATE,
     updatedAt: MOCK_CONSTANTS.MOCK_DATE,

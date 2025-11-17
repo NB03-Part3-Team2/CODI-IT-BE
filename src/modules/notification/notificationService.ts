@@ -6,7 +6,6 @@ import {
   ResNotificationDto,
   ResnotifyOutOfStockDto,
 } from '@modules/notification/dto/notificationDTO';
-import { GetMyInquiryItemDTO } from '@modules/inquiry/dto/inquiryDTO';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
 
@@ -38,10 +37,10 @@ class NotificationService {
     }
   };
 
-  notifyInquiryAnswered = async (inquiry: GetMyInquiryItemDTO) => {
+  notifyInquiryAnswered = async (buyerId: string, inquiryTitle: string) => {
     await this.createNotification({
-      userId: inquiry.user.id,
-      content: `등록한 문의 "${inquiry.title}"에 답변이 달렸습니다.`,
+      userId: buyerId,
+      content: `등록한 문의 "${inquiryTitle}"에 답변이 달렸습니다.`,
     });
   };
 
