@@ -167,9 +167,12 @@ class OrderService {
   };
 
   // 주문 목록 조회
-  getOrders = async (userId: string, query: GetOrdersQueryDto): Promise<GetOrdersResponseDto> => {
+  getOrderList = async (
+    userId: string,
+    query: GetOrdersQueryDto,
+  ): Promise<GetOrdersResponseDto> => {
     // Repository에서 주문 목록 조회
-    const { orders, total, page, limit } = await orderRepository.getOrders(userId, query);
+    const { orders, total, page, limit } = await orderRepository.getOrderList(userId, query);
 
     // 응답 DTO로 변환
     const data = orders.map((order) => ({

@@ -2,11 +2,7 @@ import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import cartService from '@modules/cart/cartService';
 import cartRepository from '@modules/cart/cartRepo';
 import { CreatedCartDto } from '@modules/cart/dto/cartDTO';
-import {
-  TEST_USER_ID,
-  createEmptyCartMock,
-  createCartWithSimpleItemsMock,
-} from '../mock';
+import { TEST_USER_ID, createEmptyCartMock, createCartWithSimpleItemsMock } from '../mock';
 
 // 각 테스트 후에 모든 모의(mock)를 복원합니다.
 afterEach(() => {
@@ -33,7 +29,7 @@ describe('createOrGetCart 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const getByUserIdMock = jest.spyOn(cartRepository, 'getByUserId').mockResolvedValue(null); // 기존 장바구니가 없음
-    const createMock = jest.spyOn(cartRepository, 'create').mockResolvedValue(mockCartFromDB);
+    const createMock = jest.spyOn(cartRepository, 'createCart').mockResolvedValue(mockCartFromDB);
 
     // 3. 서비스 함수를 올바른 인자들로 실행합니다.
     const result = await cartService.createOrGetCart(userId);
@@ -69,7 +65,7 @@ describe('createOrGetCart 메소드 테스트', () => {
     const getByUserIdMock = jest
       .spyOn(cartRepository, 'getByUserId')
       .mockResolvedValue(mockCartFromDB); // 기존 장바구니가 있음
-    const createMock = jest.spyOn(cartRepository, 'create').mockResolvedValue(mockCartFromDB);
+    const createMock = jest.spyOn(cartRepository, 'createCart').mockResolvedValue(mockCartFromDB);
 
     // 3. 서비스 함수를 올바른 인자들로 실행합니다.
     const result = await cartService.createOrGetCart(userId);

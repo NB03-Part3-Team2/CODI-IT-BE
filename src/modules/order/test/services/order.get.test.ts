@@ -9,7 +9,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe('getOrders 메소드 테스트', () => {
+describe('getOrderList 메소드 테스트', () => {
   test('성공 - 기본 주문 목록 조회 (페이지 1, limit 3)', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
     const userId = TEST_USER_ID;
@@ -27,7 +27,7 @@ describe('getOrders 메소드 테스트', () => {
     ];
 
     // 2. 레포지토리 함수 모킹
-    const getOrdersMock = jest.spyOn(orderRepository, 'getOrders').mockResolvedValue({
+    const getOrderListMock = jest.spyOn(orderRepository, 'getOrderList').mockResolvedValue({
       orders: mockOrders,
       total: 15,
       page: 1,
@@ -35,10 +35,10 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 3. 서비스 함수 실행
-    const result = await orderService.getOrders(userId, query);
+    const result = await orderService.getOrderList(userId, query);
 
     // 4. 모킹된 메소드가 올바른 인자와 함께 호출되었는지 확인
-    expect(getOrdersMock).toHaveBeenCalledWith(userId, query);
+    expect(getOrderListMock).toHaveBeenCalledWith(userId, query);
 
     // 5. 서비스 메소드가 올바른 결과를 반환하는지 확인
     expect(result.data).toHaveLength(3);
@@ -64,7 +64,7 @@ describe('getOrders 메소드 테스트', () => {
     ];
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(orderRepository, 'getOrders').mockResolvedValue({
+    jest.spyOn(orderRepository, 'getOrderList').mockResolvedValue({
       orders: mockOrders,
       total: 12,
       page: 2,
@@ -72,7 +72,7 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 3. 서비스 함수 실행
-    const result = await orderService.getOrders(userId, query);
+    const result = await orderService.getOrderList(userId, query);
 
     // 4. 결과 검증
     expect(result.data).toHaveLength(2);
@@ -123,7 +123,7 @@ describe('getOrders 메소드 테스트', () => {
     ];
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(orderRepository, 'getOrders').mockResolvedValue({
+    jest.spyOn(orderRepository, 'getOrderList').mockResolvedValue({
       orders: mockOrders,
       total: 2,
       page: 1,
@@ -131,7 +131,7 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 3. 서비스 함수 실행
-    const result = await orderService.getOrders(userId, query);
+    const result = await orderService.getOrderList(userId, query);
 
     // 4. 결과 검증
     expect(result.data).toHaveLength(2);
@@ -150,7 +150,7 @@ describe('getOrders 메소드 테스트', () => {
     };
 
     // 2. 레포지토리 함수 모킹 (빈 배열 반환)
-    jest.spyOn(orderRepository, 'getOrders').mockResolvedValue({
+    jest.spyOn(orderRepository, 'getOrderList').mockResolvedValue({
       orders: [],
       total: 0,
       page: 1,
@@ -158,7 +158,7 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 3. 서비스 함수 실행
-    const result = await orderService.getOrders(userId, query);
+    const result = await orderService.getOrderList(userId, query);
 
     // 4. 결과 검증
     expect(result.data).toHaveLength(0);
@@ -249,7 +249,7 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(orderRepository, 'getOrders').mockResolvedValue({
+    jest.spyOn(orderRepository, 'getOrderList').mockResolvedValue({
       orders: [mockOrder],
       total: 1,
       page: 1,
@@ -257,7 +257,7 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 3. 서비스 함수 실행
-    const result = await orderService.getOrders(userId, query);
+    const result = await orderService.getOrderList(userId, query);
 
     // 4. 상세 정보 검증
     expect(result.data).toHaveLength(1);
@@ -320,7 +320,7 @@ describe('getOrders 메소드 테스트', () => {
     ];
 
     // 2. 레포지토리 함수 모킹
-    jest.spyOn(orderRepository, 'getOrders').mockResolvedValue({
+    jest.spyOn(orderRepository, 'getOrderList').mockResolvedValue({
       orders: mockOrders,
       total: 13,
       page: 3,
@@ -328,7 +328,7 @@ describe('getOrders 메소드 테스트', () => {
     });
 
     // 3. 서비스 함수 실행
-    const result = await orderService.getOrders(userId, query);
+    const result = await orderService.getOrderList(userId, query);
 
     // 4. 결과 검증
     expect(result.data).toHaveLength(3);

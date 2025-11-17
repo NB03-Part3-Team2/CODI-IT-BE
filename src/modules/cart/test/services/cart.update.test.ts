@@ -46,7 +46,7 @@ describe('updateCart 메소드 테스트', () => {
       .spyOn(productRepository, 'checkProductExists')
       .mockResolvedValue(true); // 상품 존재
     const getByUserIdMock = jest.spyOn(cartRepository, 'getByUserId').mockResolvedValue(null); // 장바구니 없음
-    const createMock = jest.spyOn(cartRepository, 'create').mockResolvedValue(mockNewCart); // 새 장바구니 생성
+    const createMock = jest.spyOn(cartRepository, 'createCart').mockResolvedValue(mockNewCart); // 새 장바구니 생성
     const getStockMock = jest.spyOn(productRepository, 'getStock').mockResolvedValue(mockStock); // 재고 충분
     const upsertCartItemMock = jest
       .spyOn(cartRepository, 'upsertCartItem')
@@ -102,7 +102,7 @@ describe('updateCart 메소드 테스트', () => {
     const getByUserIdMock = jest
       .spyOn(cartRepository, 'getByUserId')
       .mockResolvedValue(mockExistingCart); // 기존 장바구니 존재
-    const createMock = jest.spyOn(cartRepository, 'create');
+    const createMock = jest.spyOn(cartRepository, 'createCart');
     const getStockMock = jest.spyOn(productRepository, 'getStock').mockResolvedValue(mockStock);
     const upsertCartItemMock = jest
       .spyOn(cartRepository, 'upsertCartItem')
