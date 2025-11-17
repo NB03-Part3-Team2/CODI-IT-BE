@@ -108,11 +108,11 @@ class DashboardService {
    * @param amount - 금액
    */
   private getPriceRangeLabel(amount: number): string {
-    if (amount <= 10000) return '만원 이하';
-    if (amount <= 30000) return '1-3만원';
-    if (amount <= 50000) return '3-5만원';
-    if (amount <= 100000) return '5-10만원';
-    return '10만원 이상';
+    if (amount <= 20000) return '~20,000원';
+    if (amount <= 50000) return '~50,000원';
+    if (amount <= 100000) return '~100,000원';
+    if (amount <= 200000) return '~200,000원';
+    return '200,000원~';
   }
 
   /**
@@ -135,7 +135,7 @@ class DashboardService {
     }
 
     // 결과 배열 생성 (정해진 순서대로)
-    const priceRanges = ['만원 이하', '1-3만원', '3-5만원', '5-10만원', '10만원 이상'];
+    const priceRanges = ['~20,000원', '~50,000원', '~100,000원', '~200,000원', '200,000원~'];
     const result: PriceRangeItem[] = priceRanges.map((range) => {
       const sales = rangeMap.get(range) || 0;
       const percentage = totalSales > 0 ? Math.round((sales / totalSales) * 100 * 10) / 10 : 0;
