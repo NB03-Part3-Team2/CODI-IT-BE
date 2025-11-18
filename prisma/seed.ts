@@ -94,7 +94,7 @@ const seed = async () => {
   await prisma.store.createMany({
     data: STORES.map((store, index) => ({
       ...store,
-      userId: users[index + 2].id, // 판매자들 (3번째, 4번째 사용자)
+      userId: users[index + 52].id, // 판매자들 (3번째, 4번째 사용자)
     })),
     skipDuplicates: true,
   });
@@ -196,6 +196,7 @@ const seed = async () => {
       subtotal: order.subtotal,
       totalQuantity: order.totalQuantity,
       usePoint: order.usePoint,
+      createdAt: order.createdAt, // 날짜 분산 적용
     })),
     skipDuplicates: true,
   });
