@@ -173,7 +173,7 @@ class DashboardService {
    * @param storeId - 스토어 ID
    * @param limit - 조회할 상품 수
    */
-  private async getTopSellingProducts(storeId: string, limit: number = 5) {
+  private async getTopSellingProductList(storeId: string, limit: number = 5) {
     // 1. 판매량 집계 조회
     const salesStats = await orderRepository.getProductSalesStatsByStore(storeId, limit);
 
@@ -259,7 +259,7 @@ class DashboardService {
         dateRanges.year.previous.start,
         dateRanges.year.previous.end,
       ),
-      this.getTopSellingProducts(storeId, 5),
+      this.getTopSellingProductList(storeId, 5),
       this.calculatePriceRanges(storeId),
     ]);
 
