@@ -45,13 +45,13 @@ class OrderController {
    * @throws {ApiError} 401 - 인증되지 않은 사용자
    * @throws {ApiError} 500 - 서버 내부 오류
    */
-  getOrders = async (req: Request, res: Response) => {
+  getOrderList = async (req: Request, res: Response) => {
     // 전달할 파라미터 및 Dto 정의
     const userId = req.user.id;
     const query: GetOrdersQueryDto = { ...req.validatedQuery };
 
     // 주문 목록 조회
-    const orders = await orderService.getOrders(userId, query);
+    const orders = await orderService.getOrderList(userId, query);
 
     // response 반환
     res.status(200).json(orders);
