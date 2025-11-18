@@ -30,11 +30,11 @@ class InquiryService {
     createInquiryDto: CreateInquiryDTO,
   ): Promise<InquiryResponseDTO> => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
-    const product = await productRepository.getById(productId);
+    const product = await productRepository.getProductById(productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // inquiry 등록 레포지토리 호출
-    const inquiry = await inquiryRepository.create(userId, productId, createInquiryDto);
+    const inquiry = await inquiryRepository.createInquiry(userId, productId, createInquiryDto);
 
     /* 판매자에게 알림 전송
     그러나 알림 전송도중 알림 실패 때문에 로직이 중지되는 상황을 막기위해 console.error로 에러로그만 남기고
@@ -55,7 +55,7 @@ class InquiryService {
 
   getInquiryList = async (productId: string) => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
-    const product = await productRepository.getById(productId);
+    const product = await productRepository.getProductById(productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 문의 리스트 조회
@@ -92,7 +92,7 @@ class InquiryService {
     if (user.type === UserType.BUYER) {
       // 구매자인 경우 자신이 등록한 문의 조회
       [list, totalCount] = await Promise.all([
-        inquiryRepository.getInquiriesByUserId(userId, getMyInquiryListRepoDTO),
+        inquiryRepository.getInquiryListByUserId(userId, getMyInquiryListRepoDTO),
         inquiryRepository.getTotalCountByUserId(userId, getMyInquiryListRepoDTO.status),
       ]);
     } else {
@@ -100,7 +100,7 @@ class InquiryService {
       const store = await storeRepository.getStoreIdByUserId(userId);
       assert(store, ApiError.notFound('스토어를 찾을 수 없습니다.'));
       [list, totalCount] = await Promise.all([
-        inquiryRepository.getInquiriesByStoreId(store.id, getMyInquiryListRepoDTO),
+        inquiryRepository.getInquiryListByStoreId(store.id, getMyInquiryListRepoDTO),
         inquiryRepository.getTotalCountByStoreId(store.id, getMyInquiryListRepoDTO.status),
       ]);
     }
@@ -116,7 +116,7 @@ class InquiryService {
 
   getInquiry = async (inquiryId: string): Promise<GetInquiryResponseDTO> => {
     // 문의 상세 조회
-    const inquiry = await inquiryRepository.getById(inquiryId);
+    const inquiry = await inquiryRepository.getInquiryById(inquiryId);
     assert(inquiry, ApiError.notFound('문의가 존재하지 않습니다.'));
 
     // 리스폰스 형태에 맞게 가공
@@ -132,7 +132,7 @@ class InquiryService {
     updateInquiryDto: UpdateInquiryDTO,
   ): Promise<InquiryResponseDTO> => {
     // 수정할 문의가 있는지 먼저 조회
-    const inquiry = await inquiryRepository.getById(inquiryId);
+    const inquiry = await inquiryRepository.getInquiryById(inquiryId);
     assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
 
     // 자신이 등록한 문의인지 확인
@@ -148,7 +148,7 @@ class InquiryService {
     );
 
     // 문의 수정
-    const updatedInquiry = await inquiryRepository.update(inquiryId, updateInquiryDto);
+    const updatedInquiry = await inquiryRepository.updateInquiry(inquiryId, updateInquiryDto);
 
     // 수정된 문의 반환
     return {
@@ -159,7 +159,7 @@ class InquiryService {
 
   deleteInquiry = async (userId: string, inquiryId: string): Promise<InquiryResponseDTO> => {
     // 삭제할 문의가 있는지 먼저 조회
-    const inquiry = await inquiryRepository.getById(inquiryId);
+    const inquiry = await inquiryRepository.getInquiryById(inquiryId);
     assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
 
     // 자신이 등록한 문의인지 확인
@@ -169,7 +169,7 @@ class InquiryService {
     );
 
     // 문의 삭제
-    const deletedInquiry = await inquiryRepository.delete(inquiryId);
+    const deletedInquiry = await inquiryRepository.deleteInquiry(inquiryId);
 
     // 삭제된 문의 반환
     return {
@@ -184,7 +184,7 @@ class InquiryService {
     inquiryReplyDto: InquiryReplyDTO,
   ): Promise<InquiryReplyResponseDTO> => {
     // 문의 조회
-    const inquiry = await inquiryRepository.getById(inquiryId);
+    const inquiry = await inquiryRepository.getInquiryById(inquiryId);
     assert(inquiry, ApiError.notFound('문의를 찾을 수 없습니다.'));
 
     // 유저 조회 - 유저의 타입을 알아야 하므로
@@ -198,7 +198,7 @@ class InquiryService {
     );
 
     // 판매자가 해당 상품의 판매자인지 확인
-    const product = await productRepository.getByIdWithRelations(inquiry.productId);
+    const product = await productRepository.getProductByIdWithRelations(inquiry.productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
     assert(
       product.store.userId === userId,
@@ -224,7 +224,7 @@ class InquiryService {
     inquiryReplyDto: InquiryReplyDTO,
   ): Promise<InquiryReplyResponseDTO> => {
     // 답변 조회
-    const inquiryReply = await inquiryRepository.getReplyById(replyId);
+    const inquiryReply = await inquiryRepository.getInquiryReplyById(replyId);
     assert(inquiryReply, ApiError.notFound('답변을 찾을 수 없습니다.'));
 
     // 답변 작성자 본인인지 확인

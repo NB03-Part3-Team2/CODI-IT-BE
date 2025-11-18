@@ -38,10 +38,10 @@ describe('createInquiry 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const getProductByIdMock = jest
-      .spyOn(productRepository, 'getById')
+      .spyOn(productRepository, 'getProductById')
       .mockResolvedValue(mockProduct);
     const createInquiryMock = jest
-      .spyOn(inquiryRepository, 'create')
+      .spyOn(inquiryRepository, 'createInquiry')
       .mockResolvedValue(mockInquiryFromRepo);
 
     // 3. 서비스 함수 호출

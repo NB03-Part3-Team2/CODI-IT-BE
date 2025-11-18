@@ -27,8 +27,12 @@ describe('deleteInquiry service', () => {
     };
 
     // 2. 레포지토리 함수 모킹
-    const getByIdMock = jest.spyOn(inquiryRepository, 'getById').mockResolvedValue(mockInquiry);
-    const deleteMock = jest.spyOn(inquiryRepository, 'delete').mockResolvedValue(mockInquiry);
+    const getByIdMock = jest
+      .spyOn(inquiryRepository, 'getInquiryById')
+      .mockResolvedValue(mockInquiry);
+    const deleteMock = jest
+      .spyOn(inquiryRepository, 'deleteInquiry')
+      .mockResolvedValue(mockInquiry);
 
     // 3. 서비스 함수 호출
     const result = await inquiryService.deleteInquiry(userId, inquiryId);

@@ -22,14 +22,14 @@ const selectOptionDB = {
 };
 
 class StoreRepository {
-  create = async (userId: string, createStoreDto: CreateStoreDto) => {
+  createStore = async (userId: string, createStoreDto: CreateStoreDto) => {
     return await prisma.store.create({
       data: { userId, ...createStoreDto },
       select: selectOptionDB,
     });
   };
 
-  update = async (storeId: string, updateStoreDto: UpdateStoreDto) => {
+  updateStore = async (storeId: string, updateStoreDto: UpdateStoreDto) => {
     return await prisma.store.update({
       where: {
         id: storeId,
@@ -196,6 +196,18 @@ class StoreRepository {
     await prisma.storeLike.delete({
       where: {
         storeId_userId: { userId, storeId },
+      },
+    });
+  };
+
+  // S3 이미지 삭제를 위한 이미지 url 조회 메소드
+  getImageUrlById = async (storeId: string) => {
+    return await prisma.store.findUnique({
+      where: {
+        id: storeId,
+      },
+      select: {
+        image: true,
       },
     });
   };

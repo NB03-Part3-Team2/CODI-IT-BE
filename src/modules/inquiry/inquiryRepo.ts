@@ -36,7 +36,7 @@ const myInquiryListQuerySelect = {
 };
 
 class InquiryRepository {
-  create = async (userId: string, productId: string, createInquiryDto: CreateInquiryDTO) => {
+  createInquiry = async (userId: string, productId: string, createInquiryDto: CreateInquiryDTO) => {
     return await prisma.inquiry.create({
       data: {
         ...createInquiryDto,
@@ -78,7 +78,7 @@ class InquiryRepository {
     });
   };
 
-  getById = async (inquiryId: string) => {
+  getInquiryById = async (inquiryId: string) => {
     return await prisma.inquiry.findUnique({
       where: {
         id: inquiryId,
@@ -112,7 +112,7 @@ class InquiryRepository {
   };
 
   // 페이지네이션으로 일부 정보만 받아온 문의 리스트 (구매자)
-  getInquiriesByUserId = async (
+  getInquiryListByUserId = async (
     userId: string,
     { page, pageSize, status }: GetMyInquiryListRepoDTO,
   ) => {
@@ -137,7 +137,7 @@ class InquiryRepository {
   };
 
   // 페이지네이션으로 일부 정보만 받아온 문의 리스트 (판매자)
-  getInquiriesByStoreId = async (
+  getInquiryListByStoreId = async (
     storeId: string,
     { page, pageSize, status }: GetMyInquiryListRepoDTO,
   ) => {
@@ -175,7 +175,7 @@ class InquiryRepository {
     orderBy,
   });
 
-  update = async (inquiryId: string, updateInquiryDto: UpdateInquiryDTO) => {
+  updateInquiry = async (inquiryId: string, updateInquiryDto: UpdateInquiryDTO) => {
     return await prisma.inquiry.update({
       where: {
         id: inquiryId,
@@ -186,7 +186,7 @@ class InquiryRepository {
     });
   };
 
-  delete = async (inquiryId: string) => {
+  deleteInquiry = async (inquiryId: string) => {
     return await prisma.inquiry.delete({
       where: {
         id: inquiryId,
@@ -235,7 +235,7 @@ class InquiryRepository {
   };
 
   // 답변 ID로 답변 조회
-  getReplyById = async (replyId: string) => {
+  getInquiryReplyById = async (replyId: string) => {
     return await prisma.inquiryReply.findUnique({
       where: {
         id: replyId,

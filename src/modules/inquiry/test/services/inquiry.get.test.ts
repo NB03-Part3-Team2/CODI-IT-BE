@@ -18,7 +18,7 @@ describe('getInquiry', () => {
 
     // 2. 레포지토리 함수 모킹
     const getByIdMock = jest
-      .spyOn(inquiryRepository, 'getById')
+      .spyOn(inquiryRepository, 'getInquiryById')
       .mockResolvedValue(mockInquiryWithReply);
 
     // 3. 서비스 함수 호출

@@ -23,8 +23,8 @@ describe('updateInquiryReply 메소드 테스트', () => {
     const expectedResult = { ...mockInquiryReply, content: inquiryReplyDto.content };
 
     // 2. 레포지토리 함수 모킹
-    const getReplyByIdMock = jest
-      .spyOn(inquiryRepository, 'getReplyById')
+    const getInquiryReplyByIdMock = jest
+      .spyOn(inquiryRepository, 'getInquiryReplyById')
       .mockResolvedValue(mockInquiryReplyWithUser);
     const updateInquiryReplyMock = jest
       .spyOn(inquiryRepository, 'updateInquiryReply')
@@ -34,7 +34,7 @@ describe('updateInquiryReply 메소드 테스트', () => {
     const result = await inquiryService.updateInquiryReply(userId, replyId, inquiryReplyDto);
 
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
-    expect(getReplyByIdMock).toHaveBeenCalledWith(replyId);
+    expect(getInquiryReplyByIdMock).toHaveBeenCalledWith(replyId);
     expect(updateInquiryReplyMock).toHaveBeenCalledWith(replyId, inquiryReplyDto);
 
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인
