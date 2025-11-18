@@ -35,9 +35,11 @@ describe('updateInquiry service', () => {
     };
 
     // 2. 레포지토리 함수 모킹
-    const getByIdMock = jest.spyOn(inquiryRepository, 'getById').mockResolvedValue(baseInquiry);
+    const getByIdMock = jest
+      .spyOn(inquiryRepository, 'getInquiryById')
+      .mockResolvedValue(baseInquiry);
     const updateMock = jest
-      .spyOn(inquiryRepository, 'update')
+      .spyOn(inquiryRepository, 'updateInquiry')
       .mockResolvedValue(mockUpdatedInquiryFromRepo);
 
     // 3. 서비스 함수 호출

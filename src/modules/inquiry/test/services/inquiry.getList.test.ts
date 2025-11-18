@@ -18,7 +18,7 @@ describe('getInquiryList 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     const getProductByIdMock = jest
-      .spyOn(productRepository, 'getById')
+      .spyOn(productRepository, 'getProductById')
       .mockResolvedValue(mockProduct);
     const getInquiriesMock = jest
       .spyOn(inquiryRepository, 'getInquiryListByProductId')

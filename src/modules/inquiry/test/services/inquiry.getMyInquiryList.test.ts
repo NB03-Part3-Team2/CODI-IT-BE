@@ -52,8 +52,8 @@ describe('getMyInquiryList', () => {
     const getUserByIdMock = jest
       .spyOn(userRepository, 'getUserById')
       .mockResolvedValue(mockUserBuyer);
-    const getInquiriesByUserIdMock = jest
-      .spyOn(inquiryRepository, 'getInquiriesByUserId')
+    const getInquiryListByUserIdMock = jest
+      .spyOn(inquiryRepository, 'getInquiryListByUserId')
       .mockResolvedValue(mockMyInquiryList);
     const getTotalCountByUserIdMock = jest
       .spyOn(inquiryRepository, 'getTotalCountByUserId')
@@ -64,7 +64,7 @@ describe('getMyInquiryList', () => {
 
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
     expect(getUserByIdMock).toHaveBeenCalledWith(mockUserBuyer.id);
-    expect(getInquiriesByUserIdMock).toHaveBeenCalledWith(mockUserBuyer.id, expectedRepoDTO);
+    expect(getInquiryListByUserIdMock).toHaveBeenCalledWith(mockUserBuyer.id, expectedRepoDTO);
     expect(getTotalCountByUserIdMock).toHaveBeenCalledWith(
       mockUserBuyer.id,
       expectedRepoDTO.status,
@@ -117,8 +117,8 @@ describe('getMyInquiryList', () => {
     const getStoreIdByUserIdMock = jest
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockStore);
-    const getInquiriesByStoreIdMock = jest
-      .spyOn(inquiryRepository, 'getInquiriesByStoreId')
+    const getInquiryListByStoreIdMock = jest
+      .spyOn(inquiryRepository, 'getInquiryListByStoreId')
       .mockResolvedValue(mockMyInquiryList);
     const getTotalCountByStoreIdMock = jest
       .spyOn(inquiryRepository, 'getTotalCountByStoreId')
@@ -133,7 +133,7 @@ describe('getMyInquiryList', () => {
     // 4. 모킹된 메소드가 올바르게 호출되었는지 확인
     expect(getUserByIdMock).toHaveBeenCalledWith(mockUserSeller.id);
     expect(getStoreIdByUserIdMock).toHaveBeenCalledWith(mockUserSeller.id);
-    expect(getInquiriesByStoreIdMock).toHaveBeenCalledWith(mockStore.id, expectedRepoDTO);
+    expect(getInquiryListByStoreIdMock).toHaveBeenCalledWith(mockStore.id, expectedRepoDTO);
     expect(getTotalCountByStoreIdMock).toHaveBeenCalledWith(mockStore.id, expectedRepoDTO.status);
 
     // 5. 서비스 메소드가 모킹된 결과를 반환하는지 확인

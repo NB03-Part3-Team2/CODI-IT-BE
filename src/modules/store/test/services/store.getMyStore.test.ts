@@ -23,7 +23,7 @@ describe('getMyStore 메소드 테스트', () => {
         storeLikes: 150,
       },
     };
-    const monthFavoritCount = 25;
+    const monthFavoriteCount = 25;
     const totalSoldCount = 500;
 
     // 2. 레포지토리 함수 모킹
@@ -35,7 +35,7 @@ describe('getMyStore 메소드 테스트', () => {
       .mockResolvedValue(mockStoreFromDB);
     const countMonthlyLikesByStoreIdMock = jest
       .spyOn(storeRepository, 'getMonthlyLikesByStoreId')
-      .mockResolvedValue(monthFavoritCount);
+      .mockResolvedValue(monthFavoriteCount);
     const sumTotalSalesByStoreIdMock = jest
       .spyOn(storeRepository, 'getTotalSalesByStoreId')
       .mockResolvedValue(totalSoldCount);
@@ -54,7 +54,7 @@ describe('getMyStore 메소드 테스트', () => {
       ...mockStore,
       productCount: mockStoreFromDB._count.products,
       favoriteCount: mockStoreFromDB._count.storeLikes,
-      monthFavoritCount,
+      monthFavoriteCount,
       totalSoldCount,
     };
     expect(result).toEqual(expectedResult);

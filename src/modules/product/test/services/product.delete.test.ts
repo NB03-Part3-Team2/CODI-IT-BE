@@ -19,14 +19,16 @@ describe('deleteProduct 메소드 테스트', () => {
     // 1. 테스트에 사용할 mock 데이터 생성 - 생략
 
     // 2. 레포지토리 및 유틸 함수 모킹
-    const getByIdMock = jest.spyOn(productRepository, 'getById').mockResolvedValue(mockProduct);
+    const getByIdMock = jest
+      .spyOn(productRepository, 'getProductById')
+      .mockResolvedValue(mockProduct);
     const getStoreIdMock = jest
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockStore);
     const deleteImageMock = jest
       .spyOn(s3DeleteUtils, 'deleteImageFromS3')
       .mockResolvedValue(undefined);
-    const deleteMock = jest.spyOn(productRepository, 'delete').mockResolvedValue(undefined);
+    const deleteMock = jest.spyOn(productRepository, 'deleteProduct').mockResolvedValue(undefined);
 
     // 3. 서비스 함수 호출
     await productService.deleteProduct(mockUser.id, mockProduct.id);

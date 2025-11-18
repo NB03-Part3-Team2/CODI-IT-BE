@@ -57,12 +57,14 @@ describe('updateProduct 메소드 테스트', () => {
     };
 
     // 2. 레포지토리 및 유틸 함수 모킹
-    const getByIdMock = jest.spyOn(productRepository, 'getById').mockResolvedValue(mockProduct);
+    const getByIdMock = jest
+      .spyOn(productRepository, 'getProductById')
+      .mockResolvedValue(mockProduct);
     const getStoreIdMock = jest
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(mockStore);
     const updateMock = jest
-      .spyOn(productRepository, 'update')
+      .spyOn(productRepository, 'updateProduct')
       .mockResolvedValue(updatedProductDataFromRepo as any);
     const deleteImageMock = jest
       .spyOn(s3DeleteUtils, 'deleteImageFromS3')

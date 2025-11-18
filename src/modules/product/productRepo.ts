@@ -8,7 +8,7 @@ import {
 } from '@modules/product/dto/productDTO';
 
 class ProductRepository {
-  create = async (storeId: string, productData: CreateProductRepoDto) => {
+  createProduct = async (storeId: string, productData: CreateProductRepoDto) => {
     const { stocks, ...restProductData } = productData;
 
     return await prisma.$transaction(async (tx) => {
@@ -353,13 +353,13 @@ class ProductRepository {
     });
   };
 
-  getById = async (productId: string) => {
+  getProductById = async (productId: string) => {
     return await prisma.product.findUnique({
       where: { id: productId },
     });
   };
 
-  getByIdWithRelations = async (productId: string) => {
+  getProductByIdWithRelations = async (productId: string) => {
     return await prisma.product.findUnique({
       where: { id: productId },
       include: {
@@ -390,7 +390,7 @@ class ProductRepository {
     });
   };
 
-  update = async (productId: string, productData: UpdateProductRepoDto) => {
+  updateProduct = async (productId: string, productData: UpdateProductRepoDto) => {
     const { stocks, ...restProductData } = productData;
 
     return await prisma.$transaction(async (tx) => {
@@ -441,7 +441,7 @@ class ProductRepository {
     });
   };
 
-  delete = async (productId: string) => {
+  deleteProduct = async (productId: string) => {
     await prisma.product.delete({
       where: { id: productId },
     });

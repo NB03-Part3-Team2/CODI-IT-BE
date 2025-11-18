@@ -73,7 +73,7 @@ export interface PublicStoreDto {
 
 export interface PublicMyStoreDto extends PublicStoreDto {
   productCount: number;
-  monthFavoritCount: number;
+  monthFavoriteCount: number;
   totalSoldCount: number;
 }
 
