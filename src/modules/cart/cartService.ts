@@ -16,7 +16,7 @@ class CartService {
 
     // 장바구니가 없으면 생성
     if (!cart) {
-      cart = await cartRepository.create(userId);
+      cart = await cartRepository.createCart(userId);
     }
 
     // quantity 계산 (cartItems의 총 수량 합계)
@@ -40,7 +40,7 @@ class CartService {
     // 장바구니가 없으면 생성
     if (!cart) {
       // 장바구니가 없으면 빈 장바구니 생성
-      const newCart = await cartRepository.create(userId);
+      const newCart = await cartRepository.createCart(userId);
       return {
         id: newCart.id,
         buyerId: newCart.userId,
@@ -122,7 +122,7 @@ class CartService {
     // 2. 장바구니 조회 또는 생성
     let cart = await cartRepository.getByUserId(userId);
     if (!cart) {
-      cart = await cartRepository.create(userId);
+      cart = await cartRepository.createCart(userId);
     }
 
     // 3. 각 사이즈별로 재고 확인 및 CartItem upsert

@@ -9,6 +9,7 @@ import orderRouter from '@modules/order/orderRoute';
 import reviewRouter from '@modules/review/reviewRoute';
 import inquiryRouter from '@modules/inquiry/inquiryRoute';
 import notificationRouter from '@modules/notification/notificationRoute';
+import dashboardRouter from '@modules/dashboard/dashboardRoute';
 
 /*
 	modules에서 route임포트
@@ -30,5 +31,6 @@ router.use('/orders', orderRouter);
 router.use('/reviews', reviewRouter);
 router.use('/inquiries', inquiryRouter);
 router.use('/notifications', notificationRouter);
+router.use('/dashboard', dashboardRouter);
 
 export default router;

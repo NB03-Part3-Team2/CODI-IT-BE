@@ -322,6 +322,24 @@ class ProductRepository {
     return product?.storeId || null;
   };
 
+  /**
+   * DashboardService에서 사용하는 메소드입니다.
+   * 작성자: 박재성 (Dashboard 리팩토링)
+   * - getProductListByIds: 상품 ID 목록으로 상품 정보 조회
+   */
+
+  // 상품 ID 목록으로 상품 정보 조회
+  getProductListByIds = async (productIds: string[]) => {
+    return await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+      },
+    });
+  };
+
   // 상품 가격 및 할인 정보 조회
   getProductPriceInfo = async (productId: string) => {
     return await prisma.product.findUnique({

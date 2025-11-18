@@ -10,7 +10,7 @@ const orderRouter = express.Router();
 orderRouter
   .route('/')
   .post(authMiddleware, orderValidator.validateCreateOrder, orderController.createOrder)
-  .get(authMiddleware, orderValidator.validateGetOrders, orderController.getOrders);
+  .get(authMiddleware, orderValidator.validateGetOrders, orderController.getOrderList);
 
 // DELETE /api/orders/:orderId - 주문 취소 (인증 필요)
 orderRouter
