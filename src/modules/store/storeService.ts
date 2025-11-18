@@ -28,7 +28,7 @@ class StoreService {
     if (store) {
       throw ApiError.conflict('이미 스토어가 있습니다.');
     }
-    return await storeRepository.create(userId, createStoreDto);
+    return await storeRepository.createStore(userId, createStoreDto);
   };
 
   updateStore = async (userId: string, storeId: string, updateStoreDto: UpdateStoreDto) => {
@@ -49,7 +49,7 @@ class StoreService {
     }
 
     // 스토어 업데이트
-    const store = await storeRepository.update(storeId, updateStoreDto);
+    const store = await storeRepository.updateStore(storeId, updateStoreDto);
 
     // 기존 이미지를 지워야 하는 경우, 기존 S3 이미지 삭제
     if (oldStoreInfo && oldStoreInfo.image) {

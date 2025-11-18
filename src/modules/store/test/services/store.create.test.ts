@@ -36,7 +36,7 @@ describe('createStore 메소드 테스트', () => {
     const getStoreIdMock = jest
       .spyOn(storeRepository, 'getStoreIdByUserId')
       .mockResolvedValue(null);
-    const createMock = jest.spyOn(storeRepository, 'create').mockResolvedValue(expectedResult);
+    const createMock = jest.spyOn(storeRepository, 'createStore').mockResolvedValue(expectedResult);
 
     // 3. 서비스 함수 호출
     const result = await storeService.createStore(mockUser.id, createStoreDto);

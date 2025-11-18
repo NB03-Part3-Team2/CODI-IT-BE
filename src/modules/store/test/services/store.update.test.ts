@@ -43,7 +43,7 @@ describe('updateStore 메소드 테스트', () => {
     const getImageUrlMock = jest
       .spyOn(storeRepository, 'getImageUrlById')
       .mockResolvedValue(mockOldImage);
-    const updateMock = jest.spyOn(storeRepository, 'update').mockResolvedValue(expectedResult);
+    const updateMock = jest.spyOn(storeRepository, 'updateStore').mockResolvedValue(expectedResult);
 
     // 3. 서비스 함수 호출
     const result = await storeService.updateStore(mockUser.id, mockStore.id, updateStoreDto);

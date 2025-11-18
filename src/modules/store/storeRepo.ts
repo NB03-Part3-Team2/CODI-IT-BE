@@ -22,14 +22,14 @@ const selectOptionDB = {
 };
 
 class StoreRepository {
-  create = async (userId: string, createStoreDto: CreateStoreDto) => {
+  createStore = async (userId: string, createStoreDto: CreateStoreDto) => {
     return await prisma.store.create({
       data: { userId, ...createStoreDto },
       select: selectOptionDB,
     });
   };
 
-  update = async (storeId: string, updateStoreDto: UpdateStoreDto) => {
+  updateStore = async (storeId: string, updateStoreDto: UpdateStoreDto) => {
     return await prisma.store.update({
       where: {
         id: storeId,
