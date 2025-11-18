@@ -184,6 +184,18 @@ class StoreRepository {
       },
     });
   };
+
+  // S3 이미지 삭제를 위한 이미지 url 조회 메소드
+  getImageUrlById = async (storeId: string) => {
+    return await prisma.store.findUnique({
+      where: {
+        id: storeId,
+      },
+      select: {
+        image: true,
+      },
+    });
+  };
 }
 
 export default new StoreRepository();

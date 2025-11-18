@@ -37,6 +37,7 @@ export const createStoreDto: CreateStoreDto = {
 export const updateStoreDto: UpdateStoreDto = {
   name: '수정된 스토어명',
   content: '수정된 내용!',
+  image: 'updatedImage.jpg',
 };
 
 export const mockProducts = [

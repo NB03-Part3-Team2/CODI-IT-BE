@@ -9,6 +9,7 @@ import {
   PublicFavoriteStoreDto,
 } from '@modules/store/dto/storeDTO';
 import { UserType } from '@prisma/client';
+import { deleteImageFromS3 } from '@utils/s3DeleteUtils';
 
 class StoreService {
   createStore = async (userId: string, createStoreDto: CreateStoreDto) => {
@@ -32,16 +33,31 @@ class StoreService {
 
   updateStore = async (userId: string, storeId: string, updateStoreDto: UpdateStoreDto) => {
     // 스토어가 존재하는지 검사, swagger에는 없으나 에러 케이스 추가
-    const store = await storeRepository.getStoreIdByUserId(userId);
-    if (!store) {
+    const storeInfo = await storeRepository.getStoreIdByUserId(userId);
+    if (!storeInfo) {
       throw ApiError.notFound('스토어가 존재하지 않습니다');
     }
     // 스토어가 유저의 스토어인지 검사
-    if (store.id !== storeId) {
+    if (storeInfo.id !== storeId) {
       throw ApiError.forbidden('올바른 접근이 아닙니다.');
     }
+
+    // 새 이미지가 제공되고 기존 이미지가 있는 경우, 기존 S3 이미지 삭제를 위한 정보 조회
+    let oldStoreInfo = null;
+    if (updateStoreDto.image) {
+      oldStoreInfo = await storeRepository.getImageUrlById(storeId);
+    }
+
     // 스토어 업데이트
-    return await storeRepository.update(storeId, updateStoreDto);
+    const store = await storeRepository.update(storeId, updateStoreDto);
+
+    // 기존 이미지를 지워야 하는 경우, 기존 S3 이미지 삭제
+    if (oldStoreInfo && oldStoreInfo.image) {
+      // 업데이트 할 이미지가 없거나 기존 이미지 정보가 없는 경우 실행 x
+      await deleteImageFromS3(oldStoreInfo.image);
+    }
+
+    return store;
   };
 
   getStore = async (storeId: string): Promise<PublicStoreDto> => {
