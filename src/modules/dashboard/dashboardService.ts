@@ -14,6 +14,7 @@ import {
 } from '@modules/dashboard/dto/dashboardDTO';
 import { UserType } from '@prisma/client';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 import {
   startOfDay,
   endOfDay,
@@ -224,21 +225,15 @@ class DashboardService {
   getDashboard = async (sellerId: string): Promise<DashboardResponseDto> => {
     // 1. 사용자 타입 검증 (SELLER인지 확인)
     const user = await userRepository.getUserById(sellerId);
-
-    if (!user) {
-      throw ApiError.notFound('사용자를 찾을 수 없습니다.');
-    }
-
-    if (user.type !== UserType.SELLER) {
-      throw ApiError.forbidden('대시보드는 판매자만 접근할 수 있습니다.');
-    }
+    assert(user, ApiError.notFound('사용자를 찾을 수 없습니다.'));
+    assert(
+      user.type === UserType.SELLER,
+      ApiError.forbidden('대시보드는 판매자만 접근할 수 있습니다.'),
+    );
 
     // 2. 스토어 ID 조회
     const storeId = await storeRepository.getStoreIdBySellerId(sellerId);
-
-    if (!storeId) {
-      throw ApiError.notFound('스토어를 찾을 수 없습니다.');
-    }
+    assert(storeId, ApiError.notFound('스토어를 찾을 수 없습니다.'));
 
     // 3. 날짜 범위 계산
     const dateRanges = this.getDateRanges();
