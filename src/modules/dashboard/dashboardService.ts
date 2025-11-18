@@ -1,4 +1,7 @@
 import orderRepository from '@modules/order/orderRepo';
+import storeRepository from '@modules/store/storeRepo';
+import userRepository from '@modules/user/userRepo';
+import productRepository from '@modules/product/productRepo';
 import {
   DashboardResponseDto,
   PeriodStats,
@@ -6,7 +9,6 @@ import {
 } from '@modules/dashboard/dto/dashboardDTO';
 import { UserType } from '@prisma/client';
 import { ApiError } from '@errors/ApiError';
-import { prisma } from '@shared/prisma';
 import {
   startOfDay,
   endOfDay,
@@ -70,29 +72,46 @@ class DashboardService {
   }
 
   /**
+   * 주문 통계 계산 (비즈니스 로직)
+   * @param orders - 주문 목록
+   * @returns 주문 수와 매출액
+   */
+  private calculateOrderStats(orders: any[]) {
+    const totalOrders = orders.length;
+    const totalSales = orders.reduce((sum, order) => {
+      const orderSales = order.items.reduce(
+        (itemSum: number, item: any) => itemSum + item.price * item.quantity,
+        0,
+      );
+      return sum + orderSales;
+    }, 0);
+    return { totalOrders, totalSales };
+  }
+
+  /**
    * 기간별 통계 조회
-   * @param sellerId - 판매자 ID
+   * @param storeId - 스토어 ID
    * @param currentStart - 현재 기간 시작
    * @param currentEnd - 현재 기간 종료
    * @param previousStart - 이전 기간 시작
    * @param previousEnd - 이전 기간 종료
    */
   private async getPeriodStats(
-    sellerId: string,
+    storeId: string,
     currentStart: Date,
     currentEnd: Date,
     previousStart: Date,
     previousEnd: Date,
   ): Promise<PeriodStats> {
-    // 현재 기간 통계
-    const current = await orderRepository.getOrderStatsByPeriod(sellerId, currentStart, currentEnd);
+    // 병렬로 현재 기간과 이전 기간 주문 조회
+    const [currentOrders, previousOrders] = await Promise.all([
+      orderRepository.getCompletedOrdersByStoreAndPeriod(storeId, currentStart, currentEnd),
+      orderRepository.getCompletedOrdersByStoreAndPeriod(storeId, previousStart, previousEnd),
+    ]);
 
-    // 이전 기간 통계
-    const previous = await orderRepository.getOrderStatsByPeriod(
-      sellerId,
-      previousStart,
-      previousEnd,
-    );
+    // 통계 계산
+    const current = this.calculateOrderStats(currentOrders);
+    const previous = this.calculateOrderStats(previousOrders);
 
     // 변화율 계산
     const changeRate = {
@@ -117,10 +136,10 @@ class DashboardService {
 
   /**
    * 가격 범위별 매출 계산
-   * @param sellerId - 판매자 ID
+   * @param storeId - 스토어 ID
    */
-  private async calculatePriceRanges(sellerId: string): Promise<PriceRangeItem[]> {
-    const orders = await orderRepository.getAllCompletedOrders(sellerId);
+  private async calculatePriceRanges(storeId: string): Promise<PriceRangeItem[]> {
+    const orders = await orderRepository.getCompletedOrdersByStore(storeId);
 
     // 가격 범위별 매출 집계
     const rangeMap = new Map<string, number>();
@@ -150,15 +169,47 @@ class DashboardService {
   }
 
   /**
+   * 최다 판매 상품 조회 (비즈니스 로직)
+   * @param storeId - 스토어 ID
+   * @param limit - 조회할 상품 수
+   */
+  private async getTopSellingProducts(storeId: string, limit: number = 5) {
+    // 1. 판매량 집계 조회
+    const salesStats = await orderRepository.getProductSalesStatsByStore(storeId, limit);
+
+    // 2. 상품 정보 조회
+    const productIds = salesStats.map((item) => item.productId);
+    if (productIds.length === 0) {
+      return [];
+    }
+
+    const products = await productRepository.getProductListByIds(productIds);
+
+    // 3. 데이터 매핑 및 변환
+    const productMap = new Map(products.map((p) => [p.id, p]));
+    return salesStats
+      .map((item) => {
+        const product = productMap.get(item.productId);
+        if (!product) return null;
+        return {
+          totalOrders: item._sum.quantity || 0,
+          product: {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+          },
+        };
+      })
+      .filter((item) => item !== null);
+  }
+
+  /**
    * 대시보드 데이터 조회
    * @param sellerId - 판매자(사용자) ID
    */
   getDashboard = async (sellerId: string): Promise<DashboardResponseDto> => {
     // 1. 사용자 타입 검증 (SELLER인지 확인)
-    const user = await prisma.user.findUnique({
-      where: { id: sellerId },
-      select: { type: true },
-    });
+    const user = await userRepository.getUserById(sellerId);
 
     if (!user) {
       throw ApiError.notFound('사용자를 찾을 수 없습니다.');
@@ -168,41 +219,48 @@ class DashboardService {
       throw ApiError.forbidden('대시보드는 판매자만 접근할 수 있습니다.');
     }
 
-    // 2. 날짜 범위 계산
+    // 2. 스토어 ID 조회
+    const storeId = await storeRepository.getStoreIdBySellerId(sellerId);
+
+    if (!storeId) {
+      throw ApiError.notFound('스토어를 찾을 수 없습니다.');
+    }
+
+    // 3. 날짜 범위 계산
     const dateRanges = this.getDateRanges();
 
-    // 3. 병렬 처리로 성능 최적화
+    // 4. 병렬 처리로 성능 최적화
     const [today, week, month, year, topSales, priceRange] = await Promise.all([
       this.getPeriodStats(
-        sellerId,
+        storeId,
         dateRanges.today.current.start,
         dateRanges.today.current.end,
         dateRanges.today.previous.start,
         dateRanges.today.previous.end,
       ),
       this.getPeriodStats(
-        sellerId,
+        storeId,
         dateRanges.week.current.start,
         dateRanges.week.current.end,
         dateRanges.week.previous.start,
         dateRanges.week.previous.end,
       ),
       this.getPeriodStats(
-        sellerId,
+        storeId,
         dateRanges.month.current.start,
         dateRanges.month.current.end,
         dateRanges.month.previous.start,
         dateRanges.month.previous.end,
       ),
       this.getPeriodStats(
-        sellerId,
+        storeId,
         dateRanges.year.current.start,
         dateRanges.year.current.end,
         dateRanges.year.previous.start,
         dateRanges.year.previous.end,
       ),
-      orderRepository.getTopSellingProducts(sellerId, 5),
-      this.calculatePriceRanges(sellerId),
+      this.getTopSellingProducts(storeId, 5),
+      this.calculatePriceRanges(storeId),
     ]);
 
     return {
