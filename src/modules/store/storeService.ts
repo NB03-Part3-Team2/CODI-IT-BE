@@ -96,12 +96,12 @@ class StoreService {
 
     // 데이터 병렬 조회
     const storePromise = storeRepository.getStoreById(storeInfo.id);
-    const monthFavoritCountPromise = storeRepository.getMonthlyLikesByStoreId(storeInfo.id);
+    const monthFavoriteCountPromise = storeRepository.getMonthlyLikesByStoreId(storeInfo.id);
     const totalSoldCountPromise = storeRepository.getTotalSalesByStoreId(storeInfo.id);
 
-    const [store, monthFavoritCount, totalSoldCount] = await Promise.all([
+    const [store, monthFavoriteCount, totalSoldCount] = await Promise.all([
       storePromise,
-      monthFavoritCountPromise,
+      monthFavoriteCountPromise,
       totalSoldCountPromise,
     ]);
 
@@ -114,7 +114,7 @@ class StoreService {
       ...rest,
       favoriteCount: _count.storeLikes,
       productCount: _count.products,
-      monthFavoritCount,
+      monthFavoriteCount,
       totalSoldCount,
     };
   };
