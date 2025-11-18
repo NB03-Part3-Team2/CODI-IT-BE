@@ -6,6 +6,11 @@ import {
   DashboardResponseDto,
   PeriodStats,
   PriceRangeItem,
+  OrderForStats,
+  OrderItemForStats,
+  ProductSaleStat,
+  ProductBasicInfo,
+  TopSalesItem,
 } from '@modules/dashboard/dto/dashboardDTO';
 import { UserType } from '@prisma/client';
 import { ApiError } from '@errors/ApiError';
@@ -76,11 +81,11 @@ class DashboardService {
    * @param orders - 주문 목록
    * @returns 주문 수와 매출액
    */
-  private calculateOrderStats(orders: any[]) {
+  private calculateOrderStats(orders: OrderForStats[]) {
     const totalOrders = orders.length;
     const totalSales = orders.reduce((sum, order) => {
       const orderSales = order.items.reduce(
-        (itemSum: number, item: any) => itemSum + item.price * item.quantity,
+        (itemSum: number, item: OrderItemForStats) => itemSum + item.price * item.quantity,
         0,
       );
       return sum + orderSales;
@@ -105,8 +110,8 @@ class DashboardService {
   ): Promise<PeriodStats> {
     // 병렬로 현재 기간과 이전 기간 주문 조회
     const [currentOrders, previousOrders] = await Promise.all([
-      orderRepository.getCompletedOrdersByStoreAndPeriod(storeId, currentStart, currentEnd),
-      orderRepository.getCompletedOrdersByStoreAndPeriod(storeId, previousStart, previousEnd),
+      orderRepository.getCompletedOrderListByStoreAndPeriod(storeId, currentStart, currentEnd),
+      orderRepository.getCompletedOrderListByStoreAndPeriod(storeId, previousStart, previousEnd),
     ]);
 
     // 통계 계산
@@ -139,14 +144,17 @@ class DashboardService {
    * @param storeId - 스토어 ID
    */
   private async calculatePriceRanges(storeId: string): Promise<PriceRangeItem[]> {
-    const orders = await orderRepository.getCompletedOrdersByStore(storeId);
+    const orders: OrderForStats[] = await orderRepository.getCompletedOrderListByStore(storeId);
 
     // 가격 범위별 매출 집계
     const rangeMap = new Map<string, number>();
     let totalSales = 0;
 
     for (const order of orders) {
-      const orderTotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const orderTotal = order.items.reduce(
+        (sum: number, item: OrderItemForStats) => sum + item.price * item.quantity,
+        0,
+      );
       totalSales += orderTotal;
 
       const rangeLabel = this.getPriceRangeLabel(orderTotal);
@@ -173,9 +181,15 @@ class DashboardService {
    * @param storeId - 스토어 ID
    * @param limit - 조회할 상품 수
    */
-  private async getTopSellingProductList(storeId: string, limit: number = 5) {
+  private async getTopSellingProductList(
+    storeId: string,
+    limit: number = 5,
+  ): Promise<TopSalesItem[]> {
     // 1. 판매량 집계 조회
-    const salesStats = await orderRepository.getProductSalesStatsByStore(storeId, limit);
+    const salesStats: ProductSaleStat[] = await orderRepository.getProductSaleStatListByStore(
+      storeId,
+      limit,
+    );
 
     // 2. 상품 정보 조회
     const productIds = salesStats.map((item) => item.productId);
@@ -183,12 +197,12 @@ class DashboardService {
       return [];
     }
 
-    const products = await productRepository.getProductListByIds(productIds);
+    const products: ProductBasicInfo[] = await productRepository.getProductListByIds(productIds);
 
     // 3. 데이터 매핑 및 변환
-    const productMap = new Map(products.map((p) => [p.id, p]));
+    const productMap = new Map<string, ProductBasicInfo>(products.map((p) => [p.id, p]));
     return salesStats
-      .map((item) => {
+      .map((item): TopSalesItem | null => {
         const product = productMap.get(item.productId);
         if (!product) return null;
         return {
@@ -200,7 +214,7 @@ class DashboardService {
           },
         };
       })
-      .filter((item) => item !== null);
+      .filter((item): item is TopSalesItem => item !== null);
   }
 
   /**

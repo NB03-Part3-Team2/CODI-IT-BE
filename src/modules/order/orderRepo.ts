@@ -434,7 +434,7 @@ class OrderRepository {
    * @param startDate - 시작 날짜
    * @param endDate - 종료 날짜
    */
-  getCompletedOrdersByStoreAndPeriod = async (
+  getCompletedOrderListByStoreAndPeriod = async (
     storeId: string,
     startDate: Date,
     endDate: Date,
@@ -481,7 +481,7 @@ class OrderRepository {
    * @param storeId - 스토어 ID
    * @param limit - 조회할 상품 수
    */
-  getProductSalesStatsByStore = async (storeId: string, limit: number = 5) => {
+  getProductSaleStatListByStore = async (storeId: string, limit: number = 5) => {
     return await prisma.orderItem.groupBy({
       by: ['productId'],
       where: {
@@ -513,7 +513,7 @@ class OrderRepository {
    * 스토어의 모든 완료된 주문을 조회합니다.
    * @param storeId - 스토어 ID
    */
-  getCompletedOrdersByStore = async (storeId: string) => {
+  getCompletedOrderListByStore = async (storeId: string) => {
     return await prisma.order.findMany({
       where: {
         items: {

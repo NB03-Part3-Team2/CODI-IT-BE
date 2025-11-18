@@ -1,5 +1,32 @@
 // 대시보드 응답 DTO 정의
 
+// 주문 아이템 (대시보드 통계용)
+export interface OrderItemForStats {
+  price: number;
+  quantity: number;
+}
+
+// 주문 (대시보드 통계용)
+export interface OrderForStats {
+  id: string;
+  items: OrderItemForStats[];
+}
+
+// 상품 판매 통계 (groupBy 결과)
+export interface ProductSaleStat {
+  productId: string;
+  _sum: {
+    quantity: number | null;
+  };
+}
+
+// 상품 정보 (ID, 이름, 가격)
+export interface ProductBasicInfo {
+  id: string;
+  name: string;
+  price: number;
+}
+
 // 통계 수치 (현재/이전 기간)
 export interface PeriodStatistics {
   totalOrders: number;
