@@ -55,46 +55,6 @@ export const MOCK_DATA = {
     cartUserIds: [],
   } as ResnotifyOutOfStockDto,
 
-  // 판매자 품절 알림
-  sellerOutOfStockNotification: {
-    id: 'notif-seller',
-    userId: MOCK_CONSTANTS.SELLER_ID,
-    content: `${MOCK_CONSTANTS.STORE_NAME}에서 ${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈가 품절되었습니다.`,
-    isChecked: false,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-  },
-
-  // 구매자 품절 알림
-  buyerOutOfStockNotification: {
-    id: 'notif-buyer',
-    userId: MOCK_CONSTANTS.BUYER_ID_1,
-    content: `장바구니에 담긴 "${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈가 품절되었습니다.`,
-    isChecked: false,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-  },
-
-  // 문의 답변 알림
-  inquiryAnsweredNotification: {
-    id: 'notif-inquiry',
-    userId: MOCK_CONSTANTS.USER_ID,
-    content: `등록한 문의 "${MOCK_CONSTANTS.INQUIRY_TITLE}"에 답변이 달렸습니다.`,
-    isChecked: false,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-  },
-
-  // 새 문의 알림
-  newInquiryNotification: {
-    id: 'notif-new-inquiry',
-    userId: MOCK_CONSTANTS.SELLER_ID,
-    content: `등록된 상품:${MOCK_CONSTANTS.PRODUCT_NAME}에 새로운 문의가 등록되었습니다.`,
-    isChecked: false,
-    createdAt: MOCK_CONSTANTS.MOCK_DATE,
-    updatedAt: MOCK_CONSTANTS.MOCK_DATE,
-  },
-
   // 알림 목록 (여러 개)
   notificationList: [
     {
