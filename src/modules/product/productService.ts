@@ -45,7 +45,7 @@ class ProductService {
     };
 
     // product 생성 레포지토리 메소드 호출
-    const product = await productRepository.create(store.id, productData);
+    const product = await productRepository.createProduct(store.id, productData);
 
     // 리스폰스 형태에 맞게 가공
     return this._formatProductResponse(product, store.name);
@@ -95,7 +95,7 @@ class ProductService {
     updateProductDto: UpdateProductDto,
   ): Promise<ProductResponseDto> => {
     // 상품을 찾을수 없는 경우 에러
-    const product = await productRepository.getById(productId);
+    const product = await productRepository.getProductById(productId);
     if (!product) {
       throw ApiError.notFound('상품을 찾을 수 없습니다.');
     }
@@ -136,7 +136,7 @@ class ProductService {
     }
 
     // product 업데이트 레포지토리 메소드 호출
-    const updatedProduct = await productRepository.update(productId, repoDto);
+    const updatedProduct = await productRepository.updateProduct(productId, repoDto);
 
     // 품절 알림 전송: 업데이트 결과 재고가 0인 사이즈만 알림
     const soldOutStocks = updatedProduct.stocks.filter((stock) => stock.quantity === 0);
@@ -168,7 +168,7 @@ class ProductService {
 
   getProduct = async (productId: string): Promise<ProductResponseDto> => {
     // product 조회 레포지토리 메소드 호출
-    const product = await productRepository.getByIdWithRelations(productId);
+    const product = await productRepository.getProductByIdWithRelations(productId);
 
     // id로 받은 상품이 없을 경우 에러
     if (!product) {
@@ -181,7 +181,7 @@ class ProductService {
 
   deleteProduct = async (userId: string, productId: string) => {
     // 삭제할 상품이 있는지 + 상품이 포함된 스토어의 권한 확인을 위해 먼저 조회
-    const product = await productRepository.getById(productId);
+    const product = await productRepository.getProductById(productId);
     if (!product) {
       throw ApiError.notFound('상품을 찾을 수 없습니다.');
     }
@@ -197,7 +197,7 @@ class ProductService {
     }
 
     // product 삭제 레포지토리 메소드 호출
-    await productRepository.delete(productId);
+    await productRepository.deleteProduct(productId);
 
     // 기존에 S3에 업로드된 이미지 삭제
     if (product.image) {

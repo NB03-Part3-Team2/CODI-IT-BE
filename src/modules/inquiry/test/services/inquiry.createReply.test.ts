@@ -50,7 +50,7 @@ describe('createInquiryReply 메소드 테스트', () => {
       .spyOn(userRepository, 'getUserById')
       .mockResolvedValue(mockUserSeller);
     const getProductByIdWithRelationsMock = jest
-      .spyOn(productRepository, 'getByIdWithRelations')
+      .spyOn(productRepository, 'getProductByIdWithRelations')
       .mockResolvedValue(mockProductWithStore);
     const createInquiryReplyMock = jest
       .spyOn(inquiryRepository, 'createInquiryReply')

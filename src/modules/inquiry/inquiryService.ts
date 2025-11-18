@@ -30,7 +30,7 @@ class InquiryService {
     createInquiryDto: CreateInquiryDTO,
   ): Promise<InquiryResponseDTO> => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
-    const product = await productRepository.getById(productId);
+    const product = await productRepository.getProductById(productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // inquiry 등록 레포지토리 호출
@@ -55,7 +55,7 @@ class InquiryService {
 
   getInquiryList = async (productId: string) => {
     // path파라미터로 받은 상품이 있는지 먼저 조회
-    const product = await productRepository.getById(productId);
+    const product = await productRepository.getProductById(productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 문의 리스트 조회
@@ -198,7 +198,7 @@ class InquiryService {
     );
 
     // 판매자가 해당 상품의 판매자인지 확인
-    const product = await productRepository.getByIdWithRelations(inquiry.productId);
+    const product = await productRepository.getProductByIdWithRelations(inquiry.productId);
     assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
     assert(
       product.store.userId === userId,

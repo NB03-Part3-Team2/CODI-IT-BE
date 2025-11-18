@@ -72,7 +72,9 @@ describe('createProduct 메소드 테스트', () => {
     const findCategoryMock = jest
       .spyOn(productRepository, 'getCategoryByName')
       .mockResolvedValue(mockCategory);
-    const createMock = jest.spyOn(productRepository, 'create').mockResolvedValue(mockProduct);
+    const createMock = jest
+      .spyOn(productRepository, 'createProduct')
+      .mockResolvedValue(mockProduct);
 
     // 3. 서비스 함수 호출
     const result = await productService.createProduct(mockUser.id, createProductDto);

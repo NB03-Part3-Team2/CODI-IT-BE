@@ -36,7 +36,7 @@ describe('getProduct 메소드 테스트', () => {
 
     // 2. 레포지토리 및 유틸 함수 모킹
     const getByIdWithRelationsMock = jest
-      .spyOn(productRepository, 'getByIdWithRelations')
+      .spyOn(productRepository, 'getProductByIdWithRelations')
       .mockResolvedValue(mockProductWithRelations as any);
 
     // 3. 서비스 함수 호출
