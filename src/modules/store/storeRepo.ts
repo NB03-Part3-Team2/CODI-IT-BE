@@ -75,6 +75,21 @@ class StoreRepository {
     return store;
   };
 
+  /**
+   * DashboardService에서 사용하는 메소드입니다.
+   * 작성자: 박재성 (Dashboard 리팩토링)
+   * - getStoreIdBySellerId: 판매자 ID로 스토어 ID 조회
+   */
+
+  // 판매자 ID로 스토어 ID 조회
+  getStoreIdBySellerId = async (sellerId: string): Promise<string | null> => {
+    const store = await prisma.store.findUnique({
+      where: { userId: sellerId },
+      select: { id: true },
+    });
+    return store?.id || null;
+  };
+
   getProductListByStoreId = async (storeId: string, getMyProductListDto: GetMyProductListDto) => {
     const { page, pageSize } = getMyProductListDto;
     const offset = (page - 1) * pageSize;

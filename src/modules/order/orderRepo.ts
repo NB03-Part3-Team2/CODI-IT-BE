@@ -294,7 +294,7 @@ class OrderRepository {
   };
 
   // 주문 목록 조회 (페이지네이션 포함)
-  getOrders = async (userId: string, query: GetOrdersQueryDto) => {
+  getOrderList = async (userId: string, query: GetOrdersQueryDto) => {
     const { status, limit, page } = query;
 
     // where 조건 구성
@@ -425,6 +425,125 @@ class OrderRepository {
       },
     });
     return orderItem;
+  };
+
+  /**
+   * 기간별 완료된 주문 조회 (대시보드용)
+   * 스토어의 상품에 대한 완료된 주문을 조회합니다.
+   * @param storeId - 스토어 ID
+   * @param startDate - 시작 날짜
+   * @param endDate - 종료 날짜
+   */
+  getCompletedOrderListByStoreAndPeriod = async (
+    storeId: string,
+    startDate: Date,
+    endDate: Date,
+  ) => {
+    return await prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        items: {
+          some: {
+            product: {
+              storeId,
+            },
+          },
+        },
+        payments: {
+          some: {
+            status: 'CompletedPayment',
+          },
+        },
+      },
+      select: {
+        id: true,
+        items: {
+          where: {
+            product: {
+              storeId,
+            },
+          },
+          select: {
+            price: true,
+            quantity: true,
+          },
+        },
+      },
+    });
+  };
+
+  /**
+   * 상품별 판매량 집계 조회 (대시보드용)
+   * 스토어의 상품별 판매량을 집계합니다.
+   * @param storeId - 스토어 ID
+   * @param limit - 조회할 상품 수
+   */
+  getProductSaleStatListByStore = async (storeId: string, limit: number = 5) => {
+    return await prisma.orderItem.groupBy({
+      by: ['productId'],
+      where: {
+        product: {
+          storeId,
+        },
+        order: {
+          payments: {
+            some: {
+              status: 'CompletedPayment',
+            },
+          },
+        },
+      },
+      _sum: {
+        quantity: true,
+      },
+      orderBy: {
+        _sum: {
+          quantity: 'desc',
+        },
+      },
+      take: limit,
+    });
+  };
+
+  /**
+   * 전체 완료된 주문 조회 (대시보드용 - 가격 범위별 매출 계산용)
+   * 스토어의 모든 완료된 주문을 조회합니다.
+   * @param storeId - 스토어 ID
+   */
+  getCompletedOrderListByStore = async (storeId: string) => {
+    return await prisma.order.findMany({
+      where: {
+        items: {
+          some: {
+            product: {
+              storeId,
+            },
+          },
+        },
+        payments: {
+          some: {
+            status: 'CompletedPayment',
+          },
+        },
+      },
+      select: {
+        id: true,
+        items: {
+          where: {
+            product: {
+              storeId,
+            },
+          },
+          select: {
+            price: true,
+            quantity: true,
+          },
+        },
+      },
+    });
   };
 }
 
