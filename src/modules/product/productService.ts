@@ -138,25 +138,6 @@ class ProductService {
     // product 업데이트 레포지토리 메소드 호출
     const updatedProduct = await productRepository.updateProduct(productId, repoDto);
 
-    // 품절 알림 전송: 업데이트 결과 재고가 0인 사이즈만 알림
-    const soldOutStocks = updatedProduct.stocks.filter((stock) => stock.quantity === 0);
-    if (soldOutStocks.length > 0) {
-      for (const stock of soldOutStocks) {
-        const cartUserIds = await cartRepository.getUserIdsBySoldOutProduct(
-          productId,
-          stock.size.id,
-        );
-
-        await notificationService.notifyOutOfStock({
-          sellerId: userId,
-          storeName: store.name,
-          productName: updatedProduct.name,
-          sizeName: stock.size.en,
-          cartUserIds,
-        });
-      }
-    }
-
     // 새 이미지가 제공되고 기존 이미지가 있는 경우, 기존 S3 이미지 삭제
     if (repoDto.image && product.image) {
       await deleteImageFromS3(product.image);

@@ -25,14 +25,14 @@ class NotificationService {
   notifyOutOfStock = async (resnotifyOutOfStockDto: ResnotifyOutOfStockDto) => {
     await this.createNotification({
       userId: resnotifyOutOfStockDto.sellerId,
-      content: `${resnotifyOutOfStockDto.storeName}에서 ${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName} 사이즈가 품절되었습니다.`,
+      content: `${resnotifyOutOfStockDto.storeName}의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName}사이즈' 상품이 품절되었습니다.`,
     });
 
     // 장바구니에 담은 구매자들에게 알림
     for (const userId of resnotifyOutOfStockDto.cartUserIds) {
       await this.createNotification({
         userId,
-        content: `장바구니에 담긴 ${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName} 사이즈가 품절되었습니다.`,
+        content: `장바구니의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName}사이즈' 상품이 품절되었습니다.`,
       });
     }
   };
@@ -40,7 +40,7 @@ class NotificationService {
   notifyInquiryAnswered = async (buyerId: string, inquiryTitle: string) => {
     await this.createNotification({
       userId: buyerId,
-      content: `등록한 문의 "${inquiryTitle}"에 답변이 달렸습니다.`,
+      content: `등록한 문의:"${inquiryTitle}"에 답변이 달렸습니다.`,
     });
   };
 
