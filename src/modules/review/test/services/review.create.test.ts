@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import reviewService from '@modules/review/reviewService';
 import reviewRepository from '@modules/review/reviewRepo';
 import userRepository from '@modules/user/userRepo';

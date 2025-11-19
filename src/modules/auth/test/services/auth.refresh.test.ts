@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import authService from '@modules/auth/authService';
 import tokenUtils from '@modules/auth/utils/tokenUtils';
 

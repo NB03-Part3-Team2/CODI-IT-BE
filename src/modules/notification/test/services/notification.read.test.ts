@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import notificationService from '@modules/notification/notificationService';
 import notificationRepository from '@modules/notification/notificationRepo';
 import userRepository from '@modules/user/userRepo';
