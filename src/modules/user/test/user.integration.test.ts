@@ -14,6 +14,12 @@ describe('User API', () => {
   beforeAll(async () => {
     const hashedPassword = await hashPassword('password123');
 
+    // Green 등급 생성 (userRepo에서 필요)
+    const greenGrade = await prisma.grade.findFirst({ where: { name: 'Green' } });
+    if (!greenGrade) {
+      await prisma.grade.create({ data: { name: 'Green', rate: 1, minAmount: 0 } });
+    }
+
     const grade =
       (await prisma.grade.findFirst({ where: { name: '테스트등급' } })) ??
       (await prisma.grade.create({
@@ -87,14 +93,6 @@ describe('User API', () => {
 
       const response = await request(app).post('/api/users').send(newUserData);
 
-      // 에러 디버깅
-      if (response.status !== 201) {
-        console.log('=== 회원가입 실패 디버깅 ===');
-        console.log('Response status:', response.status);
-        console.log('Response body:', JSON.stringify(response.body, null, 2));
-        console.log('Request data:', JSON.stringify(newUserData, null, 2));
-      }
-
       expect(response.status).toBe(201);
       expect(response.body.email).toBe(newUserData.email);
       expect(response.body.name).toBe(newUserData.name);
@@ -144,10 +142,8 @@ describe('User API', () => {
   describe('GET /api/users/me/likes - 좋아하는 스토어 목록 조회', () => {
     test('성공: 좋아하는 스토어 목록을 조회하고 200을 반환', async () => {
       // 스토어 좋아요 추가
-      await prisma.storeLike.upsert({
-        where: { storeId_userId: { userId, storeId } },
-        update: {},
-        create: { userId, storeId },
+      await prisma.storeLike.create({
+        data: { userId, storeId },
       });
 
       const response = await request(app)

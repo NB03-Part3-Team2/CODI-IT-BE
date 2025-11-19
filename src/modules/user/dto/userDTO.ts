@@ -5,11 +5,6 @@ import dns from 'dns/promises';
 
 const emailWithMX = z.string().refine(
   async (email) => {
-    // 테스트 환경에서는 MX 레코드 검증 스킵
-    if (process.env.NODE_ENV === 'test') {
-      return email.includes('@');
-    }
-
     const domain = email.split('@')[1];
     try {
       const records = await dns.resolveMx(domain);
