@@ -1,23 +1,21 @@
 import type { RequestHandler } from 'express';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 
 const validateImageUpload: RequestHandler = async (req, res, next) => {
   try {
     // multer로 업로드된 파일이 없으면 에러
-    if (!req.file) {
-      throw ApiError.badRequest('이미지 파일이 필요합니다.');
-    }
+    assert(req.file, ApiError.badRequest('이미지 파일이 필요합니다.'));
 
     const file = req.file;
 
     // 파일 유효성 검증
-    if (!isValidImageType(file.mimetype)) {
-      throw ApiError.badRequest('지원하지 않는 이미지 형식입니다. (JPEG, PNG, GIF, WebP만 허용)');
-    }
+    assert(
+      isValidImageType(file.mimetype),
+      ApiError.badRequest('지원하지 않는 이미지 형식입니다. (JPEG, PNG, GIF, WebP만 허용)'),
+    );
 
-    if (!isValidFileSize(file.size)) {
-      throw ApiError.badRequest('파일 크기가 너무 큽니다. (최대 5MB)');
-    }
+    assert(isValidFileSize(file.size), ApiError.badRequest('파일 크기가 너무 큽니다. (최대 5MB)'));
 
     next();
   } catch (err) {

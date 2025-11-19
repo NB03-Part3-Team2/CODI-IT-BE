@@ -7,6 +7,7 @@ import {
   CartItemResponseDto,
 } from '@modules/cart/dto/cartDTO';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 
 class CartService {
   // 장바구니 생성 또는 기존 장바구니 반환
@@ -115,9 +116,7 @@ class CartService {
 
     // 1. 상품 존재 여부 확인
     const productExists = await productRepository.checkProductExists(productId);
-    if (!productExists) {
-      throw ApiError.notFound('상품을 찾을 수 없습니다.');
-    }
+    assert(productExists, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 2. 장바구니 조회 또는 생성
     let cart = await cartRepository.getByUserId(userId);
@@ -133,14 +132,13 @@ class CartService {
 
       // 재고 확인
       const stock = await productRepository.getStock(productId, sizeId);
-      if (!stock) {
-        throw ApiError.notFound(`사이즈 ID ${sizeId}에 대한 재고를 찾을 수 없습니다.`);
-      }
-      if (stock.quantity < quantity) {
-        throw ApiError.badRequest(
+      assert(stock, ApiError.notFound(`사이즈 ID ${sizeId}에 대한 재고를 찾을 수 없습니다.`));
+      assert(
+        stock.quantity >= quantity,
+        ApiError.badRequest(
           `사이즈 ID ${sizeId}의 재고가 부족합니다. (요청: ${quantity}, 재고: ${stock.quantity})`,
-        );
-      }
+        ),
+      );
 
       // CartItem upsert
       const cartItem = await cartRepository.upsertCartItem(cart.id, productId, sizeId, quantity);
@@ -156,14 +154,10 @@ class CartService {
     const cartItem = await cartRepository.getCartItemById(cartItemId);
 
     // 2. 아이템이 없으면 404 에러
-    if (!cartItem) {
-      throw ApiError.notFound('장바구니에 아이템이 없습니다.');
-    }
+    assert(cartItem, ApiError.notFound('장바구니에 아이템이 없습니다.'));
 
     // 3. 권한 확인 (요청한 사용자의 장바구니 아이템인지 확인)
-    if (cartItem.cart.userId !== userId) {
-      throw ApiError.forbidden('접근 권한이 없습니다.');
-    }
+    assert(cartItem.cart.userId === userId, ApiError.forbidden('접근 권한이 없습니다.'));
 
     // 4. 장바구니 아이템 삭제
     await cartRepository.deleteCartItem(cartItemId);
