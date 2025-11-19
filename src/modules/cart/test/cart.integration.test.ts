@@ -280,7 +280,7 @@ describe('Cart API', () => {
 
     test('성공: 장바구니 아이템을 삭제하고 204를 반환해야 합니다.', async () => {
       const response = await request(app)
-        .delete(`/api/cart/items/${deleteTargetItemId}`)
+        .delete(`/api/cart/${deleteTargetItemId}`)
         .set('Authorization', `Bearer ${buyerAccessToken}`);
 
       expect(response.status).toBe(204);
@@ -289,7 +289,7 @@ describe('Cart API', () => {
     test('실패: 존재하지 않는 아이템 ID로 삭제 시 404를 반환해야 합니다.', async () => {
       const invalidItemId = 'cm0000000000000000000001';
       const response = await request(app)
-        .delete(`/api/cart/items/${invalidItemId}`)
+        .delete(`/api/cart/${invalidItemId}`)
         .set('Authorization', `Bearer ${buyerAccessToken}`);
 
       expect(response.status).toBe(404);
