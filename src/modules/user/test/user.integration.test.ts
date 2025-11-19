@@ -76,11 +76,14 @@ describe('User API', () => {
   describe('POST /api/users - 회원가입', () => {
     test('성공: 새로운 사용자를 생성하고 201을 반환', async () => {
       const newUserData = {
-        email: 'newuser@gmail.com',
+        email: 'test2410@naver.com',
         password: 'password123',
         name: 'NewUser',
         type: UserType.BUYER,
       };
+
+      // 기존 사용자 삭제 (이미 존재할 경우)
+      await prisma.user.deleteMany({ where: { email: newUserData.email } });
 
       const response = await request(app).post('/api/users').send(newUserData);
 
