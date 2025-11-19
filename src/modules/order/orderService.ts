@@ -263,6 +263,7 @@ class OrderService {
               },
             },
           })),
+          reviews: item.reviews,
         },
         size: {
           id: item.size.id,

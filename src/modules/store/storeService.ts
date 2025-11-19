@@ -1,5 +1,6 @@
 import storeRepository from '@modules/store/storeRepo';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 import {
   CreateStoreDto,
   UpdateStoreDto,
@@ -16,31 +17,21 @@ class StoreService {
     // 유저가 있는지 검사,swagger에는 없으나 에러 케이스 추가 - 404
     // 토큰으로 전달받기에 없는 경우는 없으나 타입 좁히기
     const user = await storeRepository.getUserTypeByUserId(userId);
-    if (!user) {
-      throw ApiError.notFound('존재하지 않는 유저입니다.');
-    }
+    assert(user, ApiError.notFound('존재하지 않는 유저입니다.'));
     // 유저 타입이 seller 인지 검사,swagger에는 없으나 에러 케이스 추가 - 400
-    if (user.type !== UserType.SELLER) {
-      throw ApiError.badRequest('스토어는 판매자만 만들수 있습니다.');
-    }
+    assert(user.type === UserType.SELLER, ApiError.badRequest('스토어는 판매자만 만들수 있습니다.'));
     // 스토어가 이미 있는지 조회, swagger에는 없으나 에러 케이스 추가 - 409
     const store = await storeRepository.getStoreIdByUserId(userId);
-    if (store) {
-      throw ApiError.conflict('이미 스토어가 있습니다.');
-    }
+    assert(!store, ApiError.conflict('이미 스토어가 있습니다.'));
     return await storeRepository.createStore(userId, createStoreDto);
   };
 
   updateStore = async (userId: string, storeId: string, updateStoreDto: UpdateStoreDto) => {
     // 스토어가 존재하는지 검사, swagger에는 없으나 에러 케이스 추가
     const storeInfo = await storeRepository.getStoreIdByUserId(userId);
-    if (!storeInfo) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
+    assert(storeInfo, ApiError.notFound('스토어가 존재하지 않습니다'));
     // 스토어가 유저의 스토어인지 검사
-    if (storeInfo.id !== storeId) {
-      throw ApiError.forbidden('올바른 접근이 아닙니다.');
-    }
+    assert(storeInfo.id === storeId, ApiError.forbidden('올바른 접근이 아닙니다.'));
 
     // 새 이미지가 제공되고 기존 이미지가 있는 경우, 기존 S3 이미지 삭제를 위한 정보 조회
     let oldStoreInfo = null;
@@ -63,9 +54,7 @@ class StoreService {
   getStore = async (storeId: string): Promise<PublicStoreDto> => {
     // 스토어 조회, swagger에는 없으나 에러 케이스 추가
     const store = await storeRepository.getStoreById(storeId);
-    if (!store) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
+    assert(store, ApiError.notFound('스토어가 존재하지 않습니다'));
 
     // 형식에 맞게 데이터 가공
     const { _count, ...rest } = store;
@@ -79,9 +68,7 @@ class StoreService {
   getMyProductList = async (userId: string, pagenationDto: GetMyProductListDto) => {
     // 스토어가 존재하는지 검사, swagger에는 없으나 에러 케이스 추가
     const store = await storeRepository.getStoreIdByUserId(userId);
-    if (!store) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
+    assert(store, ApiError.notFound('스토어가 존재하지 않습니다'));
     // 내 스토어 등록 상품들 정보 반환
     const productList = await storeRepository.getProductListByStoreId(store.id, pagenationDto);
     return productList;
@@ -90,9 +77,7 @@ class StoreService {
   getMyStore = async (userId: string): Promise<PublicMyStoreDto> => {
     // 스토어가 존재하는지 검사 + 스토어 아이디 조회, swagger에는 없으나 에러 케이스 추가
     const storeInfo = await storeRepository.getStoreIdByUserId(userId);
-    if (!storeInfo) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
+    assert(storeInfo, ApiError.notFound('스토어가 존재하지 않습니다'));
 
     // 데이터 병렬 조회
     const storePromise = storeRepository.getStoreById(storeInfo.id);
@@ -122,15 +107,11 @@ class StoreService {
   favoriteStore = async (userId: string, storeId: string): Promise<PublicFavoriteStoreDto> => {
     // 이미 관심 스토어인지 확인
     const existingLike = await storeRepository.getStoreLike(userId, storeId);
-    if (existingLike) {
-      throw ApiError.conflict('이미 관심 스토어로 등록되어 있습니다.');
-    }
+    assert(!existingLike, ApiError.conflict('이미 관심 스토어로 등록되어 있습니다.'));
 
     // 실제 존재하는 스토어인지 확인 + 정보 조회 + 타입 좁히기, swagger에는 없으나 에러 케이스 추가
     const store = await storeRepository.getStoreById(storeId);
-    if (!store) {
-      throw ApiError.notFound('스토어가 존재하지 않습니다');
-    }
+    assert(store, ApiError.notFound('스토어가 존재하지 않습니다'));
 
     // 관심 스토어 등록
     await storeRepository.favoriteStore(userId, storeId);
@@ -146,9 +127,7 @@ class StoreService {
   unfavoriteStore = async (userId: string, storeId: string): Promise<PublicFavoriteStoreDto> => {
     // 관심 스토어로 등록되어 있는지 확인
     const existingLike = await storeRepository.getStoreLike(userId, storeId);
-    if (!existingLike) {
-      throw ApiError.notFound('관심 스토어로 등록되지 않은 스토어입니다.');
-    }
+    assert(existingLike, ApiError.notFound('관심 스토어로 등록되지 않은 스토어입니다.'));
 
     // 관심 스토어 해제
     await storeRepository.unfavoriteStore(userId, storeId);
