@@ -234,6 +234,7 @@ describe('getOrderList 메소드 테스트', () => {
             en: 'L',
             ko: '대',
           },
+          reviews: [],
         },
       ],
       payments: [

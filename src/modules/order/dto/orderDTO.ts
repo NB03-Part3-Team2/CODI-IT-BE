@@ -163,6 +163,7 @@ export interface ProductInOrderListDto {
   updatedAt: Date;
   store: StoreInOrderListDto;
   stocks: StockInOrderListDto[];
+  reviews: ReviewInOrderListDto[];
 }
 
 // 주문 목록 조회 응답 - Store DTO
@@ -185,6 +186,14 @@ export interface StockInOrderListDto {
   sizeId: number;
   quantity: number;
   size: SizeDto;
+}
+
+// 주문 목록 조회 응답 - Review DTO
+export interface ReviewInOrderListDto {
+  id: string;
+  rating: number;
+  content: string;
+  createdAt: Date;
 }
 
 // 주문 목록 조회 응답 - Pagination Meta DTO
