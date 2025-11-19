@@ -1,6 +1,9 @@
 import orderRepository from '@modules/order/orderRepo';
 import productRepository from '@modules/product/productRepo';
 import userRepository from '@modules/user/userRepo';
+import storeRepository from '@modules/store/storeRepo';
+import notificationService from '@modules/notification/notificationService';
+import cartRepository from '@modules/cart/cartRepo';
 import {
   CreateOrderDto,
   CreateOrderResponseDto,
@@ -91,7 +94,43 @@ class OrderService {
 
     assert(createdOrder, ApiError.internal('주문 생성에 실패했습니다.'));
 
-    // 6. 응답 DTO로 변환
+    /* 6. 품절 알림 발송 - 주문으로 재고가 0이 된 상품들 확인
+    에러 상황 발생 대비해 콘솔 에러로 기록하고 진행
+    */
+    try {
+      for (const item of orderItemsWithPrice) {
+        // 각 상품의 해당 사이즈 재고 조회
+        const stockInfo = await productRepository.getStockAndSize(item.productId, item.sizeId);
+
+        if (stockInfo && stockInfo.quantity === 0) {
+          // 재고가 0이 되면 상품 정보 및 스토어 정보 조회
+          const product = await productRepository.getProductById(item.productId);
+          if (!product) continue;
+
+          const store = await storeRepository.getStoreById(product.storeId);
+          if (!store) continue;
+
+          // 장바구니에 해당 상품을 담은 사용자들 조회
+          const cartUserIds = await cartRepository.getUserIdsBySoldOutProduct(
+            item.productId,
+            item.sizeId,
+          );
+
+          // 품절 알림 전송
+          await notificationService.notifyOutOfStock({
+            sellerId: store.userId,
+            storeName: store.name,
+            productName: product.name,
+            sizeName: stockInfo.size.en,
+            cartUserIds,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('품절 알림 발송 중 오류 발생:', error);
+    }
+
+    // 7. 응답 DTO로 변환
     return {
       id: createdOrder.id,
       userId: createdOrder.userId,
