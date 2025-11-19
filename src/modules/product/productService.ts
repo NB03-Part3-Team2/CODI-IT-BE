@@ -3,6 +3,7 @@ import storeRepository from '@modules/store/storeRepo';
 import notificationService from '@modules/notification/notificationService';
 import cartRepository from '@modules/cart/cartRepo';
 import { ApiError } from '@errors/ApiError';
+import { assert } from '@utils/assert';
 import {
   CreateProductDto,
   ProductResponseDto,
@@ -19,16 +20,12 @@ class ProductService {
     createProductDto: CreateProductDto,
   ): Promise<ProductResponseDto> => {
     const store = await storeRepository.getStoreIdByUserId(userId);
-    if (!store) {
-      throw ApiError.notFound('스토어를 찾을수 없습니다.');
-    }
+    assert(store, ApiError.notFound('스토어를 찾을수 없습니다.'));
 
     const { categoryName, price, discountRate, ...restOfDto } = createProductDto;
 
     const category = await productRepository.getCategoryByName(categoryName);
-    if (!category) {
-      throw ApiError.notFound('존재하지 않는 카테고리 입니다.');
-    }
+    assert(category, ApiError.notFound('존재하지 않는 카테고리 입니다.'));
 
     let discountPrice: number = price;
     if (discountRate) {
@@ -56,9 +53,10 @@ class ProductService {
 
     // 상품을 찾을 수 없을때는 빈 배열 + count 0이므로 에러 x
     // 올바르지 않은 카테고리가 들어왔을 경우 404 에러
-    if (categoryName && !CATEGORY_NAMES.includes(categoryName as any)) {
-      throw ApiError.notFound('존재하지 않는 카테고리 입니다.');
-    }
+    assert(
+      !categoryName || CATEGORY_NAMES.includes(categoryName as any),
+      ApiError.notFound('존재하지 않는 카테고리 입니다.')
+    );
 
     // 레포지토리 함수 호출 : 상품들 정보, 전체 상품 개수
     const totalCount = await productRepository.getProductCount(getProductListDto);
@@ -96,18 +94,12 @@ class ProductService {
   ): Promise<ProductResponseDto> => {
     // 상품을 찾을수 없는 경우 에러
     const product = await productRepository.getProductById(productId);
-    if (!product) {
-      throw ApiError.notFound('상품을 찾을 수 없습니다.');
-    }
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 본인에 스토어에 등록된 상품인지 확인, 명세서에는 없는 추가 에러
     const store = await storeRepository.getStoreIdByUserId(userId);
-    if (!store) {
-      throw ApiError.notFound('스토어를 찾을수 없습니다.');
-    }
-    if (product.storeId !== store.id) {
-      throw ApiError.forbidden('상품을 수정할 권한이 없습니다.');
-    }
+    assert(store, ApiError.notFound('스토어를 찾을수 없습니다.'));
+    assert(product.storeId === store.id, ApiError.forbidden('상품을 수정할 권한이 없습니다.'));
 
     const { categoryName, price, discountRate, ...restOfDto } = updateProductDto;
 
@@ -116,9 +108,7 @@ class ProductService {
     // 수정하고자 하는 카테고리가 DB에 없는 이름일 경우 에러
     if (categoryName) {
       const category = await productRepository.getCategoryByName(categoryName);
-      if (!category) {
-        throw ApiError.notFound('존재하지 않는 카테고리 입니다.');
-      }
+      assert(category, ApiError.notFound('존재하지 않는 카테고리 입니다.'));
       repoDto.categoryId = category.id;
     }
 
@@ -175,9 +165,7 @@ class ProductService {
     const product = await productRepository.getProductByIdWithRelations(productId);
 
     // id로 받은 상품이 없을 경우 에러
-    if (!product) {
-      throw ApiError.notFound('상품을 찾을 수 없습니다.');
-    }
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 리스폰스 형태에 맞게 가공
     return this._formatProductResponse(product, product.store.name);
@@ -186,19 +174,13 @@ class ProductService {
   deleteProduct = async (userId: string, productId: string) => {
     // 삭제할 상품이 있는지 + 상품이 포함된 스토어의 권한 확인을 위해 먼저 조회
     const product = await productRepository.getProductById(productId);
-    if (!product) {
-      throw ApiError.notFound('상품을 찾을 수 없습니다.');
-    }
+    assert(product, ApiError.notFound('상품을 찾을 수 없습니다.'));
 
     // 삭제 권한이 있는지 조회를 위해 스토어 조회
     const store = await storeRepository.getStoreIdByUserId(userId);
-    if (!store) {
-      throw ApiError.notFound('스토어를 찾을수 없습니다.');
-    }
+    assert(store, ApiError.notFound('스토어를 찾을수 없습니다.'));
     // 상품이 유저의 스토어와 id가 같은지 권한 체크
-    if (product.storeId !== store.id) {
-      throw ApiError.forbidden('상품을 삭제할 권한이 없습니다.');
-    }
+    assert(product.storeId === store.id, ApiError.forbidden('상품을 삭제할 권한이 없습니다.'));
 
     // product 삭제 레포지토리 메소드 호출
     await productRepository.deleteProduct(productId);
