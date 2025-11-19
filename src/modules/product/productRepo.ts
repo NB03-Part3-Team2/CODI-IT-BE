@@ -460,6 +460,25 @@ class ProductRepository {
     });
     return product?.store.userId || null;
   };
+
+  getStockAndSize = async (productId: string, sizeId: number) => {
+    return await prisma.stock.findUnique({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      select: {
+        quantity: true,
+        size: {
+          select: {
+            en: true,
+          },
+        },
+      },
+    });
+  };
 }
 
 export default new ProductRepository();

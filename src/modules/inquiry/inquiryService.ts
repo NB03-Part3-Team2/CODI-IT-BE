@@ -214,6 +214,12 @@ class InquiryService {
       userId,
       inquiryReplyDto,
     );
+    // 문의자에게 답변 알림 전달 에러 상황 대비해 로직에 영향없이 콘솔에러만 출력
+    try {
+      await notificationService.notifyInquiryAnswered(inquiry.userId, inquiry.title);
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+    }
 
     return inquiryReply;
   };
