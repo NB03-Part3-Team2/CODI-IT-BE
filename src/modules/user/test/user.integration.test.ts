@@ -89,8 +89,10 @@ describe('User API', () => {
 
       // 에러 디버깅
       if (response.status !== 201) {
+        console.log('=== 회원가입 실패 디버깅 ===');
         console.log('Response status:', response.status);
-        console.log('Response body:', response.body);
+        console.log('Response body:', JSON.stringify(response.body, null, 2));
+        console.log('Request data:', JSON.stringify(newUserData, null, 2));
       }
 
       expect(response.status).toBe(201);
