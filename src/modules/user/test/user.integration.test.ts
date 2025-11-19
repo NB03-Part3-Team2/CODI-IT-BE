@@ -87,6 +87,12 @@ describe('User API', () => {
 
       const response = await request(app).post('/api/users').send(newUserData);
 
+      // 에러 디버깅
+      if (response.status !== 201) {
+        console.log('Response status:', response.status);
+        console.log('Response body:', response.body);
+      }
+
       expect(response.status).toBe(201);
       expect(response.body.email).toBe(newUserData.email);
       expect(response.body.name).toBe(newUserData.name);
