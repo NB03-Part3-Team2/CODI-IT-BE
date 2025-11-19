@@ -10,10 +10,6 @@ describe('reviewGetList 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('getReviewList 메소드 테스트', () => {
     test('getReviewList 성공 테스트 - 리뷰가 있는 경우', async () => {
       const getReviewListQueryDto = MOCK_DATA.getReviewListQueryDto;

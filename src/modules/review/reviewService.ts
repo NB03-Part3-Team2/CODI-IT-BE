@@ -81,7 +81,7 @@ class ReviewService {
       existingReview?.userId === deleteReviewDto.userId,
       ApiError.forbidden('본인의 리뷰만 삭제할 수 있습니다.'),
     );
-    await reviewRepository.deleteReview(deleteReviewDto.reviewId);
+    await reviewRepository.deleteReview(deleteReviewDto.reviewId, existingReview.orderItemId);
   };
 }
 

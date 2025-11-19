@@ -10,10 +10,6 @@ describe('NotificationService - Create', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('createNotification 메소드 테스트', () => {
     test('알림 생성 성공 - SSE 연결 없음', async () => {
       const createDto = MOCK_DATA.createNotificationDto;

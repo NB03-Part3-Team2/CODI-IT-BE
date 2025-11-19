@@ -10,10 +10,6 @@ describe('getNotificationList 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('getNotificationList 메소드 테스트', () => {
     test('알림 목록 조회 성공 - 알림이 있는 경우', async () => {
       const userId = MOCK_CONSTANTS.USER_ID;

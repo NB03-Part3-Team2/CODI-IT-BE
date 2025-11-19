@@ -11,10 +11,6 @@ describe('userCreate 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('createUser 메소드 테스트', () => {
     test('createUser 성공 테스트', async () => {
       // 공통 mock 데이터 사용

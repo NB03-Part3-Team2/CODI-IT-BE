@@ -10,10 +10,6 @@ describe('reviewDelete 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('deleteReview 메소드 테스트', () => {
     test('deleteReview 성공 테스트', async () => {
       const deleteReviewDto = MOCK_DATA.deleteReviewDto;
@@ -30,7 +26,10 @@ describe('reviewDelete 단위 테스트', () => {
 
       expect(userRepository.getUserById).toHaveBeenCalledWith(deleteReviewDto.userId);
       expect(reviewRepository.getReviewById).toHaveBeenCalledWith(deleteReviewDto.reviewId);
-      expect(deleteReviewSpy).toHaveBeenCalledWith(deleteReviewDto.reviewId);
+      expect(deleteReviewSpy).toHaveBeenCalledWith(
+        deleteReviewDto.reviewId,
+        existingReview.orderItemId,
+      );
     });
 
     test('deleteReview 실패 테스트 - 존재하지 않는 사용자', async () => {

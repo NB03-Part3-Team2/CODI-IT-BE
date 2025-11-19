@@ -23,15 +23,22 @@ const selectOptionDB = {
 
 class ReviewRepository {
   createReview = async (createReviewDto: CreateReviewDto) => {
-    const review = await prisma.review.create({
-      data: {
-        userId: createReviewDto.userId,
-        productId: createReviewDto.productId,
-        orderItemId: createReviewDto.orderItemId,
-        content: createReviewDto.content,
-        rating: createReviewDto.rating,
-      },
-      select: selectOptionDB,
+    const review = await prisma.$transaction(async (tx) => {
+      const createdReview = await tx.review.create({
+        data: {
+          userId: createReviewDto.userId,
+          productId: createReviewDto.productId,
+          orderItemId: createReviewDto.orderItemId,
+          content: createReviewDto.content,
+          rating: createReviewDto.rating,
+        },
+        select: selectOptionDB,
+      });
+      await tx.orderItem.update({
+        where: { id: createReviewDto.orderItemId },
+        data: { isReviewed: true },
+      });
+      return createdReview;
     });
     return review;
   };
@@ -73,9 +80,15 @@ class ReviewRepository {
     return data;
   };
 
-  deleteReview = async (reviewId: string) => {
-    await prisma.review.delete({
-      where: { id: reviewId },
+  deleteReview = async (reviewId: string, orderItemId: string) => {
+    await prisma.$transaction(async (tx) => {
+      await tx.review.delete({
+        where: { id: reviewId },
+      });
+      await tx.orderItem.update({
+        where: { id: orderItemId },
+        data: { isReviewed: false },
+      });
     });
   };
 }

@@ -13,10 +13,6 @@ describe('reviewCreate 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('createReview 메소드 테스트', () => {
     test('createReview 성공 테스트', async () => {
       const createReviewDto = MOCK_DATA.createReviewDto;

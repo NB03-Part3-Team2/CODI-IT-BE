@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import usersService from '@modules/user/userService';
 import authService from '@modules/auth/authService';
 import { LoginDto } from '@modules/auth/dto/loginDTO';
@@ -9,10 +8,6 @@ import tokenUtils from '@modules/auth/utils/tokenUtils';
 describe('AuthService 단위 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('login 메소드 테스트', () => {

@@ -10,10 +10,6 @@ describe('markAsRead 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('markAsRead 메소드 테스트', () => {
     test('알림 읽음 처리 성공', async () => {
       const notificationId = MOCK_CONSTANTS.NOTIFICATION_ID;

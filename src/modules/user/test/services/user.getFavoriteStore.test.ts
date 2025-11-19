@@ -10,10 +10,6 @@ describe('getFavoriteStoreList 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('getFavoriteStoreList 메소드 테스트', () => {
     test('getFavoriteStoreList 성공 테스트 - 찜한 상점이 있는 경우', async () => {
       const userId = MOCK_CONSTANTS.USER_ID;

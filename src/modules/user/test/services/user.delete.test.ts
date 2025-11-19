@@ -10,10 +10,6 @@ describe('userDelete 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('deleteUser 메소드 테스트', () => {
     test('deleteUser 성공 테스트 - 이미지 있는 경우', async () => {
       // 공통 mock 데이터 사용

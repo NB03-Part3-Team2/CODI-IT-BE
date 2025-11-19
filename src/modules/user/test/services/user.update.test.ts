@@ -10,9 +10,6 @@ describe('userUpdate 단위 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
 
   describe('updateUser 메소드 테스트', () => {
     test('updateUser 성공 테스트', async () => {

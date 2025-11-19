@@ -9,10 +9,6 @@ describe('getUser 단위 테스트', () => {
     jest.restoreAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe('getUser 메소드 테스트', () => {
     test('getUser 성공 테스트', async () => {
       jest.spyOn(userRepository, 'getUserById').mockResolvedValue(MOCK_DATA.getUser);
