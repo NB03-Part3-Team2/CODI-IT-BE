@@ -22,7 +22,7 @@ const upload = multer({
 const uploadToS3Middleware: RequestHandler = async (req, _res, next) => {
   try {
     if (req.file) {
-      // // S3에 업로드
+      // S3에 업로드
       const result = await s3Service.uploadImage({ image: req.file });
 
       // req.body.image에 S3 URL 추가
