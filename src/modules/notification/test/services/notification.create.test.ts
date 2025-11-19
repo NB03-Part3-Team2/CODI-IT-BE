@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import notificationService from '@modules/notification/notificationService';
 import notificationRepository from '@modules/notification/notificationRepo';
 import notificationServer from '@modules/notification/notificationServer';
@@ -8,10 +7,6 @@ import { MOCK_CONSTANTS, MOCK_DATA } from './mock';
 describe('NotificationService - Create', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('createNotification 메소드 테스트', () => {

@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import reviewService from '@modules/review/reviewService';
 import reviewRepository from '@modules/review/reviewRepo';
 import productRepo from '@modules/product/productRepo';
@@ -8,10 +7,6 @@ import { MOCK_DATA } from '@modules/review/test/services/mock';
 describe('reviewGetList 단위 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('getReviewList 메소드 테스트', () => {

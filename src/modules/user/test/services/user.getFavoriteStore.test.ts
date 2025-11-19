@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import userService from '@modules/user/userService';
 import userRepository from '@modules/user/userRepo';
 import { MOCK_CONSTANTS, MOCK_DATA } from '@modules/user/test/services/mock';
@@ -8,10 +7,6 @@ describe('getFavoriteStoreList 단위 테스트', () => {
   // 각 테스트 후에 모든 모의(mock)를 복원
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('getFavoriteStoreList 메소드 테스트', () => {

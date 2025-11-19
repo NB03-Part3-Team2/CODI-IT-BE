@@ -21,6 +21,6 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     payload.error.details = details;
   }
 
-  console.error(`[Error] ${message}`, err);
+  console.error('[Error]', err);
   return res.status(status).json(payload);
 };

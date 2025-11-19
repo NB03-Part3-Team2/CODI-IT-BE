@@ -1,15 +1,10 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import authService from '@modules/auth/authService';
 import tokenUtils from '@modules/auth/utils/tokenUtils';
 
 describe('AuthService - refreshToken 단위 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('refreshToken 메소드 테스트', () => {
