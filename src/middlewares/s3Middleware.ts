@@ -23,11 +23,10 @@ const uploadToS3Middleware: RequestHandler = async (req, _res, next) => {
   try {
     if (req.file) {
       // // S3에 업로드
-      // const result = await s3Service.uploadImage({ image: req.file });
+      const result = await s3Service.uploadImage({ image: req.file });
 
-      // // req.body.image에 S3 URL 추가
-      // req.body.image = result.url;
-      req.body.image = 'https://picsum.photos/200/300';
+      // req.body.image에 S3 URL 추가
+      req.body.image = result.url;
     }
     next();
   } catch (error) {
