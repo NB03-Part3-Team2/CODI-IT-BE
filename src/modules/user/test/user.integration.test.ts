@@ -14,6 +14,12 @@ describe('User API', () => {
   beforeAll(async () => {
     const hashedPassword = await hashPassword('password123');
 
+    // Green 등급 생성 (userRepo에서 필요)
+    const greenGrade = await prisma.grade.findFirst({ where: { name: 'Green' } });
+    if (!greenGrade) {
+      await prisma.grade.create({ data: { name: 'Green', rate: 1, minAmount: 0 } });
+    }
+
     const grade =
       (await prisma.grade.findFirst({ where: { name: '테스트등급' } })) ??
       (await prisma.grade.create({
@@ -86,14 +92,6 @@ describe('User API', () => {
       await prisma.user.deleteMany({ where: { email: newUserData.email } });
 
       const response = await request(app).post('/api/users').send(newUserData);
-
-      // 에러 디버깅
-      if (response.status !== 201) {
-        console.log('=== 회원가입 실패 디버깅 ===');
-        console.log('Response status:', response.status);
-        console.log('Response body:', JSON.stringify(response.body, null, 2));
-        console.log('Request data:', JSON.stringify(newUserData, null, 2));
-      }
 
       expect(response.status).toBe(201);
       expect(response.body.email).toBe(newUserData.email);
