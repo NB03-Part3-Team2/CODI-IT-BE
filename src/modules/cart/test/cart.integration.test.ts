@@ -27,9 +27,9 @@ describe('Cart API', () => {
 
     // Grade 생성
     grade =
-      (await prisma.grade.findFirst({ where: { name: '테스트등급_장바구니' } })) ??
+      (await prisma.grade.findFirst({ where: { name: '테스트등급장바구니' } })) ??
       (await prisma.grade.create({
-        data: { name: '테스트등급_장바구니', rate: 1, minAmount: 0 },
+        data: { name: '테스트등급장바구니', rate: 1, minAmount: 0 },
       }));
 
     // Buyer 생성
@@ -79,7 +79,7 @@ describe('Cart API', () => {
       const storeResponse = await request(app)
         .post('/api/stores')
         .set('Authorization', `Bearer ${sellerAccessToken}`)
-        .field('name', '테스트스토어_장바구니')
+        .field('name', '테스트스토어장바구니')
         .field('address', '서울특별시 강남구 테스트로 123')
         .field('phoneNumber', '010-9999-8888')
         .field('content', '테스트 스토어입니다.');
@@ -88,9 +88,9 @@ describe('Cart API', () => {
 
     // Category 생성
     category = await prisma.category.upsert({
-      where: { name: '테스트카테고리_장바구니' },
+      where: { name: '테스트카테고리장바구니' },
       update: {},
-      create: { name: '테스트카테고리_장바구니' },
+      create: { name: '테스트카테고리장바구니' },
     });
 
     // Size 생성
@@ -109,7 +109,7 @@ describe('Cart API', () => {
     // Product 1 생성
     product1 = await prisma.product.create({
       data: {
-        name: '테스트상품1_장바구니',
+        name: '테스트상품1장바구니',
         content: '테스트 상품 1입니다.',
         price: 10000,
         storeId,
@@ -120,7 +120,7 @@ describe('Cart API', () => {
     // Product 2 생성
     product2 = await prisma.product.create({
       data: {
-        name: '테스트상품2_장바구니',
+        name: '테스트상품2장바구니',
         content: '테스트 상품 2입니다.',
         price: 20000,
         storeId,
@@ -187,7 +187,7 @@ describe('Cart API', () => {
         .post('/api/cart')
         .set('Authorization', `Bearer ${buyerAccessToken}`);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(response.body.id).toBe(cartId);
       expect(response.body.buyerId).toBe(buyerId);
     });
@@ -278,13 +278,12 @@ describe('Cart API', () => {
       deleteTargetItemId = cartResponse.body.items[0].id;
     });
 
-    test('성공: 장바구니 아이템을 삭제하고 200을 반환해야 합니다.', async () => {
+    test('성공: 장바구니 아이템을 삭제하고 204를 반환해야 합니다.', async () => {
       const response = await request(app)
         .delete(`/api/cart/items/${deleteTargetItemId}`)
         .set('Authorization', `Bearer ${buyerAccessToken}`);
 
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBeDefined();
+      expect(response.status).toBe(204);
     });
 
     test('실패: 존재하지 않는 아이템 ID로 삭제 시 404를 반환해야 합니다.', async () => {
