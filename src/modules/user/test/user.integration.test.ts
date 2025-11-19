@@ -142,10 +142,8 @@ describe('User API', () => {
   describe('GET /api/users/me/likes - 좋아하는 스토어 목록 조회', () => {
     test('성공: 좋아하는 스토어 목록을 조회하고 200을 반환', async () => {
       // 스토어 좋아요 추가
-      await prisma.storeLike.upsert({
-        where: { storeId_userId: { userId, storeId } },
-        update: {},
-        create: { userId, storeId },
+      await prisma.storeLike.create({
+        data: { userId, storeId },
       });
 
       const response = await request(app)
