@@ -51,3 +51,5 @@ jobs:
 
       - name: Run Tests
         run: npm run jest:ci-test
+        env:
+          NODE_ENV: test
