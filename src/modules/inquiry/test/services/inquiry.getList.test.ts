@@ -3,6 +3,7 @@ import inquiryService from '@modules/inquiry/inquiryService';
 import inquiryRepository from '@modules/inquiry/inquiryRepo';
 import productRepository from '@modules/product/productRepo';
 import { mockProduct, mockInquiryList } from '@modules/inquiry/test/mock';
+import { fromPrismaInquiryStatus } from '@modules/inquiry/utils/inquiryUtils';
 
 describe('getInquiryList 메소드 테스트', () => {
   afterEach(() => {
@@ -12,7 +13,7 @@ describe('getInquiryList 메소드 테스트', () => {
   test('성공', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
     const expectedResult = {
-      list: mockInquiryList,
+      list: mockInquiryList.map((i) => ({ ...i, status: fromPrismaInquiryStatus(i.status) })),
       totalCount: mockInquiryList.length,
     };
 

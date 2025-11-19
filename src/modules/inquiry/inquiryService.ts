@@ -63,9 +63,15 @@ class InquiryService {
     // 문의 개수 조회
     const totalCount = await inquiryRepository.getInquiryCountByProductId(productId);
 
+    // 리스폰스 형태에 맞게 가공
+    const formattedList = inquiries.map((inquiry) => ({
+      ...inquiry,
+      status: fromPrismaInquiryStatus(inquiry.status),
+    }));
+
     // 리스폰스 형태에 맞게 가공 후 반환
     return {
-      list: inquiries,
+      list: formattedList,
       totalCount,
     };
   };
