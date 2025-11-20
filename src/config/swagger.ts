@@ -93,7 +93,7 @@ const swaggerDefinition = {
                 message: {
                   type: 'string',
                   example:
-                    '사용자 로그인 유효성 검사 실패: email: 유효한 이메일 주소가 아닙니다., password: 비밀번호는 최소 8자 이상이어야 합니다',
+                    '유효성 검사 실패: email: 유효한 이메일 주소가 아닙니다., password: 비밀번호는 최소 8자 이상이어야 합니다',
                 },
                 details: {
                   type: 'array',
@@ -121,73 +121,6 @@ const swaggerDefinition = {
                       path: 'password',
                       message: '비밀번호는 최소 8자 이상이어야 합니다',
                     },
-                  ],
-                },
-              },
-            },
-            examples: {
-              loginError: {
-                summary: '로그인 유효성 검사 실패',
-                value: {
-                  code: 400,
-                  status: 400,
-                  message:
-                    '사용자 로그인 유효성 검사 실패: email: 유효한 이메일 주소가 아닙니다., password: 비밀번호는 최소 8자 이상이어야 합니다',
-                  details: [
-                    { path: 'email', message: '유효한 이메일 주소가 아닙니다.' },
-                    { path: 'password', message: '비밀번호는 최소 8자 이상이어야 합니다' },
-                  ],
-                },
-              },
-              createUserError: {
-                summary: '회원가입 유효성 검사 실패',
-                value: {
-                  code: 400,
-                  status: 400,
-                  message:
-                    '회원가입 유효성 검사 실패: name: 닉네임은 최소 2자 이상이어야 합니다, email: 유효한 이메일 주소가 아닙니다.',
-                  details: [
-                    { path: 'name', message: '닉네임은 최소 2자 이상이어야 합니다' },
-                    { path: 'email', message: '유효한 이메일 주소가 아닙니다.' },
-                  ],
-                },
-              },
-              createProductError: {
-                summary: '상품 생성 유효성 검사 실패',
-                value: {
-                  code: 400,
-                  status: 400,
-                  message:
-                    '상품 생성 유효성 검사 실패: name: 상품 이름은 최소 2자 이상이어야 합니다, price: 가격은 0 이상이어야 합니다.',
-                  details: [
-                    { path: 'name', message: '상품 이름은 최소 2자 이상이어야 합니다' },
-                    { path: 'price', message: '가격은 0 이상이어야 합니다.' },
-                  ],
-                },
-              },
-              createOrderError: {
-                summary: '주문 생성 유효성 검사 실패',
-                value: {
-                  code: 400,
-                  status: 400,
-                  message:
-                    '주문 생성 유효성 검사 실패: orderItems: 최소 하나의 주문 아이템이 필요합니다., address: 주소는 필수입니다.',
-                  details: [
-                    { path: 'orderItems', message: '최소 하나의 주문 아이템이 필요합니다.' },
-                    { path: 'address', message: '주소는 필수입니다.' },
-                  ],
-                },
-              },
-              createReviewError: {
-                summary: '리뷰 작성 유효성 검사 실패',
-                value: {
-                  code: 400,
-                  status: 400,
-                  message:
-                    '리뷰 작성 유효성 검사 실패: rating: 평점은 1에서 5 사이여야 합니다., content: 리뷰는 최소 10자 이상이어야 합니다',
-                  details: [
-                    { path: 'rating', message: '평점은 1에서 5 사이여야 합니다.' },
-                    { path: 'content', message: '리뷰는 최소 10자 이상이어야 합니다' },
                   ],
                 },
               },
