@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cross-env NODE_ENV=production node ./dist/main.js",
+    "start:prod": "pm2-runtime start ecosystem.config.js --env production",
     "dev": "nodemon --watch src --exec tsx -r tsconfig-paths/register ./src/main.ts",
     "build": "tsc",
     "prisma:generate": "prisma generate",
@@ -42,16 +43,17 @@
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
     "multer": "^2.0.1",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "pm2": "^5.4.0",
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^6.1.1",
-    "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
     "@types/node": "^24.10.1",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
