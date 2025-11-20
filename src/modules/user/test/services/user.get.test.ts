@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import userService from '@modules/user/userService';
 import userRepository from '@modules/user/userRepo';
 import { MOCK_CONSTANTS, MOCK_DATA } from '@modules/user/test/services/mock';
@@ -7,10 +6,6 @@ import { MOCK_CONSTANTS, MOCK_DATA } from '@modules/user/test/services/mock';
 describe('getUser 단위 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('getUser 메소드 테스트', () => {

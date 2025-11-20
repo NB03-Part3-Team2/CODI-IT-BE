@@ -273,6 +273,12 @@ export interface MockOrderItemInList {
     en: string;
     ko: string;
   };
+  reviews: Array<{
+    id: string;
+    rating: number;
+    content: string;
+    createdAt: Date;
+  }>;
 }
 
 export const createMockOrderItemInList = (
@@ -290,6 +296,7 @@ export const createMockOrderItemInList = (
     en: 'M',
     ko: '중',
   },
+  reviews: [],
   ...override,
 });
 

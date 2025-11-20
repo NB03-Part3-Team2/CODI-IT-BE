@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import reviewService from '@modules/review/reviewService';
 import reviewRepository from '@modules/review/reviewRepo';
 import userRepository from '@modules/user/userRepo';
@@ -8,10 +7,6 @@ import { MOCK_DATA } from '@modules/review/test/services/mock';
 describe('reviewDelete 단위 테스트', () => {
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('deleteReview 메소드 테스트', () => {
@@ -30,7 +25,10 @@ describe('reviewDelete 단위 테스트', () => {
 
       expect(userRepository.getUserById).toHaveBeenCalledWith(deleteReviewDto.userId);
       expect(reviewRepository.getReviewById).toHaveBeenCalledWith(deleteReviewDto.reviewId);
-      expect(deleteReviewSpy).toHaveBeenCalledWith(deleteReviewDto.reviewId);
+      expect(deleteReviewSpy).toHaveBeenCalledWith(
+        deleteReviewDto.reviewId,
+        existingReview.orderItemId,
+      );
     });
 
     test('deleteReview 실패 테스트 - 존재하지 않는 사용자', async () => {

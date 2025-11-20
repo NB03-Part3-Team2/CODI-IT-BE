@@ -1,5 +1,4 @@
-import { prisma } from '@shared/prisma';
-import { afterAll, afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, describe, test, expect, jest } from '@jest/globals';
 import userService from '@modules/user/userService';
 import userRepository from '@modules/user/userRepo';
 import * as passwordUtils from '@modules/auth/utils/passwordUtils';
@@ -9,9 +8,6 @@ describe('userUpdate 단위 테스트', () => {
   // 각 테스트 후에 모든 모의(mock)를 복원
   afterEach(() => {
     jest.restoreAllMocks();
-  });
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   describe('updateUser 메소드 테스트', () => {

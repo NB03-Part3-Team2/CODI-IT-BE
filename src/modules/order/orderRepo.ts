@@ -380,6 +380,14 @@ class OrderRepository {
                 ko: true,
               },
             },
+            reviews: {
+              select: {
+                id: true,
+                rating: true,
+                content: true,
+                createdAt: true,
+              },
+            },
           },
         },
         payments: {
