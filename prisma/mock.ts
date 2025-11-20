@@ -190,7 +190,7 @@ const generateBulkBuyers = (count: number): MockUser[] => {
       password: 'password123',
       type: 'BUYER',
       points: randomInt(0, 50000),
-      image: `https://example.com/avatar${i + 5}.jpg`,
+      image: 'https://picsum.photos/200/300',
       totalAmount: randomChoice(totalAmounts),
     });
   }
@@ -340,7 +340,7 @@ export const USERS: MockUser[] = [
     password: 'password1',
     type: 'BUYER',
     points: 5000,
-    image: 'https://example.com/avatar1.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 150000,
   },
   {
@@ -349,7 +349,7 @@ export const USERS: MockUser[] = [
     password: 'password2',
     type: 'BUYER',
     points: 12000,
-    image: 'https://example.com/avatar2.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 800000,
   },
   // 대량 구매자 50명 추가
@@ -361,7 +361,7 @@ export const USERS: MockUser[] = [
     password: 'password3',
     type: 'SELLER',
     points: 0,
-    image: 'https://example.com/avatar3.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 0,
   },
   {
@@ -370,7 +370,7 @@ export const USERS: MockUser[] = [
     password: 'password4',
     type: 'SELLER',
     points: 0,
-    image: 'https://example.com/avatar4.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 0,
   },
 ];
@@ -383,7 +383,7 @@ export const STORES = [
     detailAddress: '456호',
     phoneNumber: '02-1234-5678',
     content: '트렌디한 패션 아이템을 판매하는 스토어입니다.',
-    image: 'https://example.com/store1.jpg',
+    image: 'https://picsum.photos/200/300',
   },
   {
     name: '뷰티샵',
@@ -391,7 +391,7 @@ export const STORES = [
     detailAddress: '789호',
     phoneNumber: '02-2345-6789',
     content: '고품질 뷰티 제품을 판매하는 스토어입니다.',
-    image: 'https://example.com/store2.jpg',
+    image: 'https://picsum.photos/200/300',
   },
 ];
 
@@ -435,7 +435,7 @@ export const PRODUCTS = [
   {
     name: '기본 반팔 티셔츠',
     content: '편안한 착용감의 기본 반팔 티셔츠입니다.',
-    image: 'https://example.com/product1.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 25000,
     discountPrice: 20000,
     discountRate: 20,
@@ -445,7 +445,7 @@ export const PRODUCTS = [
   {
     name: '데님 청바지',
     content: '클래식한 스타일의 데님 청바지입니다.',
-    image: 'https://example.com/product2.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 80000,
     discountPrice: null,
     discountRate: 0,
@@ -455,7 +455,7 @@ export const PRODUCTS = [
   {
     name: '립스틱',
     content: '지속력이 뛰어난 립스틱입니다.',
-    image: 'https://example.com/product3.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 35000,
     discountPrice: 28000,
     discountRate: 20,
@@ -465,7 +465,7 @@ export const PRODUCTS = [
   {
     name: '아이섀도',
     content: '자연스러운 색감의 아이섀도입니다.',
-    image: 'https://example.com/product4.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 45000,
     discountPrice: null,
     discountRate: 0,
