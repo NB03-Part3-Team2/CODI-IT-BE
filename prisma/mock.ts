@@ -1,5 +1,307 @@
 // Mock 데이터만 정의 (삽입 로직은 seed.ts에서 처리)
 
+import {
+  startOfDay,
+  endOfDay,
+  subDays,
+  startOfWeek,
+  endOfWeek,
+  subWeeks,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  startOfYear,
+  endOfYear,
+  subYears,
+} from 'date-fns';
+
+// ============================================
+// 헬퍼 함수: 날짜 생성 (대시보드 기준)
+// ============================================
+
+/**
+ * 범위 내 랜덤 날짜 생성
+ */
+const getRandomDateBetween = (start: Date, end: Date): Date => {
+  const startTime = start.getTime();
+  const endTime = end.getTime();
+  const randomTime = startTime + Math.random() * (endTime - startTime);
+  return new Date(randomTime);
+};
+
+/**
+ * 오늘 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInToday = (): Date => {
+  const now = new Date();
+  return getRandomDateBetween(startOfDay(now), endOfDay(now));
+};
+
+/**
+ * 어제 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInYesterday = (): Date => {
+  const now = new Date();
+  const yesterday = subDays(now, 1);
+  return getRandomDateBetween(startOfDay(yesterday), endOfDay(yesterday));
+};
+
+/**
+ * 이번 주 날짜 범위에서 랜덤 날짜 생성 (월요일 시작)
+ */
+const getRandomDateInThisWeek = (): Date => {
+  const now = new Date();
+  return getRandomDateBetween(
+    startOfWeek(now, { weekStartsOn: 1 }),
+    endOfWeek(now, { weekStartsOn: 1 }),
+  );
+};
+
+/**
+ * 지난 주 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInLastWeek = (): Date => {
+  const now = new Date();
+  const lastWeek = subWeeks(now, 1);
+  return getRandomDateBetween(
+    startOfWeek(lastWeek, { weekStartsOn: 1 }),
+    endOfWeek(lastWeek, { weekStartsOn: 1 }),
+  );
+};
+
+/**
+ * 이번 달 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInThisMonth = (): Date => {
+  const now = new Date();
+  return getRandomDateBetween(startOfMonth(now), endOfMonth(now));
+};
+
+/**
+ * 지난 달 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInLastMonth = (): Date => {
+  const now = new Date();
+  const lastMonth = subMonths(now, 1);
+  return getRandomDateBetween(startOfMonth(lastMonth), endOfMonth(lastMonth));
+};
+
+/**
+ * 올해 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInThisYear = (): Date => {
+  const now = new Date();
+  return getRandomDateBetween(startOfYear(now), endOfYear(now));
+};
+
+/**
+ * 작년 날짜 범위에서 랜덤 날짜 생성
+ */
+const getRandomDateInLastYear = (): Date => {
+  const now = new Date();
+  const lastYear = subYears(now, 1);
+  return getRandomDateBetween(startOfYear(lastYear), endOfYear(lastYear));
+};
+
+// ============================================
+// 헬퍼 함수: 유틸리티
+// ============================================
+
+/**
+ * 배열에서 랜덤 요소 선택
+ */
+const randomChoice = <T>(arr: T[]): T => {
+  return arr[Math.floor(Math.random() * arr.length)];
+};
+
+/**
+ * 랜덤 정수 생성 (min 이상 max 이하)
+ */
+const randomInt = (min: number, max: number): number => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+// ============================================
+// 타입 정의 (Mock 데이터용)
+// ============================================
+
+export type MockUser = {
+  name: string;
+  email: string;
+  password: string;
+  type: 'BUYER' | 'SELLER';
+  points: number;
+  image: string;
+  totalAmount: number;
+};
+
+// MockBuyer는 MockUser의 별칭 (하위 호환성)
+type MockBuyer = MockUser;
+
+type MockOrder = {
+  userIndex: number;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  subtotal: number;
+  totalQuantity: number;
+  usePoint: number;
+  createdAt: Date;
+};
+
+type MockOrderItem = {
+  orderIndex: number;
+  productIndex: number;
+  sizeIndex: number;
+  price: number;
+  quantity: number;
+  isReviewed: boolean;
+};
+
+type MockPayment = {
+  orderIndex: number;
+  price: number;
+  status: string;
+};
+
+type MockReview = {
+  userIndex: number;
+  productIndex: number;
+  orderItemIndex: number;
+  content: string;
+  rating: number;
+};
+
+// ============================================
+// 헬퍼 함수: 대량 데이터 생성
+// ============================================
+
+/**
+ * 구매자 대량 생성
+ */
+const generateBulkBuyers = (count: number): MockUser[] => {
+  const buyers: MockUser[] = [];
+  const totalAmounts = [0, 50000, 150000, 350000, 600000, 1200000]; // 다양한 등급 분포
+
+  for (let i = 0; i < count; i++) {
+    buyers.push({
+      name: `구매자${i + 3}`, // 구매자1, 구매자2는 이미 존재
+      email: `buyer${i + 3}@example.com`,
+      password: 'password123',
+      type: 'BUYER',
+      points: randomInt(0, 50000),
+      image: 'https://picsum.photos/200/300',
+      totalAmount: randomChoice(totalAmounts),
+    });
+  }
+
+  return buyers;
+};
+
+/**
+ * 주문 대량 생성 (대시보드 날짜 분산 적용)
+ * 총 400개 주문:
+ * - 오늘: 10개, 어제: 8개
+ * - 이번 주: 50개, 지난 주: 40개
+ * - 이번 달: 80개, 지난 달: 70개
+ * - 올해: 100개, 작년: 42개
+ */
+const generateBulkOrders = (totalBuyerCount: number): MockOrder[] => {
+  const orders: MockOrder[] = [];
+  const addresses = [
+    '서울시 강남구 테헤란로 123',
+    '서울시 서초구 서초대로 456',
+    '서울시 송파구 올림픽로 789',
+    '경기도 성남시 분당구 판교로 100',
+    '인천시 연수구 송도과학로 200',
+  ];
+
+  // 날짜 분산 설정
+  const dateDistribution = [
+    { count: 10, generator: getRandomDateInToday },
+    { count: 8, generator: getRandomDateInYesterday },
+    { count: 50, generator: getRandomDateInThisWeek },
+    { count: 40, generator: getRandomDateInLastWeek },
+    { count: 80, generator: getRandomDateInThisMonth },
+    { count: 70, generator: getRandomDateInLastMonth },
+    { count: 100, generator: getRandomDateInThisYear },
+    { count: 42, generator: getRandomDateInLastYear },
+  ];
+
+  // 각 날짜 범위별로 주문 생성
+  for (const { count, generator } of dateDistribution) {
+    for (let i = 0; i < count; i++) {
+      const userIndex = randomInt(0, totalBuyerCount - 1);
+      const itemCount = randomInt(1, 5);
+      const basePrice = randomInt(10000, 100000);
+      const subtotal = basePrice * itemCount;
+      const usePoint = Math.random() < 0.3 ? randomInt(0, Math.min(5000, subtotal * 0.1)) : 0;
+
+      orders.push({
+        userIndex,
+        name: `구매자${userIndex + 1}`,
+        address: randomChoice(addresses),
+        phoneNumber: `010-${String(randomInt(1000, 9999)).padStart(4, '0')}-${String(randomInt(1000, 9999)).padStart(4, '0')}`,
+        subtotal,
+        totalQuantity: itemCount,
+        usePoint,
+        createdAt: generator(),
+      });
+    }
+  }
+
+  // 날짜순 정렬 (오래된 것부터)
+  orders.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+  return orders;
+};
+
+/**
+ * 주문 아이템 대량 생성
+ */
+const generateBulkOrderItems = (orderCount: number, productCount: number): MockOrderItem[] => {
+  const items: MockOrderItem[] = [];
+  const prices = [20000, 28000, 35000, 45000, 80000];
+
+  for (let orderIndex = 0; orderIndex < orderCount; orderIndex++) {
+    const itemCount = randomInt(1, 5);
+
+    for (let j = 0; j < itemCount; j++) {
+      items.push({
+        orderIndex,
+        productIndex: randomInt(0, productCount - 1),
+        sizeIndex: randomInt(0, 5), // 0~5 (XS~Free)
+        price: randomChoice(prices),
+        quantity: randomInt(1, 3),
+        isReviewed: Math.random() < 0.3,
+      });
+    }
+  }
+
+  return items;
+};
+
+/**
+ * 결제 데이터 대량 생성 (모두 CompletedPayment)
+ */
+const generateBulkPayments = (orderCount: number): MockPayment[] => {
+  const payments: MockPayment[] = [];
+
+  for (let orderIndex = 0; orderIndex < orderCount; orderIndex++) {
+    payments.push({
+      orderIndex,
+      price: randomInt(10000, 500000),
+      status: 'CompletedPayment',
+    });
+  }
+
+  return payments;
+};
+
+// ============================================
+// Mock 데이터 정의
+// ============================================
+
 // 사용자 등급 데이터
 export const GRADES = [
   {
@@ -29,15 +331,16 @@ export const GRADES = [
   },
 ];
 
-// 사용자 데이터
-export const USERS = [
+// 사용자 데이터 (구매자 52명 + 판매자 2명)
+export const USERS: MockUser[] = [
+  // 기본 구매자 2명
   {
     name: '김구매',
     email: 'buyer1@example.com',
     password: 'password1',
     type: 'BUYER',
     points: 5000,
-    image: 'https://example.com/avatar1.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 150000,
   },
   {
@@ -46,16 +349,19 @@ export const USERS = [
     password: 'password2',
     type: 'BUYER',
     points: 12000,
-    image: 'https://example.com/avatar2.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 800000,
   },
+  // 대량 구매자 50명 추가
+  ...generateBulkBuyers(50),
+  // 판매자 2명
   {
     name: '박판매',
     email: 'seller1@example.com',
     password: 'password3',
     type: 'SELLER',
     points: 0,
-    image: 'https://example.com/avatar3.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 0,
   },
   {
@@ -64,7 +370,7 @@ export const USERS = [
     password: 'password4',
     type: 'SELLER',
     points: 0,
-    image: 'https://example.com/avatar4.jpg',
+    image: 'https://picsum.photos/200/300',
     totalAmount: 0,
   },
 ];
@@ -77,7 +383,7 @@ export const STORES = [
     detailAddress: '456호',
     phoneNumber: '02-1234-5678',
     content: '트렌디한 패션 아이템을 판매하는 스토어입니다.',
-    image: 'https://example.com/store1.jpg',
+    image: 'https://picsum.photos/200/300',
   },
   {
     name: '뷰티샵',
@@ -85,7 +391,7 @@ export const STORES = [
     detailAddress: '789호',
     phoneNumber: '02-2345-6789',
     content: '고품질 뷰티 제품을 판매하는 스토어입니다.',
-    image: 'https://example.com/store2.jpg',
+    image: 'https://picsum.photos/200/300',
   },
 ];
 
@@ -129,7 +435,7 @@ export const PRODUCTS = [
   {
     name: '기본 반팔 티셔츠',
     content: '편안한 착용감의 기본 반팔 티셔츠입니다.',
-    image: 'https://example.com/product1.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 25000,
     discountPrice: 20000,
     discountRate: 20,
@@ -139,7 +445,7 @@ export const PRODUCTS = [
   {
     name: '데님 청바지',
     content: '클래식한 스타일의 데님 청바지입니다.',
-    image: 'https://example.com/product2.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 80000,
     discountPrice: null,
     discountRate: 0,
@@ -149,7 +455,7 @@ export const PRODUCTS = [
   {
     name: '립스틱',
     content: '지속력이 뛰어난 립스틱입니다.',
-    image: 'https://example.com/product3.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 35000,
     discountPrice: 28000,
     discountRate: 20,
@@ -159,7 +465,7 @@ export const PRODUCTS = [
   {
     name: '아이섀도',
     content: '자연스러운 색감의 아이섀도입니다.',
-    image: 'https://example.com/product4.jpg',
+    image: 'https://picsum.photos/200/300',
     price: 45000,
     discountPrice: null,
     discountRate: 0,
@@ -187,51 +493,18 @@ export const CART_ITEMS = [
   { userIndex: 1, productIndex: 1, sizeIndex: 3, quantity: 1 }, // 두 번째 사용자, 두 번째 상품, M 사이즈
 ];
 
-// 주문 데이터 (사용자와 스토어 인덱스 기반)
-export const ORDERS = [
-  {
-    userIndex: 0,
-    name: '김구매',
-    address: '서울시 강남구 테헤란로 123',
-    phoneNumber: '010-1234-5678',
-    subtotal: 40000,
-    totalQuantity: 2,
-    usePoint: 2000,
-  },
-  {
-    userIndex: 1,
-    name: '이구매',
-    address: '서울시 서초구 서초대로 456',
-    phoneNumber: '010-2345-6789',
-    subtotal: 35000,
-    totalQuantity: 1,
-    usePoint: 0,
-  },
-];
+// 주문 데이터 (400개, 날짜 분산 적용)
+// 구매자는 총 52명 (USERS 배열의 처음 52명)
+export const ORDERS = generateBulkOrders(52);
 
-// 주문 아이템 데이터 (주문과 상품 인덱스 기반)
-export const ORDER_ITEMS = [
-  { orderIndex: 0, productIndex: 0, sizeIndex: 3, price: 20000, quantity: 2, isReviewed: false },
-  { orderIndex: 0, productIndex: 1, sizeIndex: 3, price: 20000, quantity: 2, isReviewed: false },
-  { orderIndex: 1, productIndex: 2, sizeIndex: 0, price: 28000, quantity: 1, isReviewed: true },
-];
+// 주문 아이템 데이터 (주문당 1~5개, 총 상품 4개)
+export const ORDER_ITEMS = generateBulkOrderItems(ORDERS.length, PRODUCTS.length);
 
-// 결제 데이터 (주문 인덱스 기반)
-export const PAYMENTS = [
-  { orderIndex: 0, price: 38000, status: 'CompletedPayment' },
-  { orderIndex: 1, price: 35000, status: 'CompletedPayment' },
-];
+// 결제 데이터 (모두 CompletedPayment)
+export const PAYMENTS = generateBulkPayments(ORDERS.length);
 
-// 리뷰 데이터 (사용자, 상품, 주문 아이템 인덱스 기반)
-export const REVIEWS = [
-  {
-    userIndex: 1,
-    productIndex: 2,
-    orderItemIndex: 1,
-    content: '색상이 정말 예뻐요! 지속력도 좋습니다.',
-    rating: 5,
-  },
-];
+// 리뷰 데이터 (대량 데이터 생성 시 비활성화)
+export const REVIEWS: MockReview[] = [];
 
 // 문의 데이터 (사용자와 상품 인덱스 기반)
 export const INQUIRIES = [
