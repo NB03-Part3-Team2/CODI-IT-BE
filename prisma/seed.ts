@@ -16,6 +16,7 @@ import {
   INQUIRY_REPLIES,
   NOTIFICATIONS,
   STORE_LIKES,
+  MockUser,
 } from './mock';
 import { hashPassword } from '../src/modules/auth/utils/passwordUtils';
 
@@ -58,7 +59,7 @@ const seed = async () => {
   // 사용자 데이터 삽입 (비밀번호 해시 및 등급 할당)
   console.log('👥 사용자 데이터 삽입 중...');
   const hashedUsers = await Promise.all(
-    USERS.map(async (user: any) => {
+    USERS.map(async (user: MockUser) => {
       // 사용자 totalAmount에 따라 등급 결정
       let gradeName = 'Green';
       if (user.totalAmount >= 1000000) gradeName = 'VIP';

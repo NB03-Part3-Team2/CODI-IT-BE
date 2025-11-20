@@ -122,14 +122,65 @@ const randomInt = (min: number, max: number): number => {
 };
 
 // ============================================
+// 타입 정의 (Mock 데이터용)
+// ============================================
+
+export type MockUser = {
+  name: string;
+  email: string;
+  password: string;
+  type: 'BUYER' | 'SELLER';
+  points: number;
+  image: string;
+  totalAmount: number;
+};
+
+// MockBuyer는 MockUser의 별칭 (하위 호환성)
+type MockBuyer = MockUser;
+
+type MockOrder = {
+  userIndex: number;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  subtotal: number;
+  totalQuantity: number;
+  usePoint: number;
+  createdAt: Date;
+};
+
+type MockOrderItem = {
+  orderIndex: number;
+  productIndex: number;
+  sizeIndex: number;
+  price: number;
+  quantity: number;
+  isReviewed: boolean;
+};
+
+type MockPayment = {
+  orderIndex: number;
+  price: number;
+  status: string;
+};
+
+type MockReview = {
+  userIndex: number;
+  productIndex: number;
+  orderItemIndex: number;
+  content: string;
+  rating: number;
+};
+
+// ============================================
 // 헬퍼 함수: 대량 데이터 생성
 // ============================================
 
 /**
  * 구매자 대량 생성
  */
-const generateBulkBuyers = (count: number) => {
-  const buyers: any[] = [];
+const generateBulkBuyers = (count: number): MockUser[] => {
+  const buyers: MockUser[] = [];
   const totalAmounts = [0, 50000, 150000, 350000, 600000, 1200000]; // 다양한 등급 분포
 
   for (let i = 0; i < count; i++) {
@@ -155,8 +206,8 @@ const generateBulkBuyers = (count: number) => {
  * - 이번 달: 80개, 지난 달: 70개
  * - 올해: 100개, 작년: 42개
  */
-const generateBulkOrders = (totalBuyerCount: number) => {
-  const orders: any[] = [];
+const generateBulkOrders = (totalBuyerCount: number): MockOrder[] => {
+  const orders: MockOrder[] = [];
   const addresses = [
     '서울시 강남구 테헤란로 123',
     '서울시 서초구 서초대로 456',
@@ -208,8 +259,8 @@ const generateBulkOrders = (totalBuyerCount: number) => {
 /**
  * 주문 아이템 대량 생성
  */
-const generateBulkOrderItems = (orderCount: number, productCount: number) => {
-  const items: any[] = [];
+const generateBulkOrderItems = (orderCount: number, productCount: number): MockOrderItem[] => {
+  const items: MockOrderItem[] = [];
   const prices = [20000, 28000, 35000, 45000, 80000];
 
   for (let orderIndex = 0; orderIndex < orderCount; orderIndex++) {
@@ -233,8 +284,8 @@ const generateBulkOrderItems = (orderCount: number, productCount: number) => {
 /**
  * 결제 데이터 대량 생성 (모두 CompletedPayment)
  */
-const generateBulkPayments = (orderCount: number) => {
-  const payments: any[] = [];
+const generateBulkPayments = (orderCount: number): MockPayment[] => {
+  const payments: MockPayment[] = [];
 
   for (let orderIndex = 0; orderIndex < orderCount; orderIndex++) {
     payments.push({
@@ -281,7 +332,7 @@ export const GRADES = [
 ];
 
 // 사용자 데이터 (구매자 52명 + 판매자 2명)
-export const USERS = [
+export const USERS: MockUser[] = [
   // 기본 구매자 2명
   {
     name: '김구매',
@@ -453,7 +504,7 @@ export const ORDER_ITEMS = generateBulkOrderItems(ORDERS.length, PRODUCTS.length
 export const PAYMENTS = generateBulkPayments(ORDERS.length);
 
 // 리뷰 데이터 (대량 데이터 생성 시 비활성화)
-export const REVIEWS: any[] = [];
+export const REVIEWS: MockReview[] = [];
 
 // 문의 데이터 (사용자와 상품 인덱스 기반)
 export const INQUIRIES = [
