@@ -16,6 +16,7 @@ import {
   INQUIRY_REPLIES,
   NOTIFICATIONS,
   STORE_LIKES,
+  MockUser,
 } from './mock';
 import { hashPassword } from '../src/modules/auth/utils/passwordUtils';
 
@@ -58,7 +59,7 @@ const seed = async () => {
   // 사용자 데이터 삽입 (비밀번호 해시 및 등급 할당)
   console.log('👥 사용자 데이터 삽입 중...');
   const hashedUsers = await Promise.all(
-    USERS.map(async (user: any) => {
+    USERS.map(async (user: MockUser) => {
       // 사용자 totalAmount에 따라 등급 결정
       let gradeName = 'Green';
       if (user.totalAmount >= 1000000) gradeName = 'VIP';
@@ -94,7 +95,7 @@ const seed = async () => {
   await prisma.store.createMany({
     data: STORES.map((store, index) => ({
       ...store,
-      userId: users[index + 2].id, // 판매자들 (3번째, 4번째 사용자)
+      userId: users[index + 52].id, // 판매자들 (53번째, 54번째 사용자)
     })),
     skipDuplicates: true,
   });
@@ -196,6 +197,7 @@ const seed = async () => {
       subtotal: order.subtotal,
       totalQuantity: order.totalQuantity,
       usePoint: order.usePoint,
+      createdAt: order.createdAt, // 날짜 분산 적용
     })),
     skipDuplicates: true,
   });
