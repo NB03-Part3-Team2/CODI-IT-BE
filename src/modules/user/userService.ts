@@ -1,4 +1,6 @@
+import { Prisma } from '@prisma/client';
 import userRepository from '@modules/user/userRepo';
+import { metadataRepository } from '@modules/metadata/metadataRepo';
 import { ApiError } from '@errors/ApiError';
 import { assert } from '@utils/assert';
 import { hashPassword, isPasswordValid } from '@modules/auth/utils/passwordUtils';
@@ -88,6 +90,39 @@ class UserService {
   getUserByEmail = async (email: string): Promise<CreatedUserDto | null> => {
     const user = await userRepository.getUserByEmail(email);
     return user;
+  };
+
+  /**
+   * 사용자 등급 재계산 (OrderRepo의 트랜잭션 내에서 사용)
+   * 작성자: 박재성 (Order API 담당)
+   * totalAmount를 기준으로 적절한 등급을 결정하고 업데이트합니다.
+   */
+  recalculateUserGrade = async (userId: string, tx: Prisma.TransactionClient) => {
+    // 1. 사용자의 현재 totalAmount와 gradeId 조회
+    const user = await userRepository.getUserForGradeUpdate(userId, tx);
+
+    if (!user) {
+      throw ApiError.notFound('사용자를 찾을 수 없습니다.');
+    }
+
+    // 2. 모든 등급을 minAmount 내림차순으로 조회
+    const grades = await metadataRepository.getGradeListSortedByMinAmountDesc(tx);
+
+    // 3. totalAmount에 맞는 등급 결정
+    let newGradeId = grades[grades.length - 1].id; // 기본값: 가장 낮은 등급
+    for (const grade of grades) {
+      if (user.totalAmount >= grade.minAmount) {
+        newGradeId = grade.id;
+        break;
+      }
+    }
+
+    // 4. 등급이 변경된 경우에만 업데이트
+    if (user.gradeId !== newGradeId) {
+      return await userRepository.updateGradeId(userId, newGradeId, tx);
+    }
+
+    return null;
   };
 }
 
