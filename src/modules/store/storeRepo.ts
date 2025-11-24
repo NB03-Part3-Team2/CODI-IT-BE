@@ -98,6 +98,7 @@ class StoreRepository {
         p.id,
         p.name,
         p.price,
+        p.image,
         p."createdAt",
         CAST(COALESCE(SUM(s.quantity), 0) AS INTEGER) AS stock, -- COALESCE : left join시 stock이 없는 경우 대비
         CASE WHEN p."discountEndTime" > NOW() THEN true ELSE false END AS "isDiscount",

@@ -86,6 +86,7 @@ export interface DBProductDto {
   isDiscount: boolean;
   isSoldOut: boolean;
   totalCount: number;
+  image: string | null;
 }
 
 export type FavoriteStoreAction = 'register' | 'delete';
