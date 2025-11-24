@@ -9,6 +9,7 @@ const nameChecker = z
 const priceChecker = z.coerce
   .number()
   .min(0, '가격은 0 이상이어야 합니다.')
+  .max(100000000, '가격은 1억 이하여야 합니다')
   .int('가격은 정수여야 합니다.');
 
 const imageChecker = z.url('이미지 URL 형식이 올바르지 않습니다.').nullish();
@@ -29,7 +30,11 @@ const dateChecker = z.coerce.date();
 
 const stockChecker = z.object({
   sizeId: z.coerce.number().int(),
-  quantity: z.coerce.number().int().min(0, '재고는 0 이상이어야 합니다.'),
+  quantity: z.coerce
+    .number()
+    .int()
+    .min(0, '재고는 0 이상이어야 합니다.')
+    .max(10000, '재고는 10,000 이하여야 합니다'),
 });
 
 export const createProductSchema = z.object({
@@ -49,8 +54,8 @@ export const getProductListSchema = z.object({
   pageSize: z.coerce.number().min(1).default(16),
   search: z.string().optional(),
   sort: z.enum(SORT_OPTIONS).default('highRating'),
-  priceMin: z.coerce.number().min(0).optional(),
-  priceMax: z.coerce.number().min(0).optional(),
+  priceMin: z.coerce.number().min(0).max(100000000).optional(),
+  priceMax: z.coerce.number().min(0).max(100000000).optional(),
   size: z.enum(SIZE_OPTIONS).optional(),
   favoriteStore: z.cuid().optional(),
   categoryName: z.string().optional(), //404 에러 별도로 내기 위해 string으로 검사
