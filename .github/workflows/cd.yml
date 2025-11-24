@@ -1,0 +1,58 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  # ECR_REPOSITORY는 Public ECR의 ALIAS와 리포지토리 이름을 포함해야 합니다. (예: u1b2c3d4/codiit)
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  CONTAINER_NAME: codiit
+
+jobs:
+  deploy:
+    name: Build, Push to ECR, and Deploy to EC2
+    runs-on: ubuntu-latest
+    environment: cd
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR Public
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - name: Build, tag, and push image to Amazon ECR Public
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Deploy to EC2 instance
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull ${{ steps.build-image.outputs.image }}
+            if [ "$(docker ps -q -f name=${{ env.CONTAINER_NAME }})" ]; then
+              docker stop ${{ env.CONTAINER_NAME }}
+            fi
+            docker run -d --rm -p 80:3001 --name ${{ env.CONTAINER_NAME }} --env-file /codi-it/.env --restart always ${{ steps.build-image.outputs.image }}
