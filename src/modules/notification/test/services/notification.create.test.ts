@@ -65,15 +65,15 @@ describe('NotificationService - Create', () => {
       expect(createNotificationMock).toHaveBeenCalledTimes(3);
       expect(createNotificationMock).toHaveBeenNthCalledWith(1, {
         userId: MOCK_CONSTANTS.SELLER_ID,
-        content: `${MOCK_CONSTANTS.STORE_NAME}의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME}사이즈' 상품이 품절되었습니다.`,
+        content: `${MOCK_CONSTANTS.STORE_NAME}의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈' 상품이 품절되었습니다.`,
       });
       expect(createNotificationMock).toHaveBeenNthCalledWith(2, {
         userId: MOCK_CONSTANTS.BUYER_ID_1,
-        content: `장바구니의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME}사이즈' 상품이 품절되었습니다.`,
+        content: `장바구니의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈' 상품이 품절되었습니다.`,
       });
       expect(createNotificationMock).toHaveBeenNthCalledWith(3, {
         userId: MOCK_CONSTANTS.BUYER_ID_2,
-        content: `장바구니의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME}사이즈' 상품이 품절되었습니다.`,
+        content: `장바구니의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈' 상품이 품절되었습니다.`,
       });
     });
 
@@ -90,7 +90,7 @@ describe('NotificationService - Create', () => {
       expect(createNotificationMock).toHaveBeenCalledTimes(1);
       expect(createNotificationMock).toHaveBeenCalledWith({
         userId: MOCK_CONSTANTS.SELLER_ID,
-        content: `${MOCK_CONSTANTS.STORE_NAME}의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME}사이즈' 상품이 품절되었습니다.`,
+        content: `${MOCK_CONSTANTS.STORE_NAME}의 '${MOCK_CONSTANTS.PRODUCT_NAME} ${MOCK_CONSTANTS.SIZE_NAME} 사이즈' 상품이 품절되었습니다.`,
       });
     });
   });
