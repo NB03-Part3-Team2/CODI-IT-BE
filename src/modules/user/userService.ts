@@ -100,10 +100,7 @@ class UserService {
   recalculateUserGrade = async (userId: string, tx: Prisma.TransactionClient) => {
     // 1. 사용자의 현재 totalAmount와 gradeId 조회
     const user = await userRepository.getUserForGradeUpdate(userId, tx);
-
-    if (!user) {
-      throw ApiError.notFound('사용자를 찾을 수 없습니다.');
-    }
+    assert(user, ApiError.notFound('사용자를 찾을 수 없습니다.'));
 
     // 2. 모든 등급을 minAmount 내림차순으로 조회
     const grades = await metadataRepository.getGradeListSortedByMinAmountDesc(tx);

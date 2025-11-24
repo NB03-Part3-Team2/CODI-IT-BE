@@ -96,18 +96,20 @@ class OrderService {
           const stock = await productRepository.getStockForUpdate(item.productId, item.sizeId, tx);
 
           // 재고가 존재하지 않는 경우
-          if (!stock) {
-            throw ApiError.notFound(
+          assert(
+            stock,
+            ApiError.notFound(
               `상품 ID ${item.productId}, 사이즈 ID ${item.sizeId}에 대한 재고를 찾을 수 없습니다.`,
-            );
-          }
+            ),
+          );
 
           // 재고가 부족한 경우
-          if (stock.quantity < item.quantity) {
-            throw ApiError.badRequest(
+          assert(
+            stock.quantity >= item.quantity,
+            ApiError.badRequest(
               `상품 ID ${item.productId}, 사이즈 ID ${item.sizeId}의 재고가 부족합니다. (요청: ${item.quantity}, 재고: ${stock.quantity})`,
-            );
-          }
+            ),
+          );
         }
 
         // 5-2. 주문 생성
