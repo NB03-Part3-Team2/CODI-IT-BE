@@ -32,7 +32,7 @@ class NotificationService {
     for (const userId of resnotifyOutOfStockDto.cartUserIds) {
       await this.createNotification({
         userId,
-        content: `장바구니의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName}사이즈' 상품이 품절되었습니다.`,
+        content: `장바구니의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName} 사이즈' 상품이 품절되었습니다.`,
       });
     }
   };
