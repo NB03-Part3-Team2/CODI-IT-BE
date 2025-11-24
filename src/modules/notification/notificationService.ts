@@ -25,14 +25,14 @@ class NotificationService {
   notifyOutOfStock = async (resnotifyOutOfStockDto: ResnotifyOutOfStockDto) => {
     await this.createNotification({
       userId: resnotifyOutOfStockDto.sellerId,
-      content: `${resnotifyOutOfStockDto.storeName}의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName}사이즈' 상품이 품절되었습니다.`,
+      content: `${resnotifyOutOfStockDto.storeName}의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName} 사이즈' 상품이 품절되었습니다.`,
     });
 
     // 장바구니에 담은 구매자들에게 알림
     for (const userId of resnotifyOutOfStockDto.cartUserIds) {
       await this.createNotification({
         userId,
-        content: `장바구니의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName}사이즈' 상품이 품절되었습니다.`,
+        content: `장바구니의 '${resnotifyOutOfStockDto.productName} ${resnotifyOutOfStockDto.sizeName} 사이즈' 상품이 품절되었습니다.`,
       });
     }
   };
