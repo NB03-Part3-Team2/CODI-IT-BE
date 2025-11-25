@@ -1,12 +1,15 @@
+import { prisma } from '@shared/prisma';
 import orderRepository from '@modules/order/orderRepo';
 import productRepository from '@modules/product/productRepo';
 import userRepository from '@modules/user/userRepo';
+import userService from '@modules/user/userService';
 import storeRepository from '@modules/store/storeRepo';
 import notificationService from '@modules/notification/notificationService';
 import cartRepository from '@modules/cart/cartRepo';
 import {
   CreateOrderDto,
   CreateOrderResponseDto,
+  CreateOrderItemData,
   GetOrdersQueryDto,
   GetOrdersResponseDto,
 } from '@modules/order/dto/orderDTO';
@@ -24,7 +27,7 @@ class OrderService {
     // 2. 재고 확인 및 가격 계산
     let subtotal = 0;
     let totalQuantity = 0;
-    const orderItemsWithPrice = [];
+    const orderItemsWithPrice: CreateOrderItemData[] = [];
 
     for (const item of orderItems) {
       // 재고 확인은 트랜잭션 내에서 처리하지만, 가격 정보는 미리 조회
@@ -86,10 +89,60 @@ class OrderService {
     };
 
     // 5. 주문 생성 (트랜잭션 처리)
-    const createdOrder = await orderRepository.createOrder(
-      orderData,
-      orderItemsWithPrice,
-      paymentPrice,
+    const createdOrder = await prisma.$transaction(
+      async (tx) => {
+        // 5-1. 재고 검증 (트랜잭션 내에서 검증)
+        for (const item of orderItemsWithPrice) {
+          const stock = await productRepository.getStockForUpdate(item.productId, item.sizeId, tx);
+
+          // 재고가 존재하지 않는 경우
+          assert(
+            stock,
+            ApiError.notFound(
+              `상품 ID ${item.productId}, 사이즈 ID ${item.sizeId}에 대한 재고를 찾을 수 없습니다.`,
+            ),
+          );
+
+          // 재고가 부족한 경우
+          assert(
+            stock.quantity >= item.quantity,
+            ApiError.badRequest(
+              `상품 ID ${item.productId}, 사이즈 ID ${item.sizeId}의 재고가 부족합니다. (요청: ${item.quantity}, 재고: ${stock.quantity})`,
+            ),
+          );
+        }
+
+        // 5-2. 주문 생성
+        const order = await orderRepository.createOrderData(orderData, tx);
+
+        // 5-3. 주문 아이템 생성
+        await orderRepository.createOrderItems(order.id, orderItemsWithPrice, tx);
+
+        // 5-4. 결제 정보 생성
+        await orderRepository.createPayment(order.id, paymentPrice, tx);
+
+        // 5-5. 재고 차감
+        for (const item of orderItemsWithPrice) {
+          await productRepository.decrementStock(item.productId, item.sizeId, item.quantity, tx);
+        }
+
+        // 5-6. 포인트 차감 (usePoint가 0보다 큰 경우)
+        if (orderData.usePoint > 0) {
+          await userRepository.decrementPoints(orderData.userId, orderData.usePoint, tx);
+        }
+
+        // 5-7. 누적 구매액 증가
+        await userRepository.incrementTotalAmount(orderData.userId, paymentPrice, tx);
+
+        // 5-8. 등급 재계산
+        await userService.recalculateUserGrade(orderData.userId, tx);
+
+        // 5-9. 생성된 주문 상세 정보 조회 및 반환
+        return await orderRepository.getOrderWithDetails(order.id, tx);
+      },
+      {
+        timeout: 10000, // 10초 타임아웃
+      },
     );
 
     assert(createdOrder, ApiError.internal('주문 생성에 실패했습니다.'));
@@ -199,8 +252,35 @@ class OrderService {
       ApiError.badRequest('결제 완료된 주문만 취소할 수 있습니다.'),
     );
 
-    // 6. 주문 취소 (트랜잭션 처리)
-    await orderRepository.deleteOrder(orderId, userId, order.items, order.usePoint);
+    // 6. 결제 금액 조회
+    const paymentPrice = order.payments[0].price;
+
+    // 7. 주문 취소 (트랜잭션 처리)
+    await prisma.$transaction(
+      async (tx) => {
+        // 7-1. 재고 복원
+        for (const item of order.items) {
+          await productRepository.incrementStock(item.productId, item.sizeId, item.quantity, tx);
+        }
+
+        // 7-2. 포인트 환불 (usePoint가 0보다 큰 경우)
+        if (order.usePoint > 0) {
+          await userRepository.incrementPoints(userId, order.usePoint, tx);
+        }
+
+        // 7-3. 누적 구매액 감소
+        await userRepository.decrementTotalAmount(userId, paymentPrice, tx);
+
+        // 7-4. 등급 재계산
+        await userService.recalculateUserGrade(userId, tx);
+
+        // 7-5. Payment 상태를 'Cancelled'로 변경
+        await orderRepository.updatePaymentStatus(orderId, 'Cancelled', tx);
+      },
+      {
+        timeout: 10000, // 10초 타임아웃
+      },
+    );
 
     return null;
   };

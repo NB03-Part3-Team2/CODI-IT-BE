@@ -1,11 +1,9 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '@shared/prisma';
-import { ApiError } from '@errors/ApiError';
 import {
   CreateOrderData,
   CreateOrderItemData,
   GetOrdersQueryDto,
-  CancelOrderItemData,
 } from '@modules/order/dto/orderDTO';
 
 // 주문 상세 조회를 위한 select 옵션
@@ -65,170 +63,63 @@ const selectOrderWithDetailsDB = {
 
 class OrderRepository {
   /**
-   * 트랜잭션 내에서 사용하는 헬퍼 메소드들입니다.
-   * 주문 생성 트랜잭션을 관리하는 책임으로 인해 OrderRepository에 위치합니다.
-   * - getStockForUpdate: 재고 조회 및 잠금 (트랜잭션 내에서 사용)
-   * - decrementStock: 재고 차감 (트랜잭션 내에서 사용)
-   * - decrementUserPoints: 사용자 포인트 차감 (트랜잭션 내에서 사용)
+   * 순수 데이터 접근 메서드들
+   * 트랜잭션 내에서 사용되는 개별 데이터 접근 메서드입니다.
+   * 트랜잭션 오케스트레이션은 OrderService에서 담당합니다.
    */
 
-  // 재고 조회 및 잠금 (트랜잭션 내에서 사용)
-  getStockForUpdate = async (productId: string, sizeId: number, tx: Prisma.TransactionClient) => {
-    return await tx.stock.findUnique({
-      where: {
-        productId_sizeId: {
-          productId,
-          sizeId,
-        },
-      },
-      select: {
-        id: true,
-        quantity: true,
-      },
+  // 주문 데이터 생성 (트랜잭션 내에서 사용)
+  createOrderData = async (orderData: CreateOrderData, tx: Prisma.TransactionClient) => {
+    return await tx.order.create({
+      data: orderData,
     });
   };
 
-  // 재고 차감 (트랜잭션 내에서 사용)
-  decrementStock = async (
-    productId: string,
-    sizeId: number,
-    quantity: number,
-    tx: Prisma.TransactionClient,
-  ) => {
-    return await tx.stock.update({
-      where: {
-        productId_sizeId: {
-          productId,
-          sizeId,
-        },
-      },
-      data: {
-        quantity: {
-          decrement: quantity,
-        },
-      },
-    });
-  };
-
-  // 사용자 포인트 차감 (트랜잭션 내에서 사용)
-  decrementUserPoints = async (userId: string, points: number, tx: Prisma.TransactionClient) => {
-    return await tx.user.update({
-      where: { id: userId },
-      data: {
-        points: {
-          decrement: points,
-        },
-      },
-    });
-  };
-
-  // 재고 복원 (트랜잭션 내에서 사용)
-  incrementStock = async (
-    productId: string,
-    sizeId: number,
-    quantity: number,
-    tx: Prisma.TransactionClient,
-  ) => {
-    return await tx.stock.update({
-      where: {
-        productId_sizeId: {
-          productId,
-          sizeId,
-        },
-      },
-      data: {
-        quantity: {
-          increment: quantity,
-        },
-      },
-    });
-  };
-
-  // 사용자 포인트 환불 (트랜잭션 내에서 사용)
-  incrementUserPoints = async (userId: string, points: number, tx: Prisma.TransactionClient) => {
-    return await tx.user.update({
-      where: { id: userId },
-      data: {
-        points: {
-          increment: points,
-        },
-      },
-    });
-  };
-
-  // 주문 생성 (트랜잭션 처리)
-  createOrder = async (
-    orderData: CreateOrderData,
+  // 주문 아이템 생성 (트랜잭션 내에서 사용)
+  createOrderItems = async (
+    orderId: string,
     orderItems: CreateOrderItemData[],
-    paymentPrice: number,
+    tx: Prisma.TransactionClient,
   ) => {
-    return await prisma.$transaction(
-      async (tx) => {
-        // 1. 재고 검증 (트랜잭션 내에서 검증)
-        for (const item of orderItems) {
-          const stock = await this.getStockForUpdate(item.productId, item.sizeId, tx);
+    const orderItemsData = orderItems.map((item) => ({
+      orderId,
+      ...item,
+    }));
 
-          // 재고가 존재하지 않는 경우
-          if (!stock) {
-            throw ApiError.notFound(
-              `상품 ID ${item.productId}, 사이즈 ID ${item.sizeId}에 대한 재고를 찾을 수 없습니다.`,
-            );
-          }
+    return await tx.orderItem.createMany({
+      data: orderItemsData,
+    });
+  };
 
-          // 재고가 부족한 경우
-          if (stock.quantity < item.quantity) {
-            throw ApiError.badRequest(
-              `상품 ID ${item.productId}, 사이즈 ID ${item.sizeId}의 재고가 부족합니다. (요청: ${item.quantity}, 재고: ${stock.quantity})`,
-            );
-          }
-        }
-
-        // 2. 주문 생성
-        const order = await tx.order.create({
-          data: orderData,
-        });
-
-        // 3. 주문 아이템 생성
-        const orderItemsData = orderItems.map((item) => ({
-          orderId: order.id,
-          ...item,
-        }));
-
-        await tx.orderItem.createMany({
-          data: orderItemsData,
-        });
-
-        // 4. 결제 정보 생성
-        await tx.payment.create({
-          data: {
-            orderId: order.id,
-            price: paymentPrice,
-            status: 'CompletedPayment',
-          },
-        });
-
-        // 5. 재고 차감
-        for (const item of orderItems) {
-          await this.decrementStock(item.productId, item.sizeId, item.quantity, tx);
-        }
-
-        // 6. 포인트 차감 (usePoint가 0보다 큰 경우)
-        if (orderData.usePoint > 0) {
-          await this.decrementUserPoints(orderData.userId, orderData.usePoint, tx);
-        }
-
-        // 7. 생성된 주문 상세 정보 조회 및 반환
-        const createdOrder = await tx.order.findUnique({
-          where: { id: order.id },
-          select: selectOrderWithDetailsDB,
-        });
-
-        return createdOrder;
+  // 결제 정보 생성 (트랜잭션 내에서 사용)
+  createPayment = async (orderId: string, paymentPrice: number, tx: Prisma.TransactionClient) => {
+    return await tx.payment.create({
+      data: {
+        orderId,
+        price: paymentPrice,
+        status: 'CompletedPayment',
       },
-      {
-        timeout: 10000, // 10초 타임아웃
-      },
-    );
+    });
+  };
+
+  // 주문 상세 정보 조회 (트랜잭션 내에서 사용)
+  getOrderWithDetails = async (orderId: string, tx: Prisma.TransactionClient) => {
+    return await tx.order.findUnique({
+      where: { id: orderId },
+      select: selectOrderWithDetailsDB,
+    });
+  };
+
+  // 결제 상태 변경 (트랜잭션 내에서 사용)
+  updatePaymentStatus = async (
+    orderId: string,
+    status: string,
+    tx: Prisma.TransactionClient,
+  ) => {
+    return await tx.payment.updateMany({
+      where: { orderId },
+      data: { status },
+    });
   };
 
   // 주문 상세 조회
@@ -250,6 +141,7 @@ class OrderRepository {
           select: {
             id: true,
             status: true,
+            price: true,
           },
           take: 1,
           orderBy: {
@@ -258,39 +150,6 @@ class OrderRepository {
         },
       },
     });
-  };
-
-  // 주문 취소 (트랜잭션 처리)
-  deleteOrder = async (
-    orderId: string,
-    userId: string,
-    orderItems: CancelOrderItemData[],
-    usePoint: number,
-  ) => {
-    return await prisma.$transaction(
-      async (tx) => {
-        // 1. 재고 복원
-        for (const item of orderItems) {
-          await this.incrementStock(item.productId, item.sizeId, item.quantity, tx);
-        }
-
-        // 2. 포인트 환불 (usePoint가 0보다 큰 경우)
-        if (usePoint > 0) {
-          await this.incrementUserPoints(userId, usePoint, tx);
-        }
-
-        // 3. Payment 상태를 'Cancelled'로 변경
-        await tx.payment.updateMany({
-          where: { orderId },
-          data: {
-            status: 'Cancelled',
-          },
-        });
-      },
-      {
-        timeout: 10000, // 10초 타임아웃
-      },
-    );
   };
 
   // 주문 목록 조회 (페이지네이션 포함)

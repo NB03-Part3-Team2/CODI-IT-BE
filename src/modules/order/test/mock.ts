@@ -348,6 +348,7 @@ export interface MockOrderForCancel {
   payments: {
     id: string;
     status: string;
+    price: number;
   }[];
 }
 
@@ -368,7 +369,64 @@ export const createMockOrderForCancel = (
     {
       id: 'payment-1',
       status: 'CompletedPayment',
+      price: 20000,
     },
   ],
+  ...override,
+});
+
+/**
+ * 주문 취소용 Mock 데이터 (getOrderById 반환 형태 - price 포함)
+ */
+export interface MockOrderForCancelWithPrice {
+  id: string;
+  userId: string;
+  usePoint: number;
+  items: {
+    productId: string;
+    sizeId: number;
+    quantity: number;
+  }[];
+  payments: {
+    id: string;
+    status: string;
+    price: number;
+  }[];
+}
+
+export const createMockOrderForCancelWithPrice = (
+  override?: Partial<MockOrderForCancelWithPrice>,
+): MockOrderForCancelWithPrice => ({
+  id: TEST_ORDER_ID,
+  userId: TEST_USER_ID,
+  usePoint: 0,
+  items: [
+    {
+      productId: TEST_PRODUCT_ID,
+      sizeId: 1,
+      quantity: 2,
+    },
+  ],
+  payments: [
+    {
+      id: 'payment-1',
+      status: 'CompletedPayment',
+      price: 20000,
+    },
+  ],
+  ...override,
+});
+
+/**
+ * 생성된 주문 데이터 Mock (createOrderData 반환용)
+ */
+export interface MockCreatedOrderData {
+  id: string;
+}
+
+export const createMockCreatedOrderData = (
+  override?: Partial<MockCreatedOrderData>,
+): MockCreatedOrderData => ({
+  id: TEST_ORDER_ID,
   ...override,
 });

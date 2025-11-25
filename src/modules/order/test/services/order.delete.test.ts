@@ -1,15 +1,38 @@
-import { afterEach, describe, test, expect, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, test, expect, jest } from '@jest/globals';
 import orderService from '@modules/order/orderService';
 import orderRepository from '@modules/order/orderRepo';
+import productRepository from '@modules/product/productRepo';
+import userRepository from '@modules/user/userRepo';
+import userService from '@modules/user/userService';
+import { prisma } from '@shared/prisma';
 import { ApiError } from '@errors/ApiError';
 import { TEST_USER_ID, TEST_ORDER_ID, createMockOrderForCancel } from '../mock';
+
+// prisma 모듈 모킹
+jest.mock('@shared/prisma', () => ({
+  prisma: {
+    $transaction: jest.fn(),
+  },
+}));
 
 // 각 테스트 후에 모든 모의(mock)를 복원합니다.
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
+// 트랜잭션 모킹 헬퍼 함수
+const mockTransaction = () => {
+  (prisma.$transaction as jest.Mock).mockImplementation(async (callback: any) => {
+    const mockTx = {}; // 트랜잭션 클라이언트 mock
+    return await callback(mockTx);
+  });
+};
+
 describe('deleteOrder 메소드 테스트', () => {
+  beforeEach(() => {
+    mockTransaction();
+  });
+
   test('성공 - 정상적으로 주문 취소', async () => {
     // 1. 테스트에 사용할 mock 데이터 생성
     const userId = TEST_USER_ID;
@@ -33,16 +56,21 @@ describe('deleteOrder 메소드 테스트', () => {
       .spyOn(orderRepository, 'getOrderById')
       .mockResolvedValue(mockOrder);
 
-    const deleteOrderMock = jest
-      .spyOn(orderRepository, 'deleteOrder')
-      .mockResolvedValue(undefined);
+    // 트랜잭션 내 메서드 모킹
+    jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'incrementPoints').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+    jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
+    const updatePaymentStatusMock = jest
+      .spyOn(orderRepository, 'updatePaymentStatus')
+      .mockResolvedValue({ count: 1 });
 
     // 3. 서비스 함수 실행
     const result = await orderService.deleteOrder(userId, orderId);
 
     // 4. 모킹된 메소드가 올바른 인자와 함께 호출되었는지 확인
     expect(getOrderByIdMock).toHaveBeenCalledWith(orderId);
-    expect(deleteOrderMock).toHaveBeenCalledWith(orderId, userId, mockOrder.items, 1000);
+    expect(updatePaymentStatusMock).toHaveBeenCalledWith(orderId, 'Cancelled', expect.anything());
 
     // 5. 서비스 메소드가 null을 반환하는지 확인
     expect(result).toBeNull();
@@ -59,15 +87,21 @@ describe('deleteOrder 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     jest.spyOn(orderRepository, 'getOrderById').mockResolvedValue(mockOrder);
-    const deleteOrderMock = jest
-      .spyOn(orderRepository, 'deleteOrder')
-      .mockResolvedValue(undefined);
+    jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+    jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
+    jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
+
+    // incrementPoints는 usePoint가 0이므로 호출되지 않아야 함
+    const incrementPointsMock = jest
+      .spyOn(userRepository, 'incrementPoints')
+      .mockResolvedValue({} as any);
 
     // 3. 서비스 함수 실행
     const result = await orderService.deleteOrder(userId, orderId);
 
     // 4. 포인트 환불 없이 취소되었는지 확인
-    expect(deleteOrderMock).toHaveBeenCalledWith(orderId, userId, mockOrder.items, 0);
+    expect(incrementPointsMock).not.toHaveBeenCalled();
     expect(result).toBeNull();
   });
 
@@ -139,6 +173,7 @@ describe('deleteOrder 메소드 테스트', () => {
         {
           id: 'payment-1',
           status: 'Cancelled', // 이미 취소된 주문
+          price: 20000,
         },
       ],
     });
@@ -165,6 +200,7 @@ describe('deleteOrder 메소드 테스트', () => {
         {
           id: 'payment-1',
           status: 'Cancelled', // 이미 취소된 주문
+          price: 20000,
         },
       ],
     });
@@ -204,15 +240,19 @@ describe('deleteOrder 메소드 테스트', () => {
 
     // 2. 레포지토리 함수 모킹
     jest.spyOn(orderRepository, 'getOrderById').mockResolvedValue(mockOrder);
-    const deleteOrderMock = jest
-      .spyOn(orderRepository, 'deleteOrder')
-      .mockResolvedValue(undefined);
+    const incrementStockMock = jest
+      .spyOn(productRepository, 'incrementStock')
+      .mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'incrementPoints').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+    jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
+    jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
 
     // 3. 서비스 함수 실행
     const result = await orderService.deleteOrder(userId, orderId);
 
     // 4. 모든 상품 아이템이 취소 처리되었는지 확인
-    expect(deleteOrderMock).toHaveBeenCalledWith(orderId, userId, mockOrder.items, 2000);
+    expect(incrementStockMock).toHaveBeenCalledTimes(2);
     expect(result).toBeNull();
   });
 });

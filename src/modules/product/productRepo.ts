@@ -322,9 +322,22 @@ class ProductRepository {
     return product?.storeId || null;
   };
 
+  // 상품 가격 및 할인 정보 조회
+  getProductPriceInfo = async (productId: string) => {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        price: true,
+        discountRate: true,
+        discountStartTime: true,
+        discountEndTime: true,
+      },
+    });
+  };
+
   /**
    * DashboardService에서 사용하는 메소드입니다.
-   * 작성자: 박재성 (Dashboard 리팩토링)
+   * 작성자: 박재성 (Dashboard API 담당)
    * - getProductListByIds: 상품 ID 목록으로 상품 정보 조회
    */
 
@@ -336,19 +349,6 @@ class ProductRepository {
         id: true,
         name: true,
         price: true,
-      },
-    });
-  };
-
-  // 상품 가격 및 할인 정보 조회
-  getProductPriceInfo = async (productId: string) => {
-    return await prisma.product.findUnique({
-      where: { id: productId },
-      select: {
-        price: true,
-        discountRate: true,
-        discountStartTime: true,
-        discountEndTime: true,
       },
     });
   };
@@ -475,6 +475,72 @@ class ProductRepository {
           select: {
             en: true,
           },
+        },
+      },
+    });
+  };
+
+  /**
+   * OrderRepo의 트랜잭션 내에서 사용하는 헬퍼 메소드들입니다.
+   * 작성자: 박재성 (Order API 담당)
+   * OrderRepo의 트랜잭션에서 Stock 엔티티 접근 시 사용합니다.
+   */
+
+  // 재고 조회 및 잠금 (트랜잭션 내에서 사용)
+  getStockForUpdate = async (productId: string, sizeId: number, tx: Prisma.TransactionClient) => {
+    return await tx.stock.findUnique({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      select: {
+        id: true,
+        quantity: true,
+      },
+    });
+  };
+
+  // 재고 차감 (트랜잭션 내에서 사용)
+  decrementStock = async (
+    productId: string,
+    sizeId: number,
+    quantity: number,
+    tx: Prisma.TransactionClient,
+  ) => {
+    return await tx.stock.update({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      data: {
+        quantity: {
+          decrement: quantity,
+        },
+      },
+    });
+  };
+
+  // 재고 복원 (트랜잭션 내에서 사용)
+  incrementStock = async (
+    productId: string,
+    sizeId: number,
+    quantity: number,
+    tx: Prisma.TransactionClient,
+  ) => {
+    return await tx.stock.update({
+      where: {
+        productId_sizeId: {
+          productId,
+          sizeId,
+        },
+      },
+      data: {
+        quantity: {
+          increment: quantity,
         },
       },
     });
