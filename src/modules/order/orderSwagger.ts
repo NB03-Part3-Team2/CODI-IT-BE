@@ -26,8 +26,8 @@
  *                 example: 홍길동
  *               phone:
  *                 type: string
- *                 minLength: 1
- *                 description: 전화번호
+ *                 pattern: '^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})$'
+ *                 description: 전화번호 (하이픈 포함, 형식 010-1234-5678)
  *                 example: 010-1234-5678
  *               address:
  *                 type: string

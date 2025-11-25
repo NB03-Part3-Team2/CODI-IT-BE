@@ -104,9 +104,9 @@ class UserRepository {
   };
 
   /**
-   * OrderRepo의 트랜잭션 내에서 사용하는 헬퍼 메소드들입니다.
+   * OrderService의 트랜잭션 내에서 사용하는 헬퍼 메소드들입니다.
    * 작성자: 박재성 (Order API 담당)
-   * OrderRepo의 트랜잭션에서 User 엔티티 접근 시 사용합니다.
+   * OrderService의 트랜잭션에서 User 엔티티 접근 시 사용합니다.
    */
 
   // 포인트 차감 (트랜잭션 내에서 사용)
@@ -162,6 +162,14 @@ class UserRepository {
     return await tx.user.findUnique({
       where: { id: userId },
       select: { totalAmount: true, gradeId: true },
+    });
+  };
+
+  // 사용자와 등급 정보 조회 (트랜잭션 내에서 사용)
+  getUserWithGrade = async (userId: string, tx: Prisma.TransactionClient) => {
+    return await tx.user.findUnique({
+      where: { id: userId },
+      include: { grade: true },
     });
   };
 
