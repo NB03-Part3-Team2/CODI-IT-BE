@@ -23,7 +23,20 @@ afterEach(() => {
 // 트랜잭션 모킹 헬퍼 함수
 const mockTransaction = () => {
   (prisma.$transaction as jest.Mock).mockImplementation(async (callback: any) => {
-    const mockTx = {}; // 트랜잭션 클라이언트 mock
+    const mockTx = {
+      user: {
+        findUnique: (jest.fn() as any).mockResolvedValue({
+          id: TEST_USER_ID,
+          points: 0,
+          grade: {
+            id: 'grade-1',
+            name: 'Green',
+            rate: 1, // 1% 적립률
+            minAmount: 0,
+          },
+        }),
+      },
+    }; // 트랜잭션 클라이언트 mock
     return await callback(mockTx);
   });
 };
@@ -60,6 +73,7 @@ describe('deleteOrder 메소드 테스트', () => {
     jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
     jest.spyOn(userRepository, 'incrementPoints').mockResolvedValue({} as any);
     jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementPoints').mockResolvedValue({} as any);
     jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
     const updatePaymentStatusMock = jest
       .spyOn(orderRepository, 'updatePaymentStatus')
@@ -89,6 +103,7 @@ describe('deleteOrder 메소드 테스트', () => {
     jest.spyOn(orderRepository, 'getOrderById').mockResolvedValue(mockOrder);
     jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
     jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementPoints').mockResolvedValue({} as any);
     jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
     jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
 
@@ -245,6 +260,7 @@ describe('deleteOrder 메소드 테스트', () => {
       .mockResolvedValue({} as any);
     jest.spyOn(userRepository, 'incrementPoints').mockResolvedValue({} as any);
     jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementPoints').mockResolvedValue({} as any);
     jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
     jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
 
@@ -254,5 +270,186 @@ describe('deleteOrder 메소드 테스트', () => {
     // 4. 모든 상품 아이템이 취소 처리되었는지 확인
     expect(incrementStockMock).toHaveBeenCalledTimes(2);
     expect(result).toBeNull();
+  });
+
+  test('성공 - 적립 포인트 회수 (Green 등급, 1% 적립)', async () => {
+    // 1. 테스트에 사용할 mock 데이터 생성
+    const userId = TEST_USER_ID;
+    const orderId = TEST_ORDER_ID;
+    const paymentPrice = 20000; // 결제 금액
+
+    const mockOrder = createMockOrderForCancel({
+      id: orderId,
+      userId,
+      usePoint: 0,
+      payments: [
+        {
+          id: 'payment-1',
+          status: 'CompletedPayment',
+          price: paymentPrice,
+        },
+      ],
+    });
+
+    // 2. 트랜잭션 모킹 - Green 등급 사용자 (1% 적립)
+    (prisma.$transaction as jest.Mock).mockImplementation(async (callback: any) => {
+      const mockTx = {
+        user: {
+          findUnique: (jest.fn() as any).mockResolvedValue({
+            id: userId,
+            points: 200,
+            grade: {
+              id: 'grade-1',
+              name: 'Green',
+              rate: 1, // 1% 적립률
+              minAmount: 0,
+            },
+          }),
+        },
+      };
+      return await callback(mockTx);
+    });
+
+    // 3. 레포지토리 함수 모킹
+    jest.spyOn(orderRepository, 'getOrderById').mockResolvedValue(mockOrder);
+    jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+
+    const decrementPointsSpy = jest.spyOn(userRepository, 'decrementPoints').mockResolvedValue({} as any);
+
+    jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
+    jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
+
+    // 4. 서비스 함수 실행
+    await orderService.deleteOrder(userId, orderId);
+
+    // 5. 적립 포인트 회수가 올바르게 호출되었는지 확인
+    // 결제 금액: 20,000원
+    // Green 등급 적립률: 1%
+    // 회수 포인트: Math.floor(20,000 * 0.01) = 200포인트
+    expect(decrementPointsSpy).toHaveBeenCalledWith(userId, 200, expect.anything());
+  });
+
+  test('성공 - usePoint 환불 + 적립 포인트 회수 동시 처리', async () => {
+    // 1. 테스트에 사용할 mock 데이터 생성
+    const userId = TEST_USER_ID;
+    const orderId = TEST_ORDER_ID;
+    const paymentPrice = 15000; // 결제 금액 (20,000 - 5,000)
+    const usePoint = 5000;
+
+    const mockOrder = createMockOrderForCancel({
+      id: orderId,
+      userId,
+      usePoint,
+      payments: [
+        {
+          id: 'payment-1',
+          status: 'CompletedPayment',
+          price: paymentPrice,
+        },
+      ],
+    });
+
+    // 2. 트랜잭션 모킹 - Orange 등급 사용자 (2% 적립)
+    (prisma.$transaction as jest.Mock).mockImplementation(async (callback: any) => {
+      const mockTx = {
+        user: {
+          findUnique: (jest.fn() as any).mockResolvedValue({
+            id: userId,
+            points: 300,
+            grade: {
+              id: 'grade-2',
+              name: 'Orange',
+              rate: 2, // 2% 적립률
+              minAmount: 100000,
+            },
+          }),
+        },
+      };
+      return await callback(mockTx);
+    });
+
+    // 3. 레포지토리 함수 모킹
+    jest.spyOn(orderRepository, 'getOrderById').mockResolvedValue(mockOrder);
+    jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
+
+    const incrementPointsSpy = jest.spyOn(userRepository, 'incrementPoints').mockResolvedValue({} as any);
+
+    jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+
+    const decrementPointsSpy = jest.spyOn(userRepository, 'decrementPoints').mockResolvedValue({} as any);
+
+    jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
+    jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
+
+    // 4. 서비스 함수 실행
+    await orderService.deleteOrder(userId, orderId);
+
+    // 5. usePoint 환불 확인
+    expect(incrementPointsSpy).toHaveBeenCalledWith(userId, usePoint, expect.anything());
+
+    // 6. 적립 포인트 회수 확인
+    // 결제 금액: 15,000원
+    // Orange 등급 적립률: 2%
+    // 회수 포인트: Math.floor(15,000 * 0.02) = 300포인트
+    expect(decrementPointsSpy).toHaveBeenCalledWith(userId, 300, expect.anything());
+  });
+
+  test('성공 - 등급별 적립 포인트 회수 차이 (VIP 등급, 7% 적립)', async () => {
+    // 1. 테스트에 사용할 mock 데이터 생성
+    const userId = TEST_USER_ID;
+    const orderId = TEST_ORDER_ID;
+    const paymentPrice = 100000; // 결제 금액
+
+    const mockOrder = createMockOrderForCancel({
+      id: orderId,
+      userId,
+      usePoint: 0,
+      payments: [
+        {
+          id: 'payment-1',
+          status: 'CompletedPayment',
+          price: paymentPrice,
+        },
+      ],
+    });
+
+    // 2. 트랜잭션 모킹 - VIP 등급 사용자 (7% 적립)
+    (prisma.$transaction as jest.Mock).mockImplementation(async (callback: any) => {
+      const mockTx = {
+        user: {
+          findUnique: (jest.fn() as any).mockResolvedValue({
+            id: userId,
+            points: 7000,
+            grade: {
+              id: 'grade-5',
+              name: 'VIP',
+              rate: 7, // 7% 적립률
+              minAmount: 1000000,
+            },
+          }),
+        },
+      };
+      return await callback(mockTx);
+    });
+
+    // 3. 레포지토리 함수 모킹
+    jest.spyOn(orderRepository, 'getOrderById').mockResolvedValue(mockOrder);
+    jest.spyOn(productRepository, 'incrementStock').mockResolvedValue({} as any);
+    jest.spyOn(userRepository, 'decrementTotalAmount').mockResolvedValue({} as any);
+
+    const decrementPointsSpy = jest.spyOn(userRepository, 'decrementPoints').mockResolvedValue({} as any);
+
+    jest.spyOn(userService, 'recalculateUserGrade').mockResolvedValue(null);
+    jest.spyOn(orderRepository, 'updatePaymentStatus').mockResolvedValue({ count: 1 });
+
+    // 4. 서비스 함수 실행
+    await orderService.deleteOrder(userId, orderId);
+
+    // 5. 적립 포인트 회수가 올바르게 호출되었는지 확인
+    // 결제 금액: 100,000원
+    // VIP 등급 적립률: 7%
+    // 회수 포인트: Math.floor(100,000 * 0.07) = 7,000포인트
+    expect(decrementPointsSpy).toHaveBeenCalledWith(userId, 7000, expect.anything());
   });
 });
