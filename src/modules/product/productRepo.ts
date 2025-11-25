@@ -481,9 +481,9 @@ class ProductRepository {
   };
 
   /**
-   * OrderRepo의 트랜잭션 내에서 사용하는 헬퍼 메소드들입니다.
+   * OrderService의 트랜잭션 내에서 사용하는 헬퍼 메소드들입니다.
    * 작성자: 박재성 (Order API 담당)
-   * OrderRepo의 트랜잭션에서 Stock 엔티티 접근 시 사용합니다.
+   * OrderService의 트랜잭션에서 Stock 엔티티 접근 시 사용합니다.
    */
 
   // 재고 조회 및 잠금 (트랜잭션 내에서 사용)

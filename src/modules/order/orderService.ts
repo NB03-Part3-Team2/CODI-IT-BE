@@ -134,6 +134,20 @@ class OrderService {
         // 5-7. 누적 구매액 증가
         await userRepository.incrementTotalAmount(orderData.userId, paymentPrice, tx);
 
+        // 5-7-1. 포인트 적립
+        // 트랜잭션 내에서 사용자의 현재 등급 조회
+        const userWithGrade = await userRepository.getUserWithGrade(orderData.userId, tx);
+
+        assert(userWithGrade, ApiError.internal('사용자를 찾을 수 없습니다.'));
+
+        // 적립 포인트 계산: (결제금액) * (등급별 적립률 / 100)
+        const earnedPoints = Math.floor(paymentPrice * (userWithGrade.grade.rate / 100));
+
+        // 0포인트가 아닌 경우에만 포인트 적립
+        if (earnedPoints > 0) {
+          await userRepository.incrementPoints(orderData.userId, earnedPoints, tx);
+        }
+
         // 5-8. 등급 재계산
         await userService.recalculateUserGrade(orderData.userId, tx);
 
@@ -266,6 +280,20 @@ class OrderService {
         // 7-2. 포인트 환불 (usePoint가 0보다 큰 경우)
         if (order.usePoint > 0) {
           await userRepository.incrementPoints(userId, order.usePoint, tx);
+        }
+
+        // 7-2-1. 적립 포인트 회수
+        // 트랜잭션 내에서 사용자의 현재 등급 조회
+        const userWithGrade = await userRepository.getUserWithGrade(userId, tx);
+
+        assert(userWithGrade, ApiError.internal('사용자를 찾을 수 없습니다.'));
+
+        // 적립 포인트 계산: (결제금액) * (등급별 적립률 / 100)
+        const earnedPoints = Math.floor(paymentPrice * (userWithGrade.grade.rate / 100));
+
+        // 0포인트가 아닌 경우에만 포인트 회수
+        if (earnedPoints > 0) {
+          await userRepository.decrementPoints(userId, earnedPoints, tx);
         }
 
         // 7-3. 누적 구매액 감소

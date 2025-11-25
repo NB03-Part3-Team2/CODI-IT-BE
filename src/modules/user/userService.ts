@@ -93,7 +93,7 @@ class UserService {
   };
 
   /**
-   * 사용자 등급 재계산 (OrderRepo의 트랜잭션 내에서 사용)
+   * 사용자 등급 재계산 (OrderService의 트랜잭션 내에서 사용)
    * 작성자: 박재성 (Order API 담당)
    * totalAmount를 기준으로 적절한 등급을 결정하고 업데이트합니다.
    */
