@@ -57,7 +57,7 @@ model Store {
   name          String   @unique
   address       String
   detailAddress String?
-  phoneNumber   String   @unique
+  phoneNumber   String
   content       String
   image         String?
   createdAt     DateTime @default(now())
