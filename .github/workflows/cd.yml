@@ -54,5 +54,6 @@ jobs:
             docker pull ${{ steps.build-image.outputs.image }}
             if [ "$(docker ps -q -f name=${{ env.CONTAINER_NAME }})" ]; then
               docker stop ${{ env.CONTAINER_NAME }}
+              docker rm ${{ env.CONTAINER_NAME }}
             fi
-            docker run -d --rm -p 80:3001 --name ${{ env.CONTAINER_NAME }} --env-file /codi-it/.env --restart always ${{ steps.build-image.outputs.image }}
+            docker run -d -p 80:3001 --name ${{ env.CONTAINER_NAME }} --env-file /codi-it/.env --restart always ${{ steps.build-image.outputs.image }}
