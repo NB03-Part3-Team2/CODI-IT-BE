@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 const idChecker = z.cuid({ message: 'ID는 CUID 형식이어야 합니다.' });
 
+const phoneNumberChecker = z
+  .string()
+  .regex(/^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})$/, '올바른 핸드폰 번호가 아닙니다');
+
 // 주문 아이템 요청 스키마
 const orderItemRequestSchema = z.object({
   productId: idChecker,
@@ -12,7 +16,7 @@ const orderItemRequestSchema = z.object({
 // 주문 생성 요청 스키마
 export const createOrderSchema = z.object({
   name: z.string().min(1, '주문자 이름은 필수입니다.'),
-  phone: z.string().min(1, '전화번호는 필수입니다.'),
+  phone: phoneNumberChecker,
   address: z.string().min(1, '주소는 필수입니다.'),
   orderItems: z.array(orderItemRequestSchema).min(1, '최소 하나의 주문 아이템이 필요합니다.'),
   usePoint: z.number().int().nonnegative('사용 포인트는 0 이상이어야 합니다.').default(0),
