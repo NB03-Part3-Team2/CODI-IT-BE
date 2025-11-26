@@ -112,7 +112,7 @@
  *                   type: string
  *                   example: 존재하지 않는 유저입니다.
  *       409:
- *         description: 이미 스토어가 있습니다
+ *         description: 이미 스토어가 있습니다 / 이미 존재하는 스토어 이름입니다.
  *         content:
  *           application/json:
  *             schema:
@@ -586,4 +586,17 @@
  *                 message:
  *                   type: string
  *                   example: 스토어가 존재하지 않습니다.
+ *       409:
+ *         description: 이미 존재하는 스토어 이름입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 409
+ *                 message:
+ *                   type: string
+ *                   example: 이미 존재하는 스토어 이름입니다.
  */
