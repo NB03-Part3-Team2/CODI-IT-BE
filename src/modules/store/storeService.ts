@@ -19,10 +19,18 @@ class StoreService {
     const user = await storeRepository.getUserTypeByUserId(userId);
     assert(user, ApiError.notFound('존재하지 않는 유저입니다.'));
     // 유저 타입이 seller 인지 검사,swagger에는 없으나 에러 케이스 추가 - 400
-    assert(user.type === UserType.SELLER, ApiError.badRequest('스토어는 판매자만 만들수 있습니다.'));
+    assert(
+      user.type === UserType.SELLER,
+      ApiError.badRequest('스토어는 판매자만 만들수 있습니다.'),
+    );
     // 스토어가 이미 있는지 조회, swagger에는 없으나 에러 케이스 추가 - 409
     const store = await storeRepository.getStoreIdByUserId(userId);
     assert(!store, ApiError.conflict('이미 스토어가 있습니다.'));
+
+    // 스토어 이름 중복 검사
+    const existingStoreWithName = await storeRepository.getStoreByName(createStoreDto.name);
+    assert(!existingStoreWithName, ApiError.conflict('이미 존재하는 스토어 이름입니다.'));
+
     return await storeRepository.createStore(userId, createStoreDto);
   };
 
@@ -32,6 +40,15 @@ class StoreService {
     assert(storeInfo, ApiError.notFound('스토어가 존재하지 않습니다'));
     // 스토어가 유저의 스토어인지 검사
     assert(storeInfo.id === storeId, ApiError.forbidden('올바른 접근이 아닙니다.'));
+
+    // 스토어 이름 중복 검사 (업데이트하려는 이름이 있고, 그 이름이 다른 스토어에 이미 존재하는 경우)
+    if (updateStoreDto.name) {
+      const existingStoreWithName = await storeRepository.getStoreByName(updateStoreDto.name);
+      assert(
+        !existingStoreWithName || existingStoreWithName.id === storeId,
+        ApiError.conflict('이미 존재하는 스토어 이름입니다.'),
+      );
+    }
 
     // 새 이미지가 제공되고 기존 이미지가 있는 경우, 기존 S3 이미지 삭제를 위한 정보 조회
     let oldStoreInfo = null;

@@ -212,6 +212,18 @@ class StoreRepository {
       },
     });
   };
+
+  getStoreByName = async (name: string) => {
+    return await prisma.store.findUnique({
+      where: {
+        name: name,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  };
 }
 
 export default new StoreRepository();
